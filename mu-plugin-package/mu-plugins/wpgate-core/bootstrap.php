@@ -9,8 +9,8 @@
 defined( 'ABSPATH' ) || exit;
 
 // Safe kill-switch: Allows completely disabling the module via wp-config.php
-if ( ( defined( 'WPGATE_CORE_DISABLED' ) && WPGATE_CORE_DISABLED ) ||
-     ( defined( 'GHATEINO_CORE_DISABLED' ) && GHATEINO_CORE_DISABLED ) ) {
+if ( ( defined( 'WPGATE_DISABLED' ) && WPGATE_DISABLED ) ||
+     ( defined( 'WPGATE_CORE_DISABLED' ) && WPGATE_CORE_DISABLED ) ) {
 	return;
 }
 
@@ -74,6 +74,9 @@ add_filter( 'get_avatar', [ \WPGate\Core\GravatarGuard::class, 'filter' ], 10, 5
 
 // Initialize Updates control
 \WPGate\Core\UpdateGuard::init();
+
+// Register REST API endpoints
+add_action( 'rest_api_init', [ \WPGate\Core\RestController::class, 'register_routes' ] );
 
 // Initialize Admin interface only if in WordPress admin area
 if ( is_admin() ) {

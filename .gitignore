@@ -13,6 +13,10 @@ desktop.ini
 /analysis-report.md
 /GHATEINO-*
 
+# Frontend build & dependencies
+/admin-ui/node_modules/
+/admin-ui/.vite/
+
 # Temporary test scratch & output
 /tests/scratch/
 /tests/*.tmp

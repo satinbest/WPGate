@@ -1,48 +1,46 @@
-# Migration Guide: From Ghateino to WPGate
+# Deployment & Migration Guide
 
-This guide explains how to migrate existing WordPress installations from legacy **Ghateino / Shokrino (v1.2.x)** to **WPGate v0.1.0+**.
-
----
-
-## 🔄 Automatic Settings Migration
-
-WPGate includes automatic migration logic in `WPGate\Core\Settings`:
-- When WPGate boots, it checks if `wpgate_http_control_settings` exists.
-- If not found, it automatically reads and imports your existing `ghateino_http_control_settings` (including custom Whitelist, Blacklist, timeout, and font settings).
-- Diagnostic logs are likewise migrated from `ghateino_http_logs`.
-- You do **not** need to manually re-enter your whitelisted domains or configurations.
+This guide explains how to migrate, upgrade, or switch between WPGate deployment architectures on WordPress production sites.
 
 ---
 
-## ⚡ Backward Compatibility Guarantees
+## 1. Migrating from Theme Loader to Must-Use Plugin
 
-WPGate maintains complete backward compatibility with legacy hooks and constants:
+If you initially installed WPGate inside your child theme and now want early-stage execution via `mu-plugins`:
 
-1. **Kill-Switch Constant:**
-   If your `wp-config.php` contains:
+1. Copy the `wpgate-core/` directory to `wp-content/mu-plugins/wpgate-core/`.
+2. Copy `wpgate-loader.php` into `wp-content/mu-plugins/wpgate-loader.php`.
+3. Remove or comment out the bootstrap call in your child theme's `functions.php`:
    ```php
-   define( 'GHATEINO_CORE_DISABLED', true );
+   // Remove this:
+   // require_once get_stylesheet_directory() . '/wpgate-core/bootstrap.php';
    ```
-   WPGate recognizes it and halts execution immediately. You can transition to `WPGATE_CORE_DISABLED` at your convenience.
-
-2. **Rewrite Filters:**
-   Legacy filters `ghateino_local_script_rewrite` and `ghateino_local_style_rewrite` are still evaluated as fallbacks if custom themes hooked into them.
+4. Verify by checking **Settings > WPGate**; the deployment badge in the Overview tab will now display **Must-Use Plugin**.
+5. All database settings and logs are preserved seamlessly.
 
 ---
 
-## 📋 Migration Steps
+## 2. Upgrading WPGate to a Newer Version
 
-### Step 1: Deactivate Legacy Plugin
-1. Go to **WordPress Admin > Plugins**.
-2. Locate **Ghateino** and click **Deactivate**.
-3. (Optional) Delete the `ghateino` plugin folder from `wp-content/plugins/`.
+When a new release of WPGate is issued:
 
-### Step 2: Deploy WPGate (MU-Plugin Mode)
-1. Download `WPGate-MU-Plugin-v0.1.0.zip`.
-2. Extract the archive into `wp-content/`.
-3. Confirm that `wp-content/mu-plugins/wpgate-loader.php` and `wp-content/mu-plugins/wpgate-core/` are in place.
+1. Download the latest `WPGate-MU-Plugin-vX.Y.Z.zip` or `WPGate-Theme-Module-vX.Y.Z.zip`.
+2. Overwrite the files inside `wp-content/mu-plugins/wpgate-core/` (or theme folder).
+3. The database options (`wpgate_http_control_settings`) remain intact.
+4. Hard-refresh your browser (`Ctrl+F5` or `Cmd+Shift+R`) to load any updated Vue 3 admin assets.
 
-### Step 3: Verify Settings
-1. Navigate to **Settings > WPGate**.
-2. Confirm that your previously configured Whitelist domains are populated.
-3. Click **Save Settings** to confirm the migration.
+---
+
+## 3. Safe Deactivation & Removal
+
+To temporarily disable WPGate:
+- Add `define('WPGATE_DISABLED', true);` to `wp-config.php`.
+
+To completely remove WPGate:
+1. Delete `wp-content/mu-plugins/wpgate-loader.php`.
+2. Delete `wp-content/mu-plugins/wpgate-core/`.
+3. (Optional) Run the following in WP-CLI to purge saved options:
+   ```bash
+   wp option delete wpgate_http_control_settings
+   wp option delete wpgate_http_logs
+   ```

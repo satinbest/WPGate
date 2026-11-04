@@ -1,10 +1,10 @@
 <?php
 /**
  * Plugin Name: WPGate Loader (Must-Use)
- * Description: Automated loader for WPGate Standalone Core - WordPress HTTP Control & Local Asset Manager.
+ * Description: Automated loader for WPGate Standalone Core - Outbound HTTP Control & Local Asset Gateway.
  * Version: 0.1.0
- * Author: satinbest
- * Author URI: https://github.com/satinbest/WPGate
+ * Author: Hossein Mohammadpour
+ * Author URI: https://hosseinmohammadpour.ir
  *
  * @package WPGate\Loader
  */
@@ -12,8 +12,8 @@
 defined( 'ABSPATH' ) || exit;
 
 // Kill-switch: check if module is disabled via wp-config.php constant
-if ( ( defined( 'WPGATE_CORE_DISABLED' ) && WPGATE_CORE_DISABLED ) ||
-     ( defined( 'GHATEINO_CORE_DISABLED' ) && GHATEINO_CORE_DISABLED ) ) {
+if ( ( defined( 'WPGATE_DISABLED' ) && WPGATE_DISABLED ) ||
+     ( defined( 'WPGATE_CORE_DISABLED' ) && WPGATE_CORE_DISABLED ) ) {
 	return;
 }
 

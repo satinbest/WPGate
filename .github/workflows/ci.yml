@@ -30,7 +30,6 @@ jobs:
         with:
           php-version: ${{ matrix.php }}
           extensions: mbstring, json, curl
-          tools: php-cs-fixer, phpunit
 
       - name: Validate PHP syntax (php -l)
         run: |
@@ -44,4 +43,6 @@ jobs:
         run: |
           test -f mu-plugin-package/mu-plugins/wpgate-loader.php
           test -f mu-plugin-package/mu-plugins/wpgate-core/bootstrap.php
+          test -f mu-plugin-package/mu-plugins/wpgate-core/admin/dist/wpgate-admin.js
+          test -f mu-plugin-package/mu-plugins/wpgate-core/admin/dist/wpgate-admin.css
           test -f theme-package/wpgate-core/bootstrap.php

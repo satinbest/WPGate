@@ -10,7 +10,7 @@ defined( 'ABSPATH' ) || exit;
 
 return [
 	'mode'                     => 'disabled',
-	'whitelist'                => 'api.shokrino.com',
+	'whitelist'                => 'api.zarinpal.com',
 	'blacklist'                => '',
 	'disable_telemetry'        => 'yes',
 	'disable_updates'          => 'no', // Safe default: Security updates remain enabled unless changed by admin.

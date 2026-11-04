@@ -1,64 +1,65 @@
 # WPGate v0.1.0 — Initial Standalone Release Notes
 
-**Release Date:** 2026-11-04  
-**Git Tag:** `v0.1.0`  
-**Target Platform:** WordPress 5.0+ (PHP 7.4 to 8.4)  
-**Author:** satinbest  
+**Release Version:** `v0.1.0`  
+**Release Date:** November 2026  
+**Author & Architect:** Hossein Mohammadpour (<info@hosseinmohammadpour.ir>)  
+**Official Repository:** [https://github.com/satinbest/WPGate](https://github.com/satinbest/WPGate)
 
 ---
 
 ## 🌟 Executive Summary
 
-We are proud to present **WPGate v0.1.0**, the initial open-source release of the standalone WordPress HTTP Control & Local Asset Manager.
+**WPGate** is an independent, enterprise-grade, standalone WordPress software product designed to ensure uninterrupted website availability, privacy, and responsiveness during international internet blackouts, external CDN outages, or third-party service degradation.
 
-WPGate transforms the legacy Ghateino/Shokrino plugin into an enterprise-ready, standalone PHP module. Designed specifically to ensure uninterrupted website availability during international internet outages, WPGate provides an intelligent outbound HTTP firewall, timeout management, automated CDN fallback rewrites, and privacy protection—without requiring traditional WordPress plugin installation or runtime disk access.
-
----
-
-## 🚀 Key Highlights in v0.1.0
-
-### 1. Dual Standalone Deployment Architecture
-- **Must-Use Plugin (Preferred):** Loads via `wp-content/mu-plugins/wpgate-loader.php` in early WordPress bootstrap before regular plugins execute.
-- **Theme Loader:** Direct integration into child theme `functions.php` via `require_once get_stylesheet_directory() . '/wpgate-core/bootstrap.php';`.
-
-### 2. Zero Runtime Disk Modifications
-- Completely eliminated legacy runtime `copy()` and `file_put_contents()` routines that caused failures in read-only containers (Docker, Kubernetes) and managed WordPress environments (Kinsta, WP Engine, Pantheon).
-- All assets are served statically through `Context::get_asset_url()`.
-
-### 3. Outbound Request Firewall & Timeout Guard
-- **Whitelist Mode:** Allows only authorized hosts; drops all unapproved outbound traffic.
-- **Blacklist Mode:** Drops explicitly targeted endpoints.
-- **Subdomain-Aware Matching:** Prevents hostname prefix spoofing while honoring subdomains and normalizing ports and trailing periods.
-- **Timeout Ceiling:** Limits slow external HTTP calls to 3 seconds (configurable 1–30s) to avert PHP-FPM worker pool saturation.
-
-### 4. Security & Privacy Hardening
-- **Sensitive Parameter Masking:** URL query arguments containing tokens, API keys, and passwords are automatically redacted (`[REDACTED]`) before diagnostic logging.
-- **Safe Defaults:** WordPress core security updates default to enabled (`disable_updates = 'no'`), preserving vital security notifications.
-- **Emergency Kill-Switch:** Complete functional deactivation via `define('WPGATE_CORE_DISABLED', true);` in `wp-config.php`.
-
-### 5. Seamless Legacy Migration
-- Automatically detects and migrates existing settings from legacy `ghateino_http_control_settings` and logs from `ghateino_http_logs`.
-- Recognizes legacy `GHATEINO_CORE_DISABLED` constant for zero-friction upgrades.
+WPGate operates completely independently of normal WordPress plugin activation mechanisms. It features a modern **Vue 3 + Vite** single-page administration interface communicating with a robust **WordPress REST API (`wpgate/v1`)**, requires zero runtime disk writes, and introduces negligible execution overhead.
 
 ---
 
-## 📦 Download Packages
+## 🚀 Key Highlights & New Architecture
 
-| Package | Filename | Description | Destination |
-|---|---|---|---|
-| **MU-Plugin Package** | `WPGate-MU-Plugin-v0.1.0.zip` | Ready-to-deploy Must-Use plugin | Extract to `wp-content/` |
-| **Theme Module Package** | `WPGate-Theme-Module-v0.1.0.zip` | Standalone theme integration module | Extract to `wp-content/themes/<child-theme>/` |
+### 1. Dual Deployment Architecture
+- **Must-Use Plugin (Recommended):** Deployed into `wp-content/mu-plugins/` for early-stage network interception during `muplugins_loaded`.
+- **Child Theme Loader:** Deployed directly within a child theme's `wpgate-core/` and bootstrapped from `functions.php`.
+
+### 2. Vue 3 + Vite Administration Dashboard
+- Built with **Vue 3 Composition API (`<script setup>`)** and compiled with Vite.
+- Instant toggle between **Dark Mode** and **Light Mode**.
+- Native bidirectional support (**Persian RTL** and **English LTR**).
+- Ultra-compact bundle size: Minified JS **144.09 KB** (only 49.23 KB gzipped), CSS **14.57 KB** (only 3.11 KB gzipped).
+- Zero frontend asset leakage: Vue assets are enqueued strictly on `settings_page_wpgate` and never on visitor-facing pages.
+
+### 3. WordPress REST API Controller (`wpgate/v1`)
+- `GET /wpgate/v1/settings` & `POST /wpgate/v1/settings`: Settings read/write with validation.
+- `GET /wpgate/v1/logs` & `POST /wpgate/v1/logs/clear`: Searchable, paginated audit logs.
+- `GET /wpgate/v1/presets`: Domain preset library retrieval.
+- `GET /wpgate/v1/stats`: Live gateway metrics and status summary.
+- `POST /wpgate/v1/settings/reset`: Factory reset capability.
+- Security: Strictly restricted to `current_user_can('manage_options')` with REST nonce verification (`X-WP-Nonce`).
+
+### 4. Smart Outbound HTTP Interceptor
+- Three operational modes: **Whitelist**, **Blacklist**, and **Disabled**.
+- Port-agnostic and subdomain-aware matching with strict prevention of substring spoofing attacks.
+
+### 5. Local Asset Gateway & CDN Fallbacks
+- Automatic local rewriting for FontAwesome, Google Fonts (Vazirmatn & Roboto), Swiper, Elementor Icons, and Dashicons.
+- Non-blocking stubs for uncached third-party CDN assets.
+- Mixpanel analytics stub (`mixpanel-stub.js`) preventing client-side console errors.
+
+### 6. Emergency Kill-Switch
+- Hard operational bypass via constant in `wp-config.php`:
+  ```php
+  define( 'WPGATE_DISABLED', true );
+  define( 'WPGATE_CORE_DISABLED', true );
+  ```
+
+### 7. Secure Logger & Sensitive Data Masking
+- Automated sanitization replacing query values for `token`, `password`, `key`, `secret`, `signature`, and `auth` with `[REDACTED]`.
+- Automatic deduplication and configurable retention limits (1–30 days, 100–1000 entries).
 
 ---
 
-## 🧪 Verification & Test Results
-- **Automated Tests Executed:** 34 unit and integration scenarios across class loading, domain matching, timeout enforcement, asset rewriting, and logger security.
-- **Success Rate:** 100% (34 Passed, 0 Failed).
-- **Linter Status:** Clean syntax across all PHP files under PHP 8.4 CLI.
+## 📦 Package Artifacts
 
----
-
-## ⚠️ Notes for Project Manager Review
-- Pre-release testing completed successfully.
-- Deployment packages verified with zero path restructuring required upon extraction.
-- Awaiting final PM sign-off before merging feature branch to `main`.
+1. **`WPGate-MU-Plugin-v0.1.0.zip`**: Must-Use plugin package.
+2. **`WPGate-Theme-Module-v0.1.0.zip`**: Child theme loader package.
+3. **`WPGate-Complete-Release-v0.1.0.zip`**: Comprehensive package with both deployment options, documentation, and source code.

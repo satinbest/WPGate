@@ -13,7 +13,6 @@ defined( 'ABSPATH' ) || exit;
 class Settings {
 
 	public const OPTION_KEY = 'wpgate_http_control_settings';
-	public const LEGACY_OPTION_KEY = 'ghateino_http_control_settings';
 
 	/**
 	 * In-memory settings cache.
@@ -34,19 +33,7 @@ class Settings {
 		}
 
 		$defaults = self::get_defaults();
-		$saved    = get_option( self::OPTION_KEY, null );
-
-		// Backward compatibility / migration from legacy option if present
-		if ( null === $saved || false === $saved ) {
-			$legacy = get_option( self::LEGACY_OPTION_KEY, null );
-			if ( is_array( $legacy ) && ! empty( $legacy ) ) {
-				$saved = $legacy;
-				// Persist migrated option
-				update_option( self::OPTION_KEY, $saved, false );
-			} else {
-				$saved = [];
-			}
-		}
+		$saved    = get_option( self::OPTION_KEY, [] );
 
 		if ( ! is_array( $saved ) ) {
 			$saved = [];
@@ -60,6 +47,27 @@ class Settings {
 		}
 
 		return self::$cached_settings;
+	}
+
+	/**
+	 * Save sanitized settings array.
+	 *
+	 * @param array $settings
+	 * @return bool
+	 */
+	public static function save( array $settings ): bool {
+		self::$cached_settings = null;
+		return (bool) update_option( self::OPTION_KEY, $settings, false );
+	}
+
+	/**
+	 * Reset all settings to default values.
+	 *
+	 * @return bool
+	 */
+	public static function reset(): bool {
+		self::$cached_settings = null;
+		return (bool) delete_option( self::OPTION_KEY );
 	}
 
 	/**
@@ -90,7 +98,7 @@ class Settings {
 
 		return [
 			'mode'                     => 'disabled',
-			'whitelist'                => 'api.shokrino.com',
+			'whitelist'                => 'api.zarinpal.com',
 			'blacklist'                => '',
 			'disable_telemetry'        => 'yes',
 			'disable_updates'          => 'no',

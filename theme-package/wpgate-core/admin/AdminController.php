@@ -2,6 +2,9 @@
 /**
  * WPGate Standalone Core - Admin Controller
  *
+ * Manages WordPress admin menu, script enqueueing for the Vue 3 SPA,
+ * and dashboard widget integration.
+ *
  * @package WPGate\Core
  * @version 0.1.0
  */
@@ -17,6 +20,13 @@ defined( 'ABSPATH' ) || exit;
 class AdminController {
 
 	/**
+	 * Page hook suffix for WPGate settings page.
+	 *
+	 * @var string
+	 */
+	private static $page_hook = '';
+
+	/**
 	 * Initialize admin hooks.
 	 *
 	 * @return void
@@ -27,6 +37,7 @@ class AdminController {
 		}
 
 		add_action( 'admin_menu', [ self::class, 'register_menu' ] );
+		add_action( 'admin_enqueue_scripts', [ self::class, 'enqueue_admin_assets' ] );
 		add_action( 'admin_init', [ self::class, 'register_settings' ] );
 		add_action( 'admin_init', [ self::class, 'handle_clear_logs' ] );
 		add_action( 'admin_init', [ self::class, 'handle_reset_defaults' ] );
@@ -39,8 +50,8 @@ class AdminController {
 	 * @return void
 	 */
 	public static function register_menu(): void {
-		add_options_page(
-			'WPGate — WordPress HTTP Control & Local Asset Manager',
+		self::$page_hook = add_options_page(
+			'WPGate — WordPress HTTP Control & Local Asset Gateway',
 			'WPGate',
 			'manage_options',
 			'wpgate',
@@ -49,7 +60,57 @@ class AdminController {
 	}
 
 	/**
-	 * Register settings in WordPress Settings API.
+	 * Enqueue Vue 3 SPA assets ONLY on WPGate administration page.
+	 *
+	 * @param string $hook_suffix
+	 * @return void
+	 */
+	public static function enqueue_admin_assets( string $hook_suffix ): void {
+		if ( 'settings_page_wpgate' !== $hook_suffix && self::$page_hook !== $hook_suffix ) {
+			return;
+		}
+
+		$dist_dir = Context::get_base_dir() . '/admin/dist';
+		$js_file  = $dist_dir . '/wpgate-admin.js';
+		$css_file = $dist_dir . '/wpgate-admin.css';
+
+		if ( file_exists( $css_file ) ) {
+			wp_enqueue_style(
+				'wpgate-admin-spa',
+				Context::get_asset_url( 'admin/dist/wpgate-admin.css' ),
+				[],
+				defined( 'WPGATE_CORE_VERSION' ) ? WPGATE_CORE_VERSION : '0.1.0'
+			);
+		}
+
+		if ( file_exists( $js_file ) ) {
+			wp_enqueue_script(
+				'wpgate-admin-spa',
+				Context::get_asset_url( 'admin/dist/wpgate-admin.js' ),
+				[],
+				defined( 'WPGATE_CORE_VERSION' ) ? WPGATE_CORE_VERSION : '0.1.0',
+				true
+			);
+
+			wp_localize_script(
+				'wpgate-admin-spa',
+				'wpgateApiSettings',
+				[
+					'root'         => esc_url_raw( rest_url() ),
+					'nonce'        => wp_create_nonce( 'wp_rest' ),
+					'version'      => defined( 'WPGATE_CORE_VERSION' ) ? WPGATE_CORE_VERSION : '0.1.0',
+					'isRtl'        => is_rtl(),
+					'locale'       => get_user_locale(),
+					'author'       => 'Hossein Mohammadpour',
+					'authorUri'    => 'https://hosseinmohammadpour.ir',
+					'supportEmail' => 'info@hosseinmohammadpour.ir',
+				]
+			);
+		}
+	}
+
+	/**
+	 * Register settings in WordPress Settings API (fallback support).
 	 *
 	 * @return void
 	 */
@@ -64,7 +125,7 @@ class AdminController {
 	}
 
 	/**
-	 * Handle request to clear logs.
+	 * Handle legacy/direct HTTP request to clear logs.
 	 *
 	 * @return void
 	 */
@@ -83,7 +144,7 @@ class AdminController {
 	}
 
 	/**
-	 * Handle request to restore default settings.
+	 * Handle legacy/direct HTTP request to restore default settings.
 	 *
 	 * @return void
 	 */
@@ -95,7 +156,7 @@ class AdminController {
 			current_user_can( 'manage_options' )
 		) {
 			check_admin_referer( 'wpgate_reset_defaults' );
-			delete_option( Settings::OPTION_KEY );
+			Settings::reset();
 			wp_safe_redirect( admin_url( 'options-general.php?page=wpgate&settings_reset=1' ) );
 			exit;
 		}
@@ -113,7 +174,7 @@ class AdminController {
 
 		add_meta_box(
 			'wpgate_dashboard_widget',
-			'WPGate — HTTP & Asset Gateway',
+			'WPGate — Outbound HTTP & Asset Gateway',
 			[ self::class, 'render_dashboard_widget' ],
 			'dashboard',
 			'normal',
@@ -122,7 +183,7 @@ class AdminController {
 	}
 
 	/**
-	 * Render settings page view.
+	 * Render settings page view. Mounts Vue 3 SPA or falls back to server-rendered template.
 	 *
 	 * @return void
 	 */
@@ -131,6 +192,17 @@ class AdminController {
 			return;
 		}
 
+		$dist_js = Context::get_base_dir() . '/admin/dist/wpgate-admin.js';
+
+		if ( file_exists( $dist_js ) ) {
+			echo '<div class="wrap wpgate-admin-wrap">';
+			echo '<div id="wpgate-admin-app"></div>';
+			echo '<noscript><p class="notice notice-error">' . esc_html__( 'WPGate Administration Dashboard requires JavaScript to be enabled in your browser.', 'wpgate' ) . '</p></noscript>';
+			echo '</div>';
+			return;
+		}
+
+		// Fallback server template if compiled SPA assets are not found
 		$settings        = Settings::get_all();
 		$logs            = Logger::get_logs();
 		$presets         = Settings::get_presets();
@@ -138,7 +210,9 @@ class AdminController {
 		$reset_url       = wp_nonce_url( admin_url( 'options-general.php?page=wpgate&reset_defaults=1' ), 'wpgate_reset_defaults' );
 		$loading_method  = Context::get_loading_method();
 
-		require Context::get_base_dir() . '/admin/views/settings-page.php';
+		if ( file_exists( Context::get_base_dir() . '/admin/views/settings-page.php' ) ) {
+			require Context::get_base_dir() . '/admin/views/settings-page.php';
+		}
 	}
 
 	/**
@@ -151,6 +225,8 @@ class AdminController {
 		$settings       = Settings::get_all();
 		$loading_method = Context::get_loading_method();
 
-		require Context::get_base_dir() . '/admin/views/dashboard-widget.php';
+		if ( file_exists( Context::get_base_dir() . '/admin/views/dashboard-widget.php' ) ) {
+			require Context::get_base_dir() . '/admin/views/dashboard-widget.php';
+		}
 	}
 }

@@ -67,7 +67,7 @@ Navigate to **WordPress Admin > Settings > WPGate**.
 
 ### WordPress Updates (`disable_updates` & `allow_whitelisted_updates`)
 - **`disable_updates`:** Default is `no` (Keeps WordPress core and security updates enabled).
-- **`allow_whitelisted_updates`:** Default is `yes`. When updates are disabled, this allows plugin and theme updates from whitelisted domestic marketplaces (Zhaket, RTL-Theme, Shokrino).
+- **`allow_whitelisted_updates`:** Default is `yes`. When updates are disabled, this allows plugin and theme updates from whitelisted domestic marketplaces (such as Zhaket or RTL-Theme).
 
 ### Gravatar Masking (`disable_gravatar` & `gravatar_url`)
 - **Default:** `yes`
