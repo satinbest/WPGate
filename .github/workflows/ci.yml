@@ -1,0 +1,47 @@
+name: CI / Quality & Tests
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+      - 'feature/**'
+      - 'fix/**'
+  pull_request:
+    branches:
+      - main
+      - develop
+
+jobs:
+  lint-and-test:
+    name: PHP ${{ matrix.php }} Lint & Test
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['7.4', '8.0', '8.1', '8.2', '8.3', '8.4']
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up PHP ${{ matrix.php }}
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: mbstring, json, curl
+          tools: php-cs-fixer, phpunit
+
+      - name: Validate PHP syntax (php -l)
+        run: |
+          find mu-plugin-package theme-package tests -name "*.php" -exec php -l {} \;
+
+      - name: Execute automated unit & integration test suite
+        run: |
+          php tests/run-tests.php
+
+      - name: Verify package integrity
+        run: |
+          test -f mu-plugin-package/mu-plugins/wpgate-loader.php
+          test -f mu-plugin-package/mu-plugins/wpgate-core/bootstrap.php
+          test -f theme-package/wpgate-core/bootstrap.php

@@ -1,0 +1,27 @@
+# Operating System metadata
+.DS_Store
+Thumbs.db
+desktop.ini
+*.log
+
+# Legacy and raw extraction sources (preserved locally, untracked)
+/ghateino.php
+/user.jpg
+/assets/css/
+/assets/js/
+/assets/vendor/
+/analysis-report.md
+/GHATEINO-*
+
+# Temporary test scratch & output
+/tests/scratch/
+/tests/*.tmp
+
+# IDE & Editor files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Build zip archives
+*.zip

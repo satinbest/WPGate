@@ -1,0 +1,48 @@
+name: Build & Publish Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+permissions:
+  contents: write
+
+jobs:
+  build-release:
+    name: Build & Package WPGate Release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up PHP 8.2
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mbstring, json, curl
+
+      - name: Run verification tests before packaging
+        run: |
+          php tests/run-tests.php
+
+      - name: Package MU-Plugin Archive
+        run: |
+          cd mu-plugin-package && zip -r ../WPGate-MU-Plugin-${{ github.ref_name }}.zip . && cd ..
+
+      - name: Package Theme Module Archive
+        run: |
+          cd theme-package && zip -r ../WPGate-Theme-Module-${{ github.ref_name }}.zip . && cd ..
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            WPGate-MU-Plugin-${{ github.ref_name }}.zip
+            WPGate-Theme-Module-${{ github.ref_name }}.zip
+          body_path: RELEASE-NOTES.md
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
