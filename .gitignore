@@ -29,3 +29,6 @@ desktop.ini
 
 # Build zip archives
 *.zip
+
+# Local release scripts with tokens
+/scripts/publish-prerelease.js
