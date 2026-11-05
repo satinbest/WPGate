@@ -1,5 +1,8 @@
 # Release Process & Versioning Policy
 
+[English](release-process.md) | [فارسی](../fa/release-process.md)
+
+
 This document defines the release engineering procedure for WPGate.
 
 ---
@@ -49,8 +52,8 @@ Before any release branch is tagged or merged into `main`, the Release Engineer 
 4. **Tagging:**
    Create an annotated Git tag:
    ```bash
-   git tag -a v0.1.0 -m "Release v0.1.0"
-   git push origin v0.1.0
+   git tag -a v0.1.1 -m "Release v0.1.1"
+   git push origin v0.1.1
    ```
 5. **GitHub Actions Automation:**
    The `release.yml` workflow triggers automatically on tag pushes:

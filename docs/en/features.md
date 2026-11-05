@@ -1,5 +1,8 @@
 # Detailed Feature Specifications
 
+[English](features.md) | [فارسی](../fa/features.md)
+
+
 This document provides in-depth technical details on WPGate's core features.
 
 ---

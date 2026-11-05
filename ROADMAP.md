@@ -1,5 +1,7 @@
 # WPGate Development Roadmap
 
+[English](ROADMAP.md) | [فارسی](ROADMAP-FA.md)
+
 This document outlines the planned feature additions and architectural milestones for WPGate.
 
 ---

@@ -1,5 +1,8 @@
 # WPGate Configuration Guide
 
+[English](configuration.md) | [فارسی](../fa/configuration.md)
+
+
 This document details all available configuration settings in WPGate, their default values, and operational recommendations.
 
 ---

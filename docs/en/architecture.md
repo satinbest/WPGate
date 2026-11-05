@@ -1,5 +1,8 @@
 # WPGate Architecture & Lifecycle
 
+[English](architecture.md) | [فارسی](../fa/architecture.md)
+
+
 This document describes the internal structure, namespaces, and execution lifecycle of WPGate.
 
 ---

@@ -1,11 +1,11 @@
 # Quality Assurance & Test Execution Report
 
+[English](TEST-REPORT.md) | [فارسی](TEST-REPORT-FA.md)
+
 **Project:** WPGate  
-**Release Version:** v0.1.0  
+**Release Version:** v0.1.1  
 **Test Harness:** `tests/run-tests.php`  
-**Execution Date:** 2026-11-05  
 **Author & Maintainer:** Hossein Mohammadpour (<info@hosseinmohammadpour.ir>)  
-**Environment:** PHP CLI 8.4.24 (Visual C++ 2022 x64) & Node.js v24.18.1 / Vite 6.4.5 on Windows  
 
 ---
 
@@ -14,10 +14,10 @@
 | Category | Total | Passed | Failed | Success Rate |
 |---|---|---|---|---|
 | **PHP Syntax Validation (`php -l`)** | 33 Files | 33 | 0 | 100% |
-| **Automated Unit & Integration Tests** | 41 Tests | 41 | 0 | 100% |
+| **Automated Unit & Integration Tests** | 44 Tests | 44 | 0 | 100% |
 | **Vue 3 Admin Production Build** | 2 Bundles | 2 | 0 | 100% |
 | **Brand & Identity Audit** | All files | 0 legacy | 0 legacy | 100% PASS |
-| **Overall QA Status** | **76 Checks** | **76** | **0** | **100% PASS** |
+| **Overall QA Status** | **79 Checks** | **79** | **0** | **100% PASS** |
 
 ---
 

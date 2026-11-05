@@ -1,5 +1,7 @@
 # WPGate v0.1.1 — Maintenance & Bugfix Release Notes
 
+[English](RELEASE-NOTES.md) | [فارسی](RELEASE-NOTES-FA.md)
+
 **Release Version:** `v0.1.1`  
 **Release Date:** November 6, 2026  
 **Author & Lead Architect:** Hossein Mohammadpour (<info@hosseinmohammadpour.ir>)  

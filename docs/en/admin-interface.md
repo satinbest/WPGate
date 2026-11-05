@@ -1,5 +1,8 @@
 # WPGate Administration Interface Guide
 
+[English](admin-interface.md) | [فارسی](../fa/admin-interface.md)
+
+
 The WPGate administration panel is built as a modern, reactive Single Page Application (SPA) using **Vue 3 (Composition API)** and **Vite**. It integrates directly into the WordPress admin menu (**Settings > WPGate**) and communicates with the WordPress backend through the authenticated **REST API (`wpgate/v1`)**.
 
 ---
@@ -8,7 +11,7 @@ The WPGate administration panel is built as a modern, reactive Single Page Appli
 
 The interface consists of:
 1. **Top Header:**
-   - WPGate logo and version indicator (`v0.1.0`).
+   - WPGate logo and version indicator (`v0.1.1`).
    - **Language Toggle:** Instant switch between English (LTR) and Persian (RTL).
    - **Theme Toggle:** Switch between Light Mode and Dark Mode.
    - **Save Changes Button:** Global save button with live saving spinner and toast notifications.

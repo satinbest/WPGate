@@ -1,5 +1,8 @@
 # Frequently Asked Questions (FAQ)
 
+[English](faq.md) | [فارسی](../fa/faq.md)
+
+
 ---
 
 ### Q1: Is WPGate a standard WordPress plugin?

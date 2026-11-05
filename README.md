@@ -1,5 +1,7 @@
 <div align="center">
 
+**[English](README.md) | [فارسی](README-FA.md)**
+
 ![WPGate Banner](assets/banner-github.png)
 
 # WPGate
@@ -13,7 +15,7 @@
 [![Admin UI](https://img.shields.io/badge/Admin%20UI-Vue%203%20%2B%20Vite-42b883.svg)](https://vuejs.org/)
 [![License](https://img.shields.io/badge/license-MIT%20%2F%20GPLv2+-green.svg)](LICENSE-NOTICE.md)
 
-[📥 Download Latest Release](https://github.com/satinbest/WPGate/releases) | [🇮🇷 مستندات فارسی (README-FA.md)](README-FA.md) | [Admin Interface Guide](docs/admin-interface.md) | [Performance Report](PERFORMANCE-REPORT.md) | [Bugfix Report](reports/ADMIN-UI-BUGFIX.md)
+[📥 Download Latest Release](https://github.com/satinbest/WPGate/releases) | [🇮🇷 مستندات فارسی (README-FA.md)](README-FA.md) | [Admin Interface Guide](docs/en/admin-interface.md) | [Performance Report](PERFORMANCE-REPORT.md) | [Bugfix Report](reports/ADMIN-UI-BUGFIX.md)
 
 </div>
 
@@ -70,7 +72,7 @@ If the admin interface ever appears empty:
 - Inspect browser developer tools (F12 > Console).
 - Verify that `wpgate-core/admin/dist/wpgate-admin.js` exists on disk.
 - In v0.1.1+, if files are missing, WPGate renders an automatic diagnostic warning banner with exact file paths and displays the server-rendered settings view as a safe fallback.
-- Read our detailed [Troubleshooting Guide](docs/troubleshooting.md).
+- Read our detailed [Troubleshooting Guide](docs/en/troubleshooting.md).
 
 ---
 
@@ -143,19 +145,21 @@ WPGate includes verified, curated presets for domestic infrastructure:
 
 ## 📚 Documentation Index
 
-- [Admin Interface Guide](docs/admin-interface.md)
-- [Vue 3 Development & Build Guide](docs/vue-development.md)
-- [Architecture & Runtime Lifecycle](docs/architecture.md)
+- [Admin Interface Guide](docs/en/admin-interface.md)
+- [Vue 3 Development & Build Guide](docs/en/vue-development.md)
+- [📖 English Documentation Index](docs/en/README.md)
+- [Architecture & Runtime Lifecycle](docs/en/architecture.md)
 - [Performance & Benchmark Report](PERFORMANCE-REPORT.md)
 - [Admin UI Bugfix Report](reports/ADMIN-UI-BUGFIX.md)
 - [Brand & Identity Audit](reports/BRAND-AUDIT.md)
-- [Configuration Reference](docs/configuration.md)
-- [Features Reference](docs/features.md)
-- [MU Plugin Installation Guide](docs/installation-mu-plugin.md)
-- [Theme Loader Installation Guide](docs/installation-theme-loader.md)
-- [Troubleshooting & Diagnostics](docs/troubleshooting.md)
-- [Frequently Asked Questions (FAQ)](docs/faq.md)
-- [Release Process](docs/release-process.md)
+- [Configuration Reference](docs/en/configuration.md)
+- [Features Reference](docs/en/features.md)
+- [MU Plugin Installation Guide](docs/en/installation-mu-plugin.md)
+- [Theme Loader Installation Guide](docs/en/installation-theme-loader.md)
+- [Troubleshooting & Diagnostics](docs/en/troubleshooting.md)
+- [Frequently Asked Questions (FAQ)](docs/en/faq.md)
+- [Release Process](docs/en/release-process.md)
+- [Deployment & Migration](docs/en/migration.md)
 
 ---
 

@@ -1,5 +1,8 @@
 # Vue 3 Administration UI — Developer Guide
 
+[English](vue-development.md) | [فارسی](../fa/vue-development.md)
+
+
 This document describes the structure, development workflow, and compilation process for the WPGate Vue 3 administration interface.
 
 ---

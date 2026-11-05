@@ -1,5 +1,8 @@
 # Troubleshooting & Diagnostics
 
+[English](troubleshooting.md) | [فارسی](../fa/troubleshooting.md)
+
+
 This guide provides troubleshooting steps for common issues encountered when running WPGate.
 
 ---

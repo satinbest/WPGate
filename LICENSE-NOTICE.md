@@ -1,5 +1,7 @@
 # License and Attribution Notice
 
+[English](LICENSE-NOTICE.md) | [فارسی](LICENSE-NOTICE-FA.md)
+
 ## WPGate Software License
 
 **WPGate** is an independent WordPress software product designed and authored by **Hossein Mohammadpour** (<info@hosseinmohammadpour.ir>).

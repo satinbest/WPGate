@@ -66,6 +66,10 @@ jobs:
             exit 1
           fi
 
+      - name: Verify Documentation Parity & Link Integrity
+        run: |
+          node tests/verify-docs.js
+
   lint-and-test:
     name: PHP ${{ matrix.php }} Lint & Test
     runs-on: ubuntu-latest

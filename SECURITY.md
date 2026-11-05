@@ -1,5 +1,7 @@
 # Security Policy
 
+[English](SECURITY.md) | [فارسی](SECURITY-FA.md)
+
 ## Supported Versions
 
 Only the latest release branch of WPGate receives active security updates:

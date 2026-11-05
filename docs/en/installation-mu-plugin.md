@@ -1,5 +1,8 @@
 # Installation Guide: Must-Use Plugin (MU-Plugin)
 
+[English](installation-mu-plugin.md) | [فارسی](../fa/installation-mu-plugin.md)
+
+
 This is the **preferred and recommended** deployment method for WPGate in production WordPress environments.
 
 ---
@@ -16,7 +19,7 @@ Must-Use plugins (`mu-plugins`) are executed automatically by WordPress very ear
 ## Step-by-Step Installation
 
 ### 1. Download Package
-Download the latest `WPGate-MU-Plugin-v0.1.0.zip` from the [GitHub Releases](https://github.com/satinbest/WPGate/releases) page.
+Download the latest `WPGate-MU-Plugin-v0.1.1.zip` from the [GitHub Releases](https://github.com/satinbest/WPGate/releases) page.
 
 ### 2. Extract Files
 Extract the archive directly into your WordPress `wp-content/` directory.

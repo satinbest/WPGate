@@ -1,5 +1,8 @@
 # Installation Guide: Theme Loader
 
+[English](installation-theme-loader.md) | [فارسی](../fa/installation-theme-loader.md)
+
+
 Use this method when you do not have write access to `wp-content/mu-plugins/` or when managing WordPress via custom child themes.
 
 ---
@@ -13,7 +16,7 @@ Use this method when you do not have write access to `wp-content/mu-plugins/` or
 ## Step-by-Step Installation
 
 ### 1. Download Package
-Download `WPGate-Theme-Module-v0.1.0.zip` from the [GitHub Releases](https://github.com/satinbest/WPGate/releases) page.
+Download `WPGate-Theme-Module-v0.1.1.zip` from the [GitHub Releases](https://github.com/satinbest/WPGate/releases) page.
 
 ### 2. Extract into Child Theme
 Extract the archive directly into your active child theme directory.

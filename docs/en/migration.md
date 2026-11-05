@@ -1,5 +1,8 @@
 # Deployment & Migration Guide
 
+[English](migration.md) | [فارسی](../fa/migration.md)
+
+
 This guide explains how to migrate, upgrade, or switch between WPGate deployment architectures on WordPress production sites.
 
 ---

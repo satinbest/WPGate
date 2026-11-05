@@ -1,6 +1,8 @@
-# WPGate v0.1.0 — Performance & Benchmark Report
+# WPGate — Performance & Benchmark Report
 
-This document records the empirical performance benchmarks, bundle size measurements, memory utilization metrics, and runtime overhead analysis for **WPGate v0.1.0**.
+[English](PERFORMANCE-REPORT.md) | [فارسی](PERFORMANCE-REPORT-FA.md)
+
+This document records the empirical performance benchmarks, bundle size measurements, memory utilization metrics, and runtime overhead analysis for **WPGate**.
 
 ---
 

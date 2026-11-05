@@ -1,5 +1,7 @@
 <div align="center" dir="rtl">
 
+**[English](README.md) | [فارسی](README-FA.md)**
+
 ![بنر گیت‌هاب WPGate](assets/banner-github.png)
 
 # WPGate (دبلیو‌پی‌گیت)
@@ -12,7 +14,7 @@
 [![رابط کاربری](https://img.shields.io/badge/رابط_ادمین-Vue_3_+_Vite-42b883.svg)](https://vuejs.org/)
 [![مجوز](https://img.shields.io/badge/مجوز-MIT%20%2F%20GPLv2+-green.svg)](LICENSE-NOTICE.md)
 
-[📥 دانلود آخرین نسخه از گیت‌هاب](https://github.com/satinbest/WPGate/releases) | [English Documentation (README.md)](README.md) | [راهنمای داشبورد ادمین](docs/admin-interface.md) | [گزارش رفع باگ لودینگ](reports/ADMIN-UI-BUGFIX.md)
+[📥 دانلود آخرین نسخه از گیت‌هاب](https://github.com/satinbest/WPGate/releases) | [English Documentation (README.md)](README.md) | [راهنمای داشبورد ادمین](docs/fa/admin-interface.md) | [گزارش رفع باگ لودینگ](reports/ADMIN-UI-BUGFIX.md)
 
 </div>
 
@@ -97,6 +99,25 @@ define( 'WPGATE_DISABLED', true );
 - **مسدودسازی تلمتری و پینگ‌بک‌ها:** جلوگیری از ارسال اطلاعات تشخیصی پس‌زمینه به سرورهای خارجی.
 - **ثبت امن وقایع با ماسک‌سازی خودکار داده‌های حساس:** جایگزینی پارامترهای توکن، پسورد، رمزها و API Key با مقدار `[REDACTED]`.
 - **عدم نوشتن روی دیسک در زمان اجرا (Zero Runtime Disk Writes):** بدون اجرای هرگونه عملیات کپی یا ذخیره‌سازی ناامن فایل در زمان ران‌تایم، کاملاً سازگار با هاست‌های ابری و کانتینرهای Read-Only (Docker/Kubernetes).
+
+---
+
+## 📚 مستندات تفصیلی و راهنماهای جامع
+
+- 📖 [فهرست کامل مستندات فارسی](docs/fa/README.md)
+- 📦 [راهنمای جامع نصب افزونه ضروری (MU-Plugin)](docs/fa/installation-mu-plugin.md)
+- 🎨 [راهنمای استقرار در قالب فرزند (Theme Loader)](docs/fa/installation-theme-loader.md)
+- ⚙️ [راهنمای جامع تنظیمات و پیکربندی](docs/fa/configuration.md)
+- ⚡ [مشخصات فنی و تفصیلی امکانات](docs/fa/features.md)
+- 🏛️ [معماری سیستم و چرخه حیات](docs/fa/architecture.md)
+- 🖥️ [راهنمای داشبورد مدیریت و برنامه تک‌صفحه‌ای Vue 3](docs/fa/admin-interface.md)
+- 🛠️ [راهنمای توسعه فرانت‌اند Vue 3](docs/fa/vue-development.md)
+- 🚨 [راهنمای عیب‌یابی و حل مشکلات متداول](docs/fa/troubleshooting.md)
+- ❓ [پرسش‌های متداول (FAQ)](docs/fa/faq.md)
+- 🏷️ [فرآیند انتشار و سیاست نسخه‌بندی](docs/fa/release-process.md)
+- 🔄 [راهنمای استقرار و مهاجرت](docs/fa/migration.md)
+- 📊 [گزارش بنچمارک و کارایی نرم‌افزار](PERFORMANCE-REPORT-FA.md)
+- 🧪 [گزارش تضمین کیفیت و آزمون‌های خودکار](TEST-REPORT-FA.md)
 
 ---
 
