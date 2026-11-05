@@ -5,7 +5,7 @@
  * Exposes secure REST API endpoints under route `wpgate/v1` for the Vue 3 admin interface.
  *
  * @package WPGate\Core
- * @version 0.1.2
+ * @version 0.1.3
  */
 
 namespace WPGate\Core;

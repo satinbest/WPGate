@@ -166,7 +166,7 @@ const settings = reactive({
 });
 
 const system = reactive({
-  version: '0.1.2',
+  version: '0.1.3',
   php_version: '',
   wp_version: '',
   loading_method: 'mu-plugin',
@@ -215,28 +215,36 @@ const toggleLang = () => {
 
 // Data Loading
 const loadData = async () => {
+  loadingInitial.value = true;
   try {
-    const [settingsRes, systemRes, statsRes, presetsRes] = await Promise.all([
-      api.getSettings(),
-      api.getSystemInfo(),
+    // 1. Primary Contract: Load settings and system info from /settings
+    const settingsRes = await api.getSettings();
+
+    if (settingsRes && settingsRes.success && settingsRes.data) {
+      const incomingSettings = settingsRes.data.settings || settingsRes.data;
+      if (incomingSettings && typeof incomingSettings === 'object') {
+        Object.assign(settings, incomingSettings);
+        initialSettingsJson.value = JSON.stringify(incomingSettings);
+      }
+      if (settingsRes.data.system) {
+        Object.assign(system, settingsRes.data.system);
+      }
+    }
+
+    // 2. Secondary Contracts: Load stats and presets gracefully in parallel (failure must not crash settings)
+    const [statsResult, presetsResult] = await Promise.allSettled([
       api.getStats(),
       api.getPresets(),
     ]);
 
-    if (settingsRes.success && settingsRes.data) {
-      Object.assign(settings, settingsRes.data);
-      initialSettingsJson.value = JSON.stringify(settingsRes.data);
+    if (statsResult.status === 'fulfilled' && statsResult.value?.success && statsResult.value?.data) {
+      Object.assign(stats, statsResult.value.data);
     }
-    if (systemRes.success && systemRes.data) {
-      Object.assign(system, systemRes.data);
-    }
-    if (statsRes.success && statsRes.data) {
-      Object.assign(stats, statsRes.data);
-    }
-    if (presetsRes.success && presetsRes.data) {
-      presets.value = presetsRes.data;
+    if (presetsResult.status === 'fulfilled' && presetsResult.value?.success && presetsResult.value?.data) {
+      presets.value = presetsResult.value.data;
     }
   } catch (err) {
+    console.error('WPGate loadData error:', err);
     showNotification({
       type: 'error',
       message: 'Failed to communicate with WPGate REST API: ' + (err.message || 'Unknown network error'),
@@ -251,21 +259,27 @@ const saveSettings = async () => {
   saving.value = true;
   try {
     const res = await api.saveSettings(settings);
-    if (res.success) {
+    if (res && res.success) {
       showNotification({
         type: 'success',
         message: t('common.saved'),
       });
+      const updatedSettings = res.data?.settings || settings;
+      Object.assign(settings, updatedSettings);
       initialSettingsJson.value = JSON.stringify(settings);
-      // Refresh stats
-      const statsRes = await api.getStats();
-      if (statsRes.success && statsRes.data) {
-        Object.assign(stats, statsRes.data);
+      // Refresh stats gracefully
+      try {
+        const statsRes = await api.getStats();
+        if (statsRes && statsRes.success && statsRes.data) {
+          Object.assign(stats, statsRes.data);
+        }
+      } catch (e) {
+        // Non-critical telemetry refresh
       }
     } else {
       showNotification({
         type: 'error',
-        message: res.message || 'Failed to save configuration.',
+        message: res?.message || 'Failed to save configuration.',
       });
     }
   } catch (err) {

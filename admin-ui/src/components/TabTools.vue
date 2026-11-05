@@ -64,7 +64,7 @@
       <div class="wpgate-sysinfo-grid">
         <div class="wpgate-sysinfo-item">
           <span class="wpgate-sysinfo-label">{{ t('tools.wpgateVersion') }}</span>
-          <span class="wpgate-sysinfo-value">v{{ system.version || '0.1.2' }}</span>
+          <span class="wpgate-sysinfo-value">v{{ system.version || '0.1.3' }}</span>
         </div>
         <div class="wpgate-sysinfo-item">
           <span class="wpgate-sysinfo-label">{{ t('tools.loadingMethod') }}</span>
@@ -124,7 +124,7 @@ const fileInput = ref(null);
 const exportJson = () => {
   const exportPayload = {
     generator: 'WPGate',
-    version: props.system.version || '0.1.2',
+    version: props.system.version || '0.1.3',
     export_date: new Date().toISOString(),
     settings: props.settings,
   };

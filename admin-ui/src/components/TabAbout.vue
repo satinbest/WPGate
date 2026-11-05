@@ -15,7 +15,7 @@
         <div class="wpgate-about-info">
           <div class="wpgate-about-title-row">
             <h1 class="wpgate-about-name">WPGate</h1>
-            <span class="wpgate-version-pill">v0.1.2</span>
+            <span class="wpgate-version-pill">v0.1.3</span>
             <StatusBadge status="success">Production Ready</StatusBadge>
           </div>
           <p class="wpgate-about-summary">{{ t('about.summary') }}</p>

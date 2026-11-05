@@ -2,7 +2,7 @@
 /**
  * Plugin Name: WPGate Loader (Must-Use)
  * Description: Automated loader for WPGate Standalone Core - Outbound HTTP Control & Local Asset Gateway.
- * Version: 0.1.2
+ * Version: 0.1.3
  * Author: Hossein Mohammadpour
  * Author URI: https://hosseinmohammadpour.ir
  *

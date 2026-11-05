@@ -85,7 +85,7 @@ const resolvedBadgeType = computed(() => props.badgeStatus || props.badgeType ||
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  padding: 18px 24px;
+  padding: 14px 20px;
   border-bottom: 1px solid var(--wpgate-border);
   background-color: var(--wpgate-surface);
 }
@@ -98,7 +98,7 @@ const resolvedBadgeType = computed(() => props.badgeStatus || props.badgeType ||
 
 .wpgate-panel-title {
   margin: 0;
-  font-size: 1.05rem;
+  font-size: 14px;
   font-weight: 600;
   color: var(--wpgate-text);
   line-height: 1.4;
@@ -106,7 +106,7 @@ const resolvedBadgeType = computed(() => props.badgeStatus || props.badgeType ||
 
 .wpgate-panel-subtitle {
   margin: 0;
-  font-size: 0.85rem;
+  font-size: 12px;
   color: var(--wpgate-text-muted);
   line-height: 1.4;
 }
@@ -118,11 +118,11 @@ const resolvedBadgeType = computed(() => props.badgeStatus || props.badgeType ||
 }
 
 .wpgate-panel-body {
-  padding: 24px;
+  padding: 18px 20px;
 }
 
 .wpgate-panel-footer {
-  padding: 14px 24px;
+  padding: 12px 20px;
   background-color: var(--wpgate-bg);
   border-top: 1px solid var(--wpgate-border);
   display: flex;

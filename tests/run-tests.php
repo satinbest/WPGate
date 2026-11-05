@@ -255,7 +255,15 @@ function current_user_can( $capability ) {
 }
 
 function is_admin() {
-	return false;
+	return ! empty( $GLOBALS['wp_mock_is_admin'] );
+}
+
+function wp_doing_ajax() {
+	return ! empty( $GLOBALS['wp_mock_doing_ajax'] );
+}
+
+function wp_doing_cron() {
+	return ! empty( $GLOBALS['wp_mock_doing_cron'] );
 }
 
 function is_multisite() {
@@ -463,7 +471,7 @@ echo "\nTest Suite 5: Telemetry Guard\n";
 it( "Blocks telemetry and tracking domains when telemetry guard enabled", function() {
 	update_option( \WPGate\Core\Settings::OPTION_KEY, [ 'disable_telemetry' => 'yes' ] );
 	\WPGate\Core\Settings::get_all( true );
-	$res = \WPGate\Core\TelemetryGuard::filter( false, [], 'https://api.wordpress.org/core/version-check/1.7/' );
+	$res = \WPGate\Core\TelemetryGuard::filter( false, [], 'https://api.wordpress.org/core/browse-happy/1.1/' );
 	return ( $res instanceof WP_Error ) && ( $res->get_error_code() === 'wpgate_telemetry_blocked' );
 });
 
@@ -746,6 +754,124 @@ it( "Settings page renders diagnostic notice if admin JS asset is missing", func
 	rmdir( $tmp_dir );
 
 	return false !== strpos( $output, 'SPA Administration Dashboard Assets Not Found' );
+});
+
+
+// TEST SUITE 15: WordPress Admin Protection and Scope Detection (P0 Safety)
+echo "\nTest Suite 15: WordPress Admin Protection and Scope Detection\n";
+it( "Detects admin context when is_admin is true", function() {
+	$GLOBALS['wp_mock_is_admin'] = true;
+	$result = \WPGate\Core\AssetManager::is_admin_or_system_context();
+	$GLOBALS['wp_mock_is_admin'] = false;
+	return true === $result;
+});
+
+it( "Detects AJAX context when wp_doing_ajax is true", function() {
+	$GLOBALS['wp_mock_doing_ajax'] = true;
+	$result = \WPGate\Core\AssetManager::is_admin_or_system_context();
+	$GLOBALS['wp_mock_doing_ajax'] = false;
+	return true === $result;
+});
+
+it( "Detects Cron context when wp_doing_cron is true", function() {
+	$GLOBALS['wp_mock_doing_cron'] = true;
+	$result = \WPGate\Core\AssetManager::is_admin_or_system_context();
+	$GLOBALS['wp_mock_doing_cron'] = false;
+	return true === $result;
+});
+
+it( "Preserves scripts untouched when in admin context", function() {
+	update_option( \WPGate\Core\Settings::OPTION_KEY, [ 'local_asset_rewrite' => 'yes' ] );
+	\WPGate\Core\Settings::get_all( true );
+
+	$GLOBALS['wp_mock_is_admin'] = true;
+	$src = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css';
+	$result = \WPGate\Core\AssetManager::replace_style_src( $src, 'custom-admin-style' );
+	$GLOBALS['wp_mock_is_admin'] = false;
+
+	return $result === $src;
+});
+
+// TEST SUITE 16: Protected Core Handles
+echo "\nTest Suite 16: Protected WordPress Core and Elementor Handles\n";
+it( "Identifies core handles as strictly protected", function() {
+	return \WPGate\Core\AssetManager::is_protected_handle( 'wp-i18n' ) &&
+	       \WPGate\Core\AssetManager::is_protected_handle( 'svg-painter' ) &&
+	       \WPGate\Core\AssetManager::is_protected_handle( 'jquery' ) &&
+	       \WPGate\Core\AssetManager::is_protected_handle( 'underscore' ) &&
+	       \WPGate\Core\AssetManager::is_protected_handle( 'wp-element' );
+});
+
+it( "Identifies elementor prefixed handles as protected", function() {
+	return \WPGate\Core\AssetManager::is_protected_handle( 'elementor-admin' ) &&
+	       \WPGate\Core\AssetManager::is_protected_handle( 'elementor-common' );
+});
+
+it( "Never modifies protected script handle regardless of URL", function() {
+	update_option( \WPGate\Core\Settings::OPTION_KEY, [ 'local_asset_rewrite' => 'yes' ] );
+	\WPGate\Core\Settings::get_all( true );
+
+	$src = 'https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js';
+	$result = \WPGate\Core\AssetManager::replace_script_src( $src, 'wp-i18n' );
+
+	return $result === $src;
+});
+
+// TEST SUITE 17: Telemetry Guard Specificity
+echo "\nTest Suite 17: Telemetry Guard Specificity and Translation Safety\n";
+it( "Allows WordPress core translation endpoints through when telemetry guard enabled", function() {
+	update_option( \WPGate\Core\Settings::OPTION_KEY, [ 'disable_telemetry' => 'yes' ] );
+	\WPGate\Core\Settings::get_all( true );
+
+	$res1 = \WPGate\Core\TelemetryGuard::filter( false, [], 'https://api.wordpress.org/translations/core/1.0/' );
+	$res2 = \WPGate\Core\TelemetryGuard::filter( false, [], 'https://downloads.wordpress.org/translation/core/6.7.1/fa_IR.zip' );
+
+	return false === $res1 && false === $res2;
+});
+
+it( "Blocks Elementor telemetry endpoint when telemetry guard enabled", function() {
+	update_option( \WPGate\Core\Settings::OPTION_KEY, [ 'disable_telemetry' => 'yes' ] );
+	\WPGate\Core\Settings::get_all( true );
+
+	$res = \WPGate\Core\TelemetryGuard::filter( false, [], 'https://telemetry.elementor.com/v1/telemetry' );
+	return ( $res instanceof WP_Error ) && ( $res->get_error_code() === 'wpgate_telemetry_blocked' );
+});
+
+it( "Blocks stats.wordpress.com tracking requests", function() {
+	update_option( \WPGate\Core\Settings::OPTION_KEY, [ 'disable_telemetry' => 'yes' ] );
+	\WPGate\Core\Settings::get_all( true );
+
+	$res = \WPGate\Core\TelemetryGuard::filter( false, [], 'https://stats.wordpress.com/e-2026.js' );
+	return ( $res instanceof WP_Error ) && ( $res->get_error_code() === 'wpgate_telemetry_blocked' );
+});
+
+// TEST SUITE 18: API Client Contract and Settings Persistence
+echo "\nTest Suite 18: API Client Contract and Settings Persistence\n";
+it( "GET /wpgate/v1/settings returns system object required by api.js", function() {
+	$res = \WPGate\Core\RestController::get_settings();
+	$data = $res->get_data();
+
+	return $res->get_status() === 200 &&
+	       isset( $data['data']['system'] ) &&
+	       isset( $data['data']['system']['version'] ) &&
+	       $data['data']['system']['version'] === '0.1.3';
+});
+
+it( "POST /wpgate/v1/settings preserves saved values accurately", function() {
+	$payload = [
+		'mode' => 'whitelist',
+		'whitelist' => "shop.inwp.ir\napi.zarinpal.com",
+		'local_asset_rewrite' => 'yes',
+		'disable_telemetry' => 'yes',
+	];
+	$req = new WP_REST_Request( [], $payload );
+	$res = \WPGate\Core\RestController::save_settings( $req );
+
+	$check = \WPGate\Core\Settings::get_all( true );
+
+	return $res->get_status() === 200 &&
+	       $check['mode'] === 'whitelist' &&
+	       $check['disable_telemetry'] === 'yes';
 });
 
 echo "\n========================================================\n";

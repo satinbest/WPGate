@@ -2,8 +2,11 @@
 /**
  * WPGate Standalone Core - Asset Replacement Manager
  *
+ * Provides safe local CDN asset replacements for front-end rendering while
+ * guaranteeing 100% protection for WordPress administration and core scripts.
+ *
  * @package WPGate\Core
- * @version 0.1.0
+ * @version 0.1.3
  */
 
 namespace WPGate\Core;
@@ -31,6 +34,111 @@ class AssetManager {
 	];
 
 	/**
+	 * WordPress Core and Critical Ecosystem script/style handles that must never be altered or blocked.
+	 *
+	 * @var array
+	 */
+	public const PROTECTED_HANDLES = [
+		'wp-i18n',
+		'wp-hooks',
+		'wp-element',
+		'wp-components',
+		'wp-data',
+		'wp-api-fetch',
+		'wp-polyfill',
+		'wp-polyfill-inert',
+		'wp-url',
+		'wp-dom-ready',
+		'wp-a11y',
+		'jquery',
+		'jquery-core',
+		'jquery-migrate',
+		'underscore',
+		'backbone',
+		'utils',
+		'svg-painter',
+		'heartbeat',
+		'wp-auth-check',
+		'admin-bar',
+		'common',
+	];
+
+	/**
+	 * Check if current execution context is WordPress admin, login, cron, AJAX, REST, or CLI.
+	 * Local asset rewrites and external asset blocks MUST NOT touch admin or system execution contexts.
+	 *
+	 * @return bool
+	 */
+	public static function is_admin_or_system_context(): bool {
+		// 1. WordPress Admin Dashboard
+		if ( function_exists( 'is_admin' ) && is_admin() ) {
+			return true;
+		}
+
+		// 2. Login & Registration Screens
+		if ( ! empty( $GLOBALS['pagenow'] ) && in_array( $GLOBALS['pagenow'], [ 'wp-login.php', 'wp-register.php' ], true ) ) {
+			return true;
+		}
+
+		// 3. AJAX Requests
+		if ( function_exists( 'wp_doing_ajax' ) && wp_doing_ajax() ) {
+			return true;
+		}
+
+		// 4. Cron Operations
+		if ( function_exists( 'wp_doing_cron' ) && wp_doing_cron() ) {
+			return true;
+		}
+
+		// 5. REST API Requests
+		if ( defined( 'REST_REQUEST' ) && REST_REQUEST ) {
+			return true;
+		}
+
+		// 6. WP-CLI
+		if ( defined( 'WP_CLI' ) && WP_CLI ) {
+			return true;
+		}
+
+		// 7. Customizer Context
+		if ( self::is_customizer_context() ) {
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Check if a script or stylesheet handle is a protected WordPress core or ecosystem handle.
+	 *
+	 * @param string $handle
+	 * @return bool
+	 */
+	public static function is_protected_handle( string $handle ): bool {
+		if ( '' === $handle ) {
+			return false;
+		}
+
+		$handle = strtolower( trim( $handle ) );
+
+		if ( in_array( $handle, self::PROTECTED_HANDLES, true ) ) {
+			return true;
+		}
+
+		// Protect all Elementor admin and editor handles
+		if ( 0 === strpos( $handle, 'elementor' ) ) {
+			return true;
+		}
+
+		// Protect all WordPress core prefixed handles (wp-*)
+		if ( 0 === strpos( $handle, 'wp-' ) ) {
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
 	 * Check if current request is inside the WordPress Customizer.
 	 *
 	 * @return bool
@@ -42,7 +150,7 @@ class AssetManager {
 			return true;
 		}
 
-		if ( is_admin() && 'customize.php' === $pagenow ) {
+		if ( function_exists( 'is_admin' ) && is_admin() && 'customize.php' === $pagenow ) {
 			return true;
 		}
 
@@ -53,19 +161,26 @@ class AssetManager {
 
 	/**
 	 * Filter script src URLs for CDN replacement and blocking.
+	 * Guarantees zero interference with WordPress admin or core scripts.
 	 *
 	 * @param string $src
 	 * @param string $handle
 	 * @return string
 	 */
 	public static function replace_script_src( string $src, string $handle ): string {
-		$settings = Settings::get_all();
-
-		if ( ( $settings['local_asset_rewrite'] ?? 'no' ) !== 'yes' ) {
+		// Protection Check 1: Exclude admin, login, cron, ajax, rest, cli contexts
+		if ( self::is_admin_or_system_context() ) {
 			return $src;
 		}
 
-		if ( self::is_customizer_context() ) {
+		// Protection Check 2: Never modify protected core handles
+		if ( self::is_protected_handle( $handle ) ) {
+			return $src;
+		}
+
+		$settings = Settings::get_all();
+
+		if ( ( $settings['local_asset_rewrite'] ?? 'no' ) !== 'yes' ) {
 			return $src;
 		}
 
@@ -114,19 +229,26 @@ class AssetManager {
 
 	/**
 	 * Filter stylesheet src URLs for CDN replacement and blocking.
+	 * Guarantees zero interference with WordPress admin or core styles.
 	 *
 	 * @param string $src
 	 * @param string $handle
 	 * @return string
 	 */
 	public static function replace_style_src( string $src, string $handle ): string {
-		$settings = Settings::get_all();
-
-		if ( ( $settings['local_asset_rewrite'] ?? 'no' ) !== 'yes' ) {
+		// Protection Check 1: Exclude admin, login, cron, ajax, rest, cli contexts
+		if ( self::is_admin_or_system_context() ) {
 			return $src;
 		}
 
-		if ( self::is_customizer_context() ) {
+		// Protection Check 2: Never modify protected core handles
+		if ( self::is_protected_handle( $handle ) ) {
+			return $src;
+		}
+
+		$settings = Settings::get_all();
+
+		if ( ( $settings['local_asset_rewrite'] ?? 'no' ) !== 'yes' ) {
 			return $src;
 		}
 
@@ -377,19 +499,50 @@ class AssetManager {
 
 	/**
 	 * Check if host is the same as the current site's host.
+	 * Audits home_url, site_url, admin_url, includes_url, content_url, plugins_url, and HTTP_HOST.
 	 *
 	 * @param string $host
 	 * @return bool
 	 */
-	private static function is_same_site_host( string $host ): bool {
+	public static function is_same_site_host( string $host ): bool {
 		if ( '' === $host ) {
 			return false;
 		}
 
-		if ( function_exists( 'home_url' ) ) {
-			$site_host = (string) wp_parse_url( home_url(), PHP_URL_HOST );
-			if ( '' !== $site_host ) {
-				return HttpGuard::normalize_host( $site_host ) === HttpGuard::normalize_host( $host );
+		$normalized = HttpGuard::normalize_host( $host );
+
+		// Check all standard WordPress URLs
+		$url_functions = [
+			'home_url',
+			'site_url',
+			'admin_url',
+			'includes_url',
+			'content_url',
+			'plugins_url',
+		];
+
+		foreach ( $url_functions as $fn ) {
+			if ( function_exists( $fn ) ) {
+				$parsed_host = (string) wp_parse_url( $fn(), PHP_URL_HOST );
+				if ( '' !== $parsed_host && HttpGuard::normalize_host( $parsed_host ) === $normalized ) {
+					return true;
+				}
+			}
+		}
+
+		// Check HTTP host header if present
+		if ( ! empty( $_SERVER['HTTP_HOST'] ) ) {
+			$server_host = HttpGuard::normalize_host( (string) $_SERVER['HTTP_HOST'] );
+			if ( $server_host === $normalized ) {
+				return true;
+			}
+		}
+
+		// Check server name
+		if ( ! empty( $_SERVER['SERVER_NAME'] ) ) {
+			$server_name = HttpGuard::normalize_host( (string) $_SERVER['SERVER_NAME'] );
+			if ( $server_name === $normalized ) {
+				return true;
 			}
 		}
 
