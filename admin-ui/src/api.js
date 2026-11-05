@@ -11,7 +11,7 @@ const getApiConfig = () => {
   return {
     baseUrl: `${root}/wpgate/v1`,
     nonce,
-    version: wpSettings.version || '0.1.3',
+    version: wpSettings.version || '0.1.4',
     isRtl: Boolean(wpSettings.isRtl),
     locale: wpSettings.locale || 'en_US',
     author: wpSettings.author || 'Hossein Mohammadpour',

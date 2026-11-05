@@ -3,10 +3,29 @@ const path = require('path');
 const crypto = require('crypto');
 const { execSync } = require('child_process');
 
-const VERSION = '0.1.3';
+const VERSION = '0.1.4';
 const ROOT = path.resolve(__dirname, '..');
 
 console.log(`Building WPGate release packages for v${VERSION}...`);
+
+// Sync admin dist files to all destinations
+console.log('Synchronizing admin UI distribution assets...');
+const distSrc = path.join(ROOT, 'mu-plugin-package/wpgate-core/admin/dist');
+const distTargets = [
+  path.join(ROOT, 'mu-plugin-package/wpgate-core/assets/admin/dist'),
+  path.join(ROOT, 'theme-package/wpgate-core/admin/dist'),
+  path.join(ROOT, 'theme-package/wpgate-core/assets/admin/dist')
+];
+
+if (fs.existsSync(distSrc)) {
+  distTargets.forEach(targetDir => {
+    if (!fs.existsSync(targetDir)) fs.mkdirSync(targetDir, { recursive: true });
+    fs.readdirSync(distSrc).forEach(file => {
+      fs.copyFileSync(path.join(distSrc, file), path.join(targetDir, file));
+    });
+  });
+  console.log('Admin UI distribution assets synchronized across all packages.');
+}
 
 const muZip = path.join(ROOT, `WPGate-MU-Plugin-v${VERSION}.zip`);
 const themeZip = path.join(ROOT, `WPGate-Theme-Module-v${VERSION}.zip`);

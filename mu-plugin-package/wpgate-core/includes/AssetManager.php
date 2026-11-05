@@ -6,7 +6,7 @@
  * guaranteeing 100% protection for WordPress administration and core scripts.
  *
  * @package WPGate\Core
- * @version 0.1.3
+ * @version 0.1.4
  */
 
 namespace WPGate\Core;

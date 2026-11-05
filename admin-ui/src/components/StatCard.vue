@@ -16,8 +16,18 @@
         </button>
       </div>
       <div v-else class="stat-value-wrap">
-        <span class="stat-value" :class="`val-${type}`">{{ formattedValue }}</span>
-        <span v-if="suffix" class="stat-suffix">{{ suffix }}</span>
+        <slot name="value">
+          <span
+            class="stat-value"
+            :class="[
+              `val-${type}`,
+              { 'stat-value-text': isTextValue }
+            ]"
+          >
+            {{ formattedValue }}
+          </span>
+          <span v-if="suffix" class="stat-suffix">{{ suffix }}</span>
+        </slot>
       </div>
     </div>
 
@@ -74,6 +84,13 @@ const props = defineProps({
 
 defineEmits(['action']);
 
+const isTextValue = computed(() => {
+  if (typeof props.value === 'string') {
+    return isNaN(Number(props.value));
+  }
+  return false;
+});
+
 const formattedValue = computed(() => {
   if (typeof props.value === 'number') {
     return props.value.toLocaleString();
@@ -87,12 +104,13 @@ const formattedValue = computed(() => {
   background-color: var(--wpgate-surface);
   border: 1px solid var(--wpgate-border);
   border-radius: var(--wpgate-radius);
-  padding: 20px;
+  padding: 18px 20px;
+  min-height: 145px;
   box-shadow: var(--wpgate-shadow-sm);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  gap: 14px;
+  gap: 12px;
   transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
 }
 
@@ -109,9 +127,9 @@ const formattedValue = computed(() => {
 }
 
 .stat-icon-wrapper {
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
+  width: 38px;
+  height: 38px;
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -160,6 +178,10 @@ const formattedValue = computed(() => {
   background-color: rgba(239, 68, 68, 0.15);
 }
 
+[data-theme="dark"] .icon-neutral {
+  background-color: rgba(148, 163, 184, 0.15);
+}
+
 .stat-card-body {
   display: flex;
   flex-direction: column;
@@ -167,7 +189,7 @@ const formattedValue = computed(() => {
 }
 
 .stat-label {
-  font-size: 0.82rem;
+  font-size: 13px;
   font-weight: 500;
   color: var(--wpgate-text-muted);
   line-height: 1.3;
@@ -177,6 +199,8 @@ const formattedValue = computed(() => {
   display: flex;
   align-items: baseline;
   gap: 6px;
+  flex-wrap: wrap;
+  min-height: 32px;
 }
 
 .stat-value {
@@ -185,6 +209,15 @@ const formattedValue = computed(() => {
   line-height: 1.1;
   color: var(--wpgate-text);
   letter-spacing: -0.02em;
+}
+
+.stat-value.stat-value-text {
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.35;
+  letter-spacing: normal;
+  white-space: normal;
+  word-break: break-word;
 }
 
 .val-primary {
@@ -204,7 +237,7 @@ const formattedValue = computed(() => {
 }
 
 .stat-suffix {
-  font-size: 0.85rem;
+  font-size: 13px;
   font-weight: 500;
   color: var(--wpgate-text-muted);
 }
@@ -217,8 +250,8 @@ const formattedValue = computed(() => {
 }
 
 .stat-inactive-text {
-  font-size: 0.95rem;
-  font-weight: 600;
+  font-size: 14px;
+  font-weight: 500;
   color: var(--wpgate-text-muted);
 }
 
@@ -227,7 +260,7 @@ const formattedValue = computed(() => {
   border: none;
   padding: 0;
   color: var(--wpgate-primary);
-  font-size: 0.8rem;
+  font-size: 12px;
   font-weight: 600;
   cursor: pointer;
   text-align: start;
@@ -238,10 +271,13 @@ const formattedValue = computed(() => {
 }
 
 .stat-card-footer {
-  padding-top: 10px;
-  border-top: 1px solid var(--wpgate-border);
-  font-size: 0.78rem;
+  padding-top: 4px;
+  border-top: 1px dashed var(--wpgate-border);
+}
+
+.stat-hint {
+  font-size: 12px;
   color: var(--wpgate-text-muted);
-  line-height: 1.3;
+  line-height: 1.4;
 }
 </style>

@@ -11,7 +11,7 @@
     </div>
 
     <!-- Logging Engine Configuration -->
-    <SettingsPanel title="Audit &amp; Diagnostic Engine">
+    <SettingsPanel :title="t('logs.auditEngineTitle')">
       <SettingToggle
         v-model="settings.enable_logging"
         :title="t('logs.enableLogging')"
@@ -22,21 +22,21 @@
             <div class="wpgate-form-group">
               <label class="wpgate-label">{{ t('logs.retentionDays') }}</label>
               <select v-model="settings.log_retention_days" class="wpgate-select">
-                <option value="1">1 Day</option>
-                <option value="3">3 Days</option>
-                <option value="7">7 Days (Standard)</option>
-                <option value="15">15 Days</option>
-                <option value="30">30 Days</option>
+                <option value="1">{{ t('logs.daySingle') }}</option>
+                <option value="3">{{ t('logs.day3') }}</option>
+                <option value="7">{{ t('logs.dayStandard') }}</option>
+                <option value="15">{{ t('logs.day15') }}</option>
+                <option value="30">{{ t('logs.day30') }}</option>
               </select>
             </div>
 
             <div class="wpgate-form-group">
               <label class="wpgate-label">{{ t('logs.maxEntries') }}</label>
               <select v-model="settings.log_max_entries" class="wpgate-select">
-                <option value="100">100 Events</option>
-                <option value="300">300 Events (Recommended)</option>
-                <option value="500">500 Events</option>
-                <option value="1000">1000 Events</option>
+                <option value="100">{{ t('logs.event100') }}</option>
+                <option value="300">{{ t('logs.eventRecommended') }}</option>
+                <option value="500">{{ t('logs.event500') }}</option>
+                <option value="1000">{{ t('logs.event1000') }}</option>
               </select>
             </div>
 
@@ -53,7 +53,7 @@
     </SettingsPanel>
 
     <!-- Logs Viewer Panel -->
-    <SettingsPanel class="wpgate-mt-4" title="Event Log Viewer">
+    <SettingsPanel class="wpgate-mt-4" :title="t('logs.viewerTitle')">
       <template #badge>
         <StatusBadge status="neutral">{{ total }} {{ t('common.entries') }}</StatusBadge>
       </template>
@@ -120,7 +120,7 @@
               <td><strong class="wpgate-code-text" dir="ltr">{{ log.host }}</strong></td>
               <td class="wpgate-code-cell" dir="ltr" :title="log.url">{{ log.url }}</td>
               <td style="text-align: center;">
-                <button type="button" class="wpgate-btn-icon" @click="selectedLog = log" title="View details">
+                <button type="button" class="wpgate-btn-icon" @click="selectedLog = log" :title="t('common.details')">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
                 </button>
               </td>
@@ -131,20 +131,20 @@
         <!-- Empty State -->
         <EmptyState
           v-else
-          :title="settings.enable_logging === 'yes' ? t('logs.noLogs') : 'Logging Engine Disabled'"
-          :description="settings.enable_logging === 'yes' ? 'No outbound network interception events recorded matching your filter criteria.' : 'Enable diagnostic logging above to record outbound requests with secret masking.'"
+          :title="settings.enable_logging === 'yes' ? t('logs.noLogs') : t('logs.engineDisabled')"
+          :description="settings.enable_logging === 'yes' ? t('logs.noFilterLogs') : t('logs.enableLoggingPrompt')"
         />
       </div>
 
       <!-- Pagination Footer -->
       <div v-if="totalPages > 1" class="wpgate-pagination-bar wpgate-mt-4">
         <span class="wpgate-text-muted wpgate-text-sm">
-          Page <strong>{{ page }}</strong> of <strong>{{ totalPages }}</strong> ({{ total }} events)
+          {{ t('common.pageOf').replace('{page}', page).replace('{totalPages}', totalPages).replace('{total}', total) }}
         </span>
         <div class="wpgate-pagination">
-          <button type="button" class="wpgate-btn wpgate-btn-secondary wpgate-btn-sm" :disabled="page <= 1" @click="changePage(page - 1)">&larr; Prev</button>
+          <button type="button" class="wpgate-btn wpgate-btn-secondary wpgate-btn-sm" :disabled="page <= 1" @click="changePage(page - 1)">&larr; {{ t('common.prev') }}</button>
           <span class="wpgate-page-num">{{ page }}</span>
-          <button type="button" class="wpgate-btn wpgate-btn-secondary wpgate-btn-sm" :disabled="page >= totalPages" @click="changePage(page + 1)">Next &rarr;</button>
+          <button type="button" class="wpgate-btn wpgate-btn-secondary wpgate-btn-sm" :disabled="page >= totalPages" @click="changePage(page + 1)">{{ t('common.next') }} &rarr;</button>
         </div>
       </div>
     </SettingsPanel>
@@ -153,22 +153,22 @@
     <div v-if="selectedLog" class="wpgate-modal-overlay" @click.self="selectedLog = null">
       <div class="wpgate-modal-box">
         <div class="wpgate-modal-header">
-          <h3 class="wpgate-modal-title">Interception Event Details</h3>
+          <h3 class="wpgate-modal-title">{{ t('logs.detailsTitle') }}</h3>
           <button type="button" class="wpgate-modal-close" @click="selectedLog = null">&times;</button>
         </div>
         <div class="wpgate-modal-body">
           <div class="wpgate-detail-row">
-            <strong>Timestamp:</strong> <span>{{ selectedLog.time }}</span>
+            <strong>{{ t('logs.time') }}:</strong> <span>{{ selectedLog.time }}</span>
           </div>
           <div class="wpgate-detail-row">
-            <strong>Target Host:</strong> <code dir="ltr">{{ selectedLog.host }}</code>
+            <strong>{{ t('logs.host') }}:</strong> <code dir="ltr">{{ selectedLog.host }}</code>
           </div>
           <div class="wpgate-detail-row">
-            <strong>Action / Mode:</strong>
+            <strong>{{ t('logs.mode') }}:</strong>
             <StatusBadge :status="getModeStatus(selectedLog.mode)">{{ formatMode(selectedLog.mode) }}</StatusBadge>
           </div>
           <div class="wpgate-detail-row">
-            <strong>Sanitized URL (Parameters Redacted):</strong>
+            <strong>{{ t('logs.sanitizedUrl') }}:</strong>
             <pre class="wpgate-code-block" dir="ltr">{{ selectedLog.url }}</pre>
           </div>
         </div>
@@ -227,7 +227,7 @@ const fetchLogs = async () => {
       totalPages.value = res.data.total_pages || 1;
     }
   } catch (err) {
-    emit('notify', { type: 'error', message: 'Failed to load diagnostic logs.' });
+    emit('notify', { type: 'error', message: t('logs.loadFailed') });
   } finally {
     loading.value = false;
   }
@@ -256,11 +256,11 @@ const onClearLogs = () => {
     action: async () => {
       try {
         await api.clearLogs();
-        emit('notify', { type: 'success', message: 'Diagnostic logs cleared successfully.' });
+        emit('notify', { type: 'success', message: t('logs.clearSuccess') });
         page.value = 1;
         fetchLogs();
       } catch (err) {
-        emit('notify', { type: 'error', message: 'Failed to clear logs.' });
+        emit('notify', { type: 'error', message: t('logs.clearFailed') });
       }
     },
   });
@@ -282,6 +282,9 @@ const getModeStatus = (mode) => {
 
 const formatMode = (mode) => {
   if (!mode) return '';
+  if (mode === 'blocked') return t('common.blocked');
+  if (mode === 'allowed') return t('common.allowed');
+  if (mode === 'rewritten') return t('common.rewritten');
   return mode.replace(/_/g, ' ');
 };
 

@@ -6,7 +6,7 @@
         type="button"
         class="header-hamburger-btn"
         @click="$emit('open-mobile')"
-        aria-label="Open Navigation"
+        :aria-label="t('common.openNav')"
       >
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <line x1="3" y1="12" x2="21" y2="12"></line>
@@ -48,7 +48,7 @@
         class="wpgate-btn-icon-header"
         @click="$emit('toggle-theme')"
         :title="theme === 'dark' ? 'Switch to Light Theme' : 'Switch to Dark Theme'"
-        aria-label="Toggle Theme"
+        :aria-label="t('common.toggleTheme')"
       >
         <svg v-if="theme === 'dark'" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <circle cx="12" cy="12" r="5"></circle>

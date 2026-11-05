@@ -15,8 +15,8 @@
         <div class="wpgate-about-info">
           <div class="wpgate-about-title-row">
             <h1 class="wpgate-about-name">WPGate</h1>
-            <span class="wpgate-version-pill">v0.1.3</span>
-            <StatusBadge status="success">Production Ready</StatusBadge>
+            <span class="wpgate-version-pill">v0.1.4</span>
+            <StatusBadge status="success">{{ t('common.productionReady') }}</StatusBadge>
           </div>
           <p class="wpgate-about-summary">{{ t('about.summary') }}</p>
         </div>
@@ -24,14 +24,14 @@
     </div>
 
     <!-- Developer & Maintainer Card -->
-    <SettingsPanel title="Developer &amp; Maintainer" class="wpgate-mt-4">
+    <SettingsPanel :title="t('about.developerCardTitle')" class="wpgate-mt-4">
       <div class="wpgate-author-card">
         <div class="wpgate-author-avatar">
           <span>HM</span>
         </div>
         <div class="wpgate-author-details">
           <h4 class="wpgate-author-name">Hossein Mohammadpour</h4>
-          <p class="wpgate-author-role">Software Architect &amp; Lead Developer</p>
+          <p class="wpgate-author-role">{{ t('about.developerLead') }}</p>
           <div class="wpgate-author-links">
             <a href="mailto:info@hosseinmohammadpour.ir" class="wpgate-author-link" target="_blank" rel="noopener">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
@@ -52,22 +52,17 @@
 
     <!-- Architecture & Legal Grid -->
     <div class="wpgate-grid-2col wpgate-mt-4">
-      <SettingsPanel title="Architectural Highlights">
+      <SettingsPanel :title="t('about.highlightsTitle')">
         <ul class="wpgate-feature-list">
-          <li><strong>Zero Plugin Dependency:</strong> Runs autonomously in <code>wp-content/mu-plugins/</code> or theme <code>functions.php</code> without WordPress activation hooks.</li>
-          <li><strong>Zero Runtime Disk Writes:</strong> Pure in-memory caching and WordPress option storage without risky <code>file_put_contents</code>.</li>
-          <li><strong>Diagnostic Privacy:</strong> Complete automatic query string redaction (<code>[REDACTED]</code>) preventing credential leakage in logs.</li>
-          <li><strong>Emergency Kill-Switch:</strong> Instant bypass anytime via <code>define('WPGATE_DISABLED', true);</code> in <code>wp-config.php</code>.</li>
+          <li><strong>{{ t('about.hlZeroPlugin') }}</strong> {{ t('about.hlZeroPluginDesc') }}</li>
+          <li><strong>{{ t('about.hlZeroDisk') }}</strong> {{ t('about.hlZeroDiskDesc') }}</li>
+          <li><strong>{{ t('about.hlPrivacy') }}</strong> {{ t('about.hlPrivacyDesc') }}</li>
+          <li><strong>{{ t('about.hlKillSwitch') }}</strong> {{ t('about.hlKillSwitchDesc') }}</li>
         </ul>
       </SettingsPanel>
 
-      <SettingsPanel title="License &amp; Legal Attribution">
-        <p class="wpgate-field-help">
-          WPGate is licensed under the <strong>MIT License</strong> and is fully compatible with WordPress <strong>GPLv2+</strong> environments.
-        </p>
-        <p class="wpgate-field-help">
-          Bundled client-side fonts and CSS libraries (FontAwesome Free, Vazirmatn Open Font License, Swiper MIT, Dashicons GPLv2) retain their respective open-source copyright notices.
-        </p>
+      <SettingsPanel :title="t('about.licenseCardTitle')">
+        <p class="wpgate-field-help">{{ t('about.licenseDesc') }}</p>
       </SettingsPanel>
     </div>
   </div>

@@ -219,27 +219,25 @@
         <div class="deployment-box">
           <div class="deployment-badge-row">
             <span class="deployment-tag">
-              {{ system.loading_method === 'theme' ? 'Child Theme Mode' : 'Must-Use Plugin (MU)' }}
+              {{ system.loading_method === 'theme' ? t('sidebar.themeMode') : t('sidebar.muMode') }}
             </span>
-            <StatusBadge type="success" text="Operational" />
+            <StatusBadge type="success" :text="t('common.operational')" />
           </div>
           <p class="deployment-notes">
-            {{ system.loading_method === 'theme'
-              ? 'WPGate is bootstrapped via active child theme functions.php. For earlier lifecycle filtering, consider deploying into wp-content/mu-plugins/.'
-              : 'WPGate is running from wp-content/mu-plugins/, guaranteeing early interception before standard plugins load.' }}
+            {{ system.loading_method === 'theme' ? t('overview.deployThemeNote') : t('overview.deployMuNote') }}
           </p>
           <div class="wpgate-quick-info-list">
             <div class="quick-info-row">
-              <span class="quick-info-key">PHP Engine:</span>
+              <span class="quick-info-key">{{ t('tools.phpVersion') }}:</span>
               <span class="quick-info-val">{{ system.php_version || '7.4+' }}</span>
             </div>
             <div class="quick-info-row">
-              <span class="quick-info-key">WordPress Core:</span>
+              <span class="quick-info-key">{{ t('tools.wpVersion') }}:</span>
               <span class="quick-info-val">{{ system.wp_version || '5.0+' }}</span>
             </div>
             <div class="quick-info-row">
-              <span class="quick-info-key">Disk Writes:</span>
-              <span class="quick-info-val text-success"><strong>0 Bytes (Pure RAM)</strong></span>
+              <span class="quick-info-key">{{ t('tools.diskWrites') }}:</span>
+              <span class="quick-info-val text-success"><strong>{{ t('tools.diskWritesVal') }}</strong></span>
             </div>
           </div>
         </div>
@@ -254,7 +252,7 @@
             </div>
             <div class="action-text-col">
               <strong>{{ t('overview.viewRulesCta') }}</strong>
-              <small>Manage allowlist, blocklist, and domestic presets.</small>
+              <small>{{ t('overview.quickActionRulesDesc') }}</small>
             </div>
             <span class="action-arrow">&rarr;</span>
           </button>
@@ -265,7 +263,7 @@
             </div>
             <div class="action-text-col">
               <strong>{{ t('overview.manageAssetsCta') }}</strong>
-              <small>Configure local CDN fallbacks and font injection.</small>
+              <small>{{ t('overview.quickActionAssetsDesc') }}</small>
             </div>
             <span class="action-arrow">&rarr;</span>
           </button>
@@ -276,7 +274,7 @@
             </div>
             <div class="action-text-col">
               <strong>{{ t('overview.viewLogsCta') }}</strong>
-              <small>Inspect recent intercepted HTTP calls and rewrites.</small>
+              <small>{{ t('overview.quickActionLogsDesc') }}</small>
             </div>
             <span class="action-arrow">&rarr;</span>
           </button>
@@ -308,21 +306,21 @@ const modeBadgeType = computed(() => {
 });
 
 const modeBadgeText = computed(() => {
-  if (props.settings.mode === 'whitelist') return 'Strict';
-  if (props.settings.mode === 'blacklist') return 'Filtering';
-  return 'Disabled';
+  if (props.settings.mode === 'whitelist') return t('common.strict');
+  if (props.settings.mode === 'blacklist') return t('common.selective');
+  return t('common.disabled');
 });
 
 const modeDisplayText = computed(() => {
-  if (props.settings.mode === 'whitelist') return t('overview.modeWhitelist');
-  if (props.settings.mode === 'blacklist') return t('overview.modeBlacklist');
-  return t('overview.modeDisabled');
+  if (props.settings.mode === 'whitelist') return t('overview.modeWhitelistShort');
+  if (props.settings.mode === 'blacklist') return t('overview.modeBlacklistShort');
+  return t('overview.modeDisabledShort');
 });
 
 const modeHintText = computed(() => {
   if (props.settings.mode === 'whitelist') return `${props.stats.whitelist_count || 0} ${t('overview.whitelistHosts')}`;
   if (props.settings.mode === 'blacklist') return `${props.stats.blacklist_count || 0} ${t('overview.blacklistHosts')}`;
-  return 'Pass-through mode';
+  return t('overview.modeDisabledDescShort');
 });
 
 const modeValueDetail = computed(() => {

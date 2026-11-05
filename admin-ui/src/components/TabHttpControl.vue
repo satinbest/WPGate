@@ -11,7 +11,7 @@
     </div>
 
     <!-- Mode Selector Panel -->
-    <SettingsPanel :title="t('http.modeLabel')" badge="Operational Mode" badge-status="primary">
+    <SettingsPanel :title="t('http.modeLabel')" :badge="t('common.operationalMode')" badge-status="primary">
       <div class="wpgate-mode-selector-grid">
         <!-- Mode: Disabled -->
         <div
@@ -105,7 +105,7 @@
             type="button"
             class="wpgate-chip"
             @click="addPreset(preset)"
-            :title="`Add ${preset.domains ? preset.domains.length : 0} verified domains`"
+            :title="t('http.addPresetTitle').replace('{count}', preset.domains ? preset.domains.length : 0)"
           >
             <span class="wpgate-chip-plus">+</span>
             <span class="wpgate-chip-text">{{ preset.label }}</span>
@@ -118,7 +118,7 @@
       <div class="wpgate-form-group wpgate-mt-4">
         <div class="wpgate-form-label-row">
           <label class="wpgate-label">{{ t('http.whitelistTitle') }}</label>
-          <span class="wpgate-text-muted wpgate-text-xs">One domain or pattern per line (wildcards e.g. *.example.com supported)</span>
+          <span class="wpgate-text-muted wpgate-text-xs">{{ t('http.domainFormatHelp') }}</span>
         </div>
         <textarea
           v-model="settings.whitelist"
@@ -240,7 +240,7 @@ const addPreset = (preset) => {
   props.settings.whitelist = Array.from(currentSet).join('\n');
   emit('notify', {
     type: 'success',
-    message: `Added ${added} new domains from "${preset.label}".`,
+    message: t('http.domainsAdded').replace('{count}', added).replace('{label}', preset.label),
   });
 };
 </script>
