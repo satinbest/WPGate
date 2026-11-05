@@ -2,7 +2,7 @@
 
 **[English](README.md) | [فارسی](README-FA.md)**
 
-![بنر گیت‌هاب WPGate](assets/banner-github.png)
+![بنر رسمی WPGate](assets/branding/wpgate-banner.png)
 
 # WPGate (دبلیو‌پی‌گیت)
 

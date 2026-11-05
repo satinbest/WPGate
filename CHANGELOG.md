@@ -14,6 +14,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.5] - 2026-11-06
 
 ### Added
+- **Official Release Branding & Automated Generator:**
+  - Modern, dark navy SaaS developer-tool banner (`1600x600 px`) in `assets/branding/wpgate-banner.png`.
+  - GitHub OpenGraph social preview (`1280x640 px`) in `assets/branding/wpgate-social-preview.png`.
+  - Official WPGate gateway shield logo (`512x512 px`) in `assets/branding/wpgate-logo.png`.
+  - Automated version-synchronized branding generator (`scripts/generate-branding.js`) using headless browser rendering without heavy runtime dependencies.
+  - Published comprehensive branding audit reports: `reports/BRANDING-AUDIT.md` & `reports/BRANDING-AUDIT-FA.md`.
 - **Reusable `SearchInput.vue` Component:**
   - Modern, compact search input with embedded SVG search icon and dynamic clear button.
   - Directional isolation and CSS logical properties (`padding-inline-start: 36px`, `padding-inline-end: 34px`, `inset-inline-end: 8px`) ensuring zero icon or text overlap in Persian RTL mode.

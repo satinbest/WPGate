@@ -8,6 +8,14 @@ const ROOT = path.resolve(__dirname, '..');
 
 console.log(`Building WPGate release packages for v${VERSION}...`);
 
+// Ensure branding assets are generated
+console.log('Verifying release branding assets...');
+const bannerPath = path.join(ROOT, 'assets/branding/wpgate-banner.png');
+if (!fs.existsSync(bannerPath)) {
+  console.log('Generating missing branding assets...');
+  execSync('node scripts/generate-branding.js', { stdio: 'inherit', cwd: ROOT });
+}
+
 // Sync admin dist files to all destinations
 console.log('Synchronizing admin UI distribution assets...');
 const distSrc = path.join(ROOT, 'mu-plugin-package/wpgate-core/admin/dist');
@@ -60,6 +68,8 @@ const itemsToCopy = [
   'mu-plugin-package',
   'theme-package',
   'admin-ui',
+  'assets',
+  'scripts',
   'docs',
   'reports',
   'tests',

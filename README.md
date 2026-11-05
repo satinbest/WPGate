@@ -2,7 +2,7 @@
 
 **[English](README.md) | [فارسی](README-FA.md)**
 
-![WPGate Banner](assets/banner-github.png)
+![WPGate Banner](assets/branding/wpgate-banner.png)
 
 # WPGate
 
