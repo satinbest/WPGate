@@ -170,6 +170,22 @@
 /* ==========================================================================
    5. Section Headers & Typography
    ========================================================================== */
+/* Scoped Typography Protection */
+.wpgate-admin-wrap h1,
+.wpgate-admin-wrap h2,
+.wpgate-admin-wrap h3,
+.wpgate-admin-wrap h4,
+.wpgate-admin-wrap p,
+.wpgate-admin-wrap label,
+.wpgate-admin-wrap button,
+.wpgate-admin-wrap input,
+.wpgate-admin-wrap select,
+.wpgate-admin-wrap textarea {
+  font-family: inherit;
+  letter-spacing: normal;
+}
+
+
 .wpgate-section-header {
   display: flex;
   align-items: flex-start;
@@ -179,15 +195,15 @@
 }
 
 .wpgate-section-title {
-  font-size: 1.35rem;
-  font-weight: 700;
+  font-size: 16px;
+  font-weight: 600;
   margin: 0 0 6px 0;
   color: var(--wpgate-text);
   line-height: 1.3;
 }
 
 .wpgate-section-desc {
-  font-size: 0.9rem;
+  font-size: 13px;
   color: var(--wpgate-text-muted);
   margin: 0;
   line-height: 1.5;
@@ -214,8 +230,9 @@
 }
 
 .wpgate-btn-sm {
-  padding: 6px 12px;
-  font-size: 0.8rem;
+  height: 30px;
+  padding: 0 10px;
+  font-size: 12px;
 }
 
 .wpgate-btn:disabled {
@@ -287,7 +304,7 @@
 
 .wpgate-label {
   display: block;
-  font-size: 0.875rem;
+  font-size: 13px;
   font-weight: 600;
   color: var(--wpgate-text);
 }
@@ -330,7 +347,7 @@
 }
 
 .wpgate-field-help {
-  font-size: 0.825rem;
+  font-size: 12px;
   color: var(--wpgate-text-muted);
   margin-top: 5px;
   line-height: 1.45;

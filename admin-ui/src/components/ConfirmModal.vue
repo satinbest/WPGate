@@ -4,7 +4,7 @@
       <div class="wpgate-modal-box">
         <div class="wpgate-modal-header">
           <h3 class="wpgate-modal-title">{{ title }}</h3>
-          <button type="button" class="wpgate-modal-close" @click="cancel">&times;</button>
+          <button type="button" class="wpgate-modal-close" @click="cancel" :aria-label="t('common.close')">&times;</button>
         </div>
         <div class="wpgate-modal-body">
           <p>{{ message }}</p>
@@ -24,16 +24,17 @@ import { ref } from 'vue';
 const isOpen = ref(false);
 const title = ref('');
 const message = ref('');
-const confirmText = ref('Confirm');
-const cancelText = ref('Cancel');
+import { t } from '../i18n';
+const confirmText = ref('');
+const cancelText = ref('');
 const isDanger = ref(false);
 let resolvePromise = null;
 
 const open = (options = {}) => {
   title.value = options.title || 'Confirm Action';
   message.value = options.message || 'Are you sure?';
-  confirmText.value = options.confirmText || 'Confirm';
-  cancelText.value = options.cancelText || 'Cancel';
+  confirmText.value = options.confirmText || t('common.confirm');
+  cancelText.value = options.cancelText || t('common.cancel');
   isDanger.value = Boolean(options.isDanger);
   isOpen.value = true;
 

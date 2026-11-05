@@ -1,69 +1,73 @@
-# WPGate v0.1.3 — WordPress Compatibility & JavaScript Runtime Patch Release Notes
+# WPGate v0.1.4 — UI Typography, Component Scoping & Persian Localization Audit Release Notes
 
 [English](RELEASE-NOTES.md) | [فارسی](RELEASE-NOTES-FA.md)
 
-**Release Version:** `v0.1.3`  
+**Release Version:** `v0.1.4`  
 **Release Date:** November 6, 2026  
 **Author & Lead Architect:** Hossein Mohammadpour (<info@hosseinmohammadpour.ir>)  
 **Official Repository:** [https://github.com/satinbest/WPGate](https://github.com/satinbest/WPGate)  
-**Release Type:** Critical Bugfix, Compatibility & Stability Patch  
+**Release Type:** UI Quality, Typography Baseline & Complete Localization Patch  
 
 ---
 
 ## 🌟 Executive Summary
 
-**WPGate v0.1.3** is a critical stability patch resolving runtime JavaScript exceptions, establishing complete compatibility with WordPress Core 6.x and Elementor page builder administration environments, and perfecting Persian UI typography and enterprise layout density.
-
-This release addresses reported field issues on production installations (specifically `tt.getSystemInfo is not a function`, cascading localization errors `wp.i18n.setLocaleData`, Elementor `__` exceptions, and `svgPainter.init` failures), while ensuring that all user settings persist reliably across reloads.
+**WPGate v0.1.4** delivers a comprehensive visual and localization audit of the entire WPGate administration interface. This release directly resolves the reported oversized Persian text issue on the main dashboard (`فقط لیست سفید (محدودسازی سخت‌گیرانه)`), establishes strict typography baseline tokens across all screens, ensures 100% dictionary parity between English and Persian across 276 localized keys, eliminates all hardcoded strings, and prevents WordPress core admin styles from bleeding into the WPGate interface.
 
 ---
 
-## 🚀 Key Fixes & Architectural Improvements in v0.1.3
+## 🚀 Key Improvements in v0.1.4
 
-### 1. API Client Contract & Resilient Frontend Initialization
-- **Implemented `api.getSystemInfo()`:** Resolved `tt.getSystemInfo is not a function` by providing a dedicated contract method in `admin-ui/src/api.js`.
-- **Sequential Resilient Loading:** In `App.vue:loadData()`, settings and system information are fetched first. Non-critical telemetry metrics (`stats`, `presets`) are loaded via `Promise.allSettled()`, preventing secondary endpoint failures from interrupting administrative dashboard access.
-- **Settings Persistence Lifecycle:** Corrected reactive data unpacking in `App.vue` and ensured form changes are only marked clean upon confirmed server responses (`success: true`).
+### 1. Resolution of Oversized Dashboard Typography
+- **Root Cause:** In previous versions, configuration status strings like `فقط لیست سفید (محدودسازی سخت‌گیرانه)` were passed into `StatCard.vue`'s numeric `:value` prop, which was styled as a large `1.75rem` (28px) bold number without text wrapping constraints or minimum height limits.
+- **Architectural Solution:**
+  - Added intelligent non-numeric text value detection in `StatCard.vue` (`.stat-value-text`).
+  - Text-based status labels are rendered at a refined `15px` font size with semi-bold weight (`600`), line height of `1.35`, and flexible word-break wrapping.
+  - Enforced a uniform card minimum height of `145px` to eliminate uneven card expansion across responsive breakpoints.
+  - Streamlined Active Firewall Mode values to concise, clear translated labels:
+    - Whitelist Mode: `Allowlist Only` / `لیست سفید` (Badge: `Strict` / `سخت‌گیرانه`)
+    - Blacklist Mode: `Blocklist Only` / `لیست سیاه` (Badge: `Selective` / `انتخابی`)
+    - Disabled Mode: `Disabled` / `غیرفعال` (Badge: `Inactive` / `غیرفعال`)
 
-### 2. Strict WordPress Admin & System Context Protection
-- **Scope Detection (`AssetManager::is_admin_or_system_context()`):** Bypasses all script and stylesheet rewriting in `wp-admin`, login screens (`wp-login.php`, `wp-register.php`), AJAX requests (`wp_doing_ajax`), Cron jobs (`wp_doing_cron`), REST API calls (`REST_REQUEST`), WP-CLI, and Customizer previews.
-- **Protected Core Handles (`AssetManager::is_protected_handle()`):** Establishes an immutable table preventing asset replacement on core script handles (`wp-i18n`, `wp-hooks`, `wp-element`, `wp-components`, `wp-data`, `wp-api-fetch`, `jquery`, `underscore`, `utils`, `svg-painter`, `heartbeat`, and all `elementor*` handles).
-- **Eliminated Localization Cascades:** Completely resolved `setLocaleData`, Elementor `__()`, and `svgPainter.init()` crashes.
+### 2. Complete Centralized Localization Parity (276 Keys)
+- Expanded the centralized translation dictionary in `admin-ui/src/i18n.js` from 199 to **276 keys**.
+- Achieved **100% translation parity** between English and Persian with zero missing keys in either language.
+- Eliminated all hardcoded English strings across panels, buttons, badges, modals, and toasts.
+- Preserved technical terms in their canonical form (`WPGate`, `PHP`, `WordPress`, `REST API`, `URL`, `HTTP`, `JavaScript`, domain names).
+- Implemented automated verification script (`scripts/verify-i18n.js`) to guarantee dictionary parity and validate every component `t('...')` reference.
 
-### 3. Granular Telemetry Guard & Translation Safety
-- **Surgical Path Matching:** Replaced blanket `*.wordpress.org` blocking with targeted URI path matching in `TelemetryGuard.php`.
-- **Protected Translation Queries:** Explicitly allows queries to `api.wordpress.org/translations/*` and downloads from `downloads.wordpress.org/translation/*`.
-- **Targeted Telemetry Blocking:** Accurately intercepts and blocks tracking endpoints (`telemetry.elementor.com`, `stats.wordpress.com`, `/core/browse-happy/`, `/core/serve-happy/`, `/events/`).
+### 3. Strict Scoped Typography Baseline
+All typography tokens are strictly scoped within `.wpgate-admin-wrap` and `#wpgate-admin-app`:
+- **Main Page Title:** `20px` (Font weight: 700)
+- **Section Title:** `16px` (Font weight: 600)
+- **Card / Panel Title:** `14px` (Font weight: 600)
+- **Sidebar Item:** `13px` (Font weight: 500)
+- **Body Text & Form Labels:** `13px`
+- **Buttons:** `13px` with fixed `36px` height (Compact: `12px` / `30px`)
+- **Inputs & Selects:** `13px` with fixed `38px` height
+- **Help Text & Metadata:** `12px`
+- **Badges & Chips:** `11–12px`
+- **Panel Padding:** `16–20px`
+- **Sidebar Width:** `232px`
 
-### 4. UI Typography & Layout Density Baseline
-- Calibrated all typography and component sizing to the exact project baseline:
-  - **Main Title:** `20px` (Weight: 700)
-  - **Section Title:** `16px` (Weight: 600)
-  - **Card / Panel Title:** `14px` (Weight: 600)
-  - **Sidebar Item:** `13px` (Weight: 500)
-  - **Body Text & Form Labels:** `13px`
-  - **Buttons:** `13px` with fixed `36px` height (Compact: `12px` / `30px`)
-  - **Inputs & Selects:** `13px` with fixed `38px` height
-  - **Help Text & Metadata:** `12px`
-  - **Badges & Chips:** `11–12px`
-  - **Panel Padding:** `16–20px`
-  - **Sidebar Width:** `232px`
-- Optimized Persian Vazirmatn rendering with balanced line heights and native RTL directional adjustments.
-
-### 5. Automated Quality Assurance & Verification
-- Added **Test Suites 15–18** to `tests/run-tests.php`:
-  - Suite 15: WordPress Admin Protection and Scope Detection.
-  - Suite 16: Protected WordPress Core and Elementor Handles.
-  - Suite 17: Telemetry Guard Specificity and Translation Safety.
-  - Suite 18: API Client Contract and Settings Persistence.
-- Total test coverage: **56 unit tests across 18 suites with a 100% pass rate**.
+### 4. Component Attribute Binding Cleanup
+- Cleaned up malformed template bindings where literal `t('...')` strings or double colons (`::title`, `::placeholder`) were passed.
+- Standardized all component dynamic properties to `:title`, `:badge`, `:aria-label`, and `:placeholder`.
 
 ---
 
-## 📦 Verified Deliverables & Downloads
+## 🧪 Quality Assurance & Test Verification
 
-| Package File | Size | SHA-256 Checksum | Description |
-| :--- | :--- | :--- | :--- |
-| `WPGate-MU-Plugin-v0.1.3.zip` | ~1.4 MB | See `SHA256SUMS.txt` | Recommended Must-Use Plugin installation |
-| `WPGate-Theme-Module-v0.1.3.zip` | ~1.4 MB | See `SHA256SUMS.txt` | Alternative theme `functions.php` module |
-| `WPGate-Complete-Release-v0.1.3.zip` | ~3.0 MB | See `SHA256SUMS.txt` | Complete release bundle with documentation |
+- **PHP Unit Tests:** All **56 automated tests across 18 test suites passed with 100% success** (`php tests/run-tests.php`).
+- **Localization Verification:** **100% translation dictionary parity** verified across 276 keys (`node scripts/verify-i18n.js`).
+- **Documentation Parity:** Full bilingual parity verified across all documentation pairs (`node tests/verify-docs.js`).
+
+---
+
+## 📦 Downloadable Assets (v0.1.4)
+
+Official release packages are available on GitHub Releases:
+- `WPGate-MU-Plugin-v0.1.4.zip` — Recommended MU-Plugin package for `wp-content/mu-plugins/`
+- `WPGate-Theme-Module-v0.1.4.zip` — Child Theme module package for active themes
+- `WPGate-Complete-Release-v0.1.4.zip` — Full development archive with complete source and tests
+- `SHA256SUMS.txt` — SHA-256 cryptographic verification checksums

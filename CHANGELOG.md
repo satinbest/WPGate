@@ -11,6 +11,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.1.4] - 2026-11-06
+
+### Fixed
+- **Oversized Persian Dashboard Typography:**
+  - Resolved oversized Persian status label (`فقط لیست سفید (محدودسازی سخت‌گیرانه)`) on the main dashboard stat cards.
+  - Implemented text-mode rendering in `StatCard.vue` (`.stat-value-text`) with calibrated `15px` font size, semi-bold weight (`600`), flexible word-break wrapping, and fixed card minimum height (`145px`).
+  - Streamlined Active Firewall Mode card values to concise translated labels (`Allowlist Only` / `Blocklist Only` / `Disabled`) accompanied by distinct status badges and explanatory hints.
+- **Component Attribute Binding Corrections:**
+  - Fixed attribute bindings across Vue components where literal `t('...')` strings or duplicated colons (`::title`, `::placeholder`) were passed.
+  - Corrected all dynamic bindings to standard `:title`, `:badge`, `:aria-label`, and `:placeholder`.
+- **CSS Scoping and Typography Protection:**
+  - Added scoped typography reset to `.wpgate-admin-wrap` in `styles.css` to prevent WordPress core admin styles (`#wpcontent h2`, `.wrap h1`) from overriding WPGate elements.
+  - Enforced baseline typography: Main Title `20px` (700), Section Title `16px` (600), Card/Panel Title `14px` (600), Sidebar/Body/Labels/Buttons `13px` (button height `36px`, compact `30px`), Inputs `13px` (height `38px`), Help text `12px`, Badges `11–12px`, Panel padding `16–20px`.
+
+### Added
+- **Centralized Localization Parity (276 Keys):**
+  - Expanded dictionary in `admin-ui/src/i18n.js` to 276 localized keys with 100% parity between English and Persian.
+  - Zero hardcoded English strings in templates; all text resolves via dynamic `t('...')` translation helper.
+  - Added automated dictionary parity and component scan verification script (`scripts/verify-i18n.js`).
+- **Engineering & Audit Reports:**
+  - Published `reports/TYPOGRAPHY-LOCALIZATION-AUDIT.md` and `reports/TYPOGRAPHY-LOCALIZATION-AUDIT-FA.md`.
+
 ## [0.1.3] - 2026-11-06
 
 ### Fixed

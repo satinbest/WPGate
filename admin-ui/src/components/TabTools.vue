@@ -3,25 +3,25 @@
     <div class="wpgate-section-header">
       <div>
         <h2 class="wpgate-section-title">{{ t('tools.title') }}</h2>
-        <p class="wpgate-section-desc">Configuration portability, runtime diagnostics, and disaster recovery controls.</p>
+        <p class="wpgate-section-desc">{{ t('tools.desc') }}</p>
       </div>
     </div>
 
     <!-- Backup & Restore Grid -->
     <div class="wpgate-grid-2col">
       <!-- Export Configuration Card -->
-      <SettingsPanel :title="t('common.export')" description="Download all active WPGate rules and policies as a clean JSON backup file.">
+      <SettingsPanel :title="t('common.export')" :description="t('tools.exportDesc')">
         <div class="wpgate-tool-action-box">
           <button type="button" class="wpgate-btn wpgate-btn-secondary" @click="exportJson">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="wpgate-icon"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
             <span>{{ t('common.export') }} JSON</span>
           </button>
-          <span class="wpgate-text-muted wpgate-text-xs">Portable across all staging and production environments</span>
+          <span class="wpgate-text-muted wpgate-text-xs">{{ t('tools.exportCardDesc') }}</span>
         </div>
       </SettingsPanel>
 
       <!-- Import Configuration Card -->
-      <SettingsPanel :title="t('common.import')" description="Restore or migrate WPGate settings from a previously saved JSON backup file.">
+      <SettingsPanel :title="t('common.import')" :description="t('tools.importDesc')">
         <div class="wpgate-tool-action-box">
           <input
             type="file"
@@ -34,15 +34,15 @@
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="wpgate-icon"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
             <span>{{ t('common.import') }} JSON</span>
           </button>
-          <span class="wpgate-text-muted wpgate-text-xs">Validates format before applying</span>
+          <span class="wpgate-text-muted wpgate-text-xs">{{ t('tools.importCardDesc') }}</span>
         </div>
       </SettingsPanel>
     </div>
 
     <!-- Emergency Kill-Switch Panel -->
-    <SettingsPanel title="Emergency Kill-Switch (wp-config.php)" class="wpgate-mt-4" badge="Zero-Risk Recovery" badge-status="warning">
+    <SettingsPanel :title="t('tools.killSwitchTitle')" class="wpgate-mt-4" :badge="t('common.zeroRiskRecovery')" badge-status="warning">
       <p class="wpgate-field-help">
-        If you ever need to instantly bypass all WPGate filters and network interceptions without accessing the WordPress admin, add this constant anywhere in your <code>wp-config.php</code> file:
+        {{ t('tools.killSwitchDocDesc') }}
       </p>
       <div class="wpgate-code-snippet-box">
         <pre class="wpgate-code-snippet" dir="ltr"><code>define('WPGATE_DISABLED', true);</code></pre>
@@ -52,19 +52,19 @@
         </button>
       </div>
       <p class="wpgate-text-muted wpgate-text-xs wpgate-mt-2">
-        When defined, WPGate halts execution on the first line of its bootstrap routine with zero overhead.
+        {{ t('overview.deploymentDesc') }}
       </p>
     </SettingsPanel>
 
     <!-- System Diagnostics Information -->
     <SettingsPanel :title="t('tools.sysInfo')" class="wpgate-mt-4">
       <template #badge>
-        <StatusBadge status="success">Operational</StatusBadge>
+        <StatusBadge status="success">{{ t('common.operational') }}</StatusBadge>
       </template>
       <div class="wpgate-sysinfo-grid">
         <div class="wpgate-sysinfo-item">
           <span class="wpgate-sysinfo-label">{{ t('tools.wpgateVersion') }}</span>
-          <span class="wpgate-sysinfo-value">v{{ system.version || '0.1.3' }}</span>
+          <span class="wpgate-sysinfo-value">v{{ system.version || '0.1.4' }}</span>
         </div>
         <div class="wpgate-sysinfo-item">
           <span class="wpgate-sysinfo-label">{{ t('tools.loadingMethod') }}</span>
@@ -92,7 +92,7 @@
     </SettingsPanel>
 
     <!-- Danger Zone: Factory Reset -->
-    <SettingsPanel title="Danger Zone" class="wpgate-mt-4" badge="Irreversible" badge-status="danger">
+    <SettingsPanel :title="t('common.dangerZone')" class="wpgate-mt-4" :badge="t('common.irreversible')" badge-status="danger">
       <div class="wpgate-danger-zone-box">
         <div>
           <strong class="text-danger">{{ t('common.reset') }}</strong>
@@ -124,7 +124,7 @@ const fileInput = ref(null);
 const exportJson = () => {
   const exportPayload = {
     generator: 'WPGate',
-    version: props.system.version || '0.1.3',
+    version: props.system.version || '0.1.4',
     export_date: new Date().toISOString(),
     settings: props.settings,
   };
@@ -135,7 +135,7 @@ const exportJson = () => {
   a.download = `wpgate-settings-${new Date().toISOString().slice(0, 10)}.json`;
   a.click();
   URL.revokeObjectURL(downloadUrl);
-  emit('notify', { type: 'success', message: 'Configuration exported successfully.' });
+  emit('notify', { type: 'success', message: t('tools.exportSuccess') });
 };
 
 const importJson = (event) => {
@@ -152,7 +152,7 @@ const importJson = (event) => {
       }
       const res = await api.saveSettings(incoming);
       if (res.success) {
-        emit('notify', { type: 'success', message: 'Settings imported and saved successfully.' });
+        emit('notify', { type: 'success', message: t('tools.importSuccess') });
         emit('reload-settings');
       }
     } catch (err) {
@@ -181,10 +181,10 @@ const onResetDefaults = () => {
     action: async () => {
       try {
         await api.resetSettings();
-        emit('notify', { type: 'success', message: 'WPGate settings reset to default.' });
+        emit('notify', { type: 'success', message: t('tools.resetSuccess') });
         emit('reload-settings');
       } catch (err) {
-        emit('notify', { type: 'error', message: 'Failed to reset settings.' });
+        emit('notify', { type: 'error', message: t('tools.resetFailed') });
       }
     },
   });

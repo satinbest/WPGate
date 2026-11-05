@@ -8,7 +8,7 @@
     </div>
 
     <!-- Update Policy Management -->
-    <SettingsPanel title="WordPress Updates Management" badge="Core Protection" badge-status="primary">
+    <SettingsPanel :title="t('wpControls.updatesManagementTitle')" :badge="t('common.coreProtection')" badge-status="primary">
       <!-- Disable Updates -->
       <SettingToggle
         v-model="settings.disable_updates"
@@ -28,7 +28,7 @@
     </SettingsPanel>
 
     <!-- Telemetry & Network Pingbacks -->
-    <SettingsPanel title="Telemetry &amp; Background Tracking" class="wpgate-mt-4">
+    <SettingsPanel :title="t('wpControls.telemetryTrackingTitle')" class="wpgate-mt-4">
       <SettingToggle
         v-model="settings.disable_telemetry"
         :title="t('wpControls.disableTelemetry')"
@@ -37,7 +37,7 @@
     </SettingsPanel>
 
     <!-- Gravatar Management -->
-    <SettingsPanel title="Avatar &amp; Identity Privacy" class="wpgate-mt-4">
+    <SettingsPanel :title="t('wpControls.avatarPrivacyTitle')" class="wpgate-mt-4">
       <SettingToggle
         v-model="settings.disable_gravatar"
         :title="t('wpControls.disableGravatar')"
@@ -52,7 +52,7 @@
                 v-model="settings.gravatar_url"
                 dir="ltr"
                 class="wpgate-input"
-                :placeholder="defaultGravatarUrl"
+                :placeholder="t('wpControls.defaultGravatarUrl')"
               />
               <small class="wpgate-field-help">{{ t('wpControls.gravatarUrlHelp') }}</small>
             </div>

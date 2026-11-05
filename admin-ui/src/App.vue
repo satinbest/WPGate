@@ -166,7 +166,7 @@ const settings = reactive({
 });
 
 const system = reactive({
-  version: '0.1.3',
+  version: '0.1.4',
   php_version: '',
   wp_version: '',
   loading_method: 'mu-plugin',
@@ -247,7 +247,7 @@ const loadData = async () => {
     console.error('WPGate loadData error:', err);
     showNotification({
       type: 'error',
-      message: 'Failed to communicate with WPGate REST API: ' + (err.message || 'Unknown network error'),
+      message: t('common.apiError') + (err.message ? ' (' + err.message + ')' : ''),
     });
   } finally {
     loadingInitial.value = false;
@@ -279,13 +279,13 @@ const saveSettings = async () => {
     } else {
       showNotification({
         type: 'error',
-        message: res?.message || 'Failed to save configuration.',
+        message: res?.message || t('common.saveFailed'),
       });
     }
   } catch (err) {
     showNotification({
       type: 'error',
-      message: 'Save failed: ' + (err.message || 'Network error'),
+      message: t('common.saveFailed') + (err.message ? ' (' + err.message + ')' : ''),
     });
   } finally {
     saving.value = false;

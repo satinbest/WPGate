@@ -22,13 +22,13 @@
     <!-- Sub Settings (Shown when master switch is enabled) -->
     <div v-show="settings.local_asset_rewrite === 'yes'" class="wpgate-mt-4">
       <!-- Security & Blocking Policies -->
-      <SettingsPanel title="Security &amp; Blocking Policies" class="wpgate-mt-4">
+      <SettingsPanel :title="t('assets.securityPolicyTitle')" class="wpgate-mt-4">
         <!-- Strict Asset Blocking -->
         <SettingToggle
           v-model="settings.strict_asset_block"
           :title="t('assets.strictAssetBlock')"
           :description="t('assets.strictAssetBlockDesc')"
-          warning="Blocks all unapproved external scripts and stylesheets from third-party CDNs to guarantee zero foreign network leaks."
+          :warning="t('assets.strictAssetBlockWarning')"
         />
 
         <hr class="wpgate-divider" />
@@ -42,14 +42,14 @@
       </SettingsPanel>
 
       <!-- Typography & Font Management -->
-      <SettingsPanel title="Typography &amp; Persian Fonts" class="wpgate-mt-4">
+      <SettingsPanel :title="t('assets.typographyTitle')" class="wpgate-mt-4">
         <!-- Admin UI Font (Informative / Built-in) -->
         <div class="wpgate-font-info-box">
           <div class="wpgate-font-info-header">
             <div class="wpgate-flex-center wpgate-gap-2">
               <span class="wpgate-font-icon">Aa</span>
               <div>
-                <strong>WPGate Dashboard Font: Vazirmatn (Built-in)</strong>
+                <strong>{{ t('assets.dashboardFontTitle') }}</strong>
                 <p class="wpgate-text-muted wpgate-text-xs">
                   Locally bundled and inlined into admin assets. Operates 100% offline with zero CDN dependencies and zero font 404s.
                 </p>

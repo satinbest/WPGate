@@ -19,7 +19,7 @@
         </div>
         <div v-show="!isCollapsed" class="brand-text-wrap">
           <span class="brand-name">WPGate</span>
-          <span class="brand-subtitle">Security Core</span>
+          <span class="brand-subtitle">{{ t('sidebar.securityCore') }}</span>
         </div>
       </div>
 
@@ -28,7 +28,7 @@
         type="button"
         class="mobile-close-btn"
         @click="$emit('close-mobile')"
-        aria-label="Close Navigation"
+        :aria-label="t('common.closeNav')"
       >
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
       </button>
@@ -90,7 +90,7 @@
     <div class="sidebar-footer">
       <div v-show="!isCollapsed" class="footer-info-row">
         <span class="footer-version-tag">
-          v{{ system.version || '0.1.3' }}
+          v{{ system.version || '0.1.4' }}
         </span>
         <span class="footer-mode-pill">
           {{ system.loading_method === 'theme' ? t('sidebar.themeMode') : t('sidebar.muMode') }}
