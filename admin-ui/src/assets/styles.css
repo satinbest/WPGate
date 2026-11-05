@@ -1,157 +1,187 @@
 /**
- * WPGate Admin UI - Production Stylesheet
- * Responsive, Lightweight, Light/Dark Theme, RTL/LTR
+ * WPGate Admin UI - Professional Redesign Stylesheet
+ * Architecture: Clean Component Design System, Scoped, Responsive, RTL/LTR
+ * Developer: Hossein Mohammadpour <info@hosseinmohammadpour.ir>
  */
 
+/* ==========================================================================
+   1. Locally Bundled Vazirmatn Typography (@font-face)
+   ========================================================================== */
+@font-face {
+  font-family: 'Vazirmatn';
+  src: url('./fonts/Vazirmatn-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Vazirmatn';
+  src: url('./fonts/Vazirmatn-Medium.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Vazirmatn';
+  src: url('./fonts/Vazirmatn-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ==========================================================================
+   2. Design Tokens & Theme Variables
+   ========================================================================== */
 :root {
   --wpgate-bg: #f8fafc;
   --wpgate-surface: #ffffff;
   --wpgate-surface-alt: #f1f5f9;
+  --wpgate-surface-hover: #e2e8f0;
   --wpgate-border: #e2e8f0;
-  --wpgate-border-focus: #3b82f6;
+  --wpgate-border-subtle: #f1f5f9;
+  --wpgate-border-focus: #0284c7;
   --wpgate-text: #0f172a;
   --wpgate-text-muted: #64748b;
+  --wpgate-text-subtle: #94a3b8;
   --wpgate-primary: #0284c7;
   --wpgate-primary-hover: #0369a1;
   --wpgate-primary-text: #ffffff;
+  --wpgate-primary-tint: rgba(2, 132, 199, 0.08);
   --wpgate-success: #10b981;
+  --wpgate-success-tint: rgba(16, 185, 129, 0.08);
   --wpgate-warning: #f59e0b;
+  --wpgate-warning-tint: rgba(245, 158, 11, 0.08);
   --wpgate-danger: #ef4444;
+  --wpgate-danger-tint: rgba(239, 68, 68, 0.08);
   --wpgate-info: #0ea5e9;
-  --wpgate-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --wpgate-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  --wpgate-radius: 8px;
-  --wpgate-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Vazirmatn", Oxygen, Ubuntu, Cantarell, sans-serif;
+  --wpgate-info-tint: rgba(14, 165, 233, 0.08);
+  --wpgate-shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.04);
+  --wpgate-shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.06), 0 1px 2px 0 rgba(0, 0, 0, 0.04);
+  --wpgate-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
+  --wpgate-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --wpgate-radius-sm: 6px;
+  --wpgate-radius: 10px;
+  --wpgate-radius-lg: 14px;
+  --wpgate-font-fa: 'Vazirmatn', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --wpgate-font-en: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Vazirmatn", sans-serif;
+  --wpgate-font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Courier New", monospace;
 }
 
 [data-theme="dark"] {
-  --wpgate-bg: #0b1120;
-  --wpgate-surface: #1e293b;
-  --wpgate-surface-alt: #0f172a;
-  --wpgate-border: #334155;
-  --wpgate-border-focus: #60a5fa;
-  --wpgate-text: #f8fafc;
-  --wpgate-text-muted: #94a3b8;
+  --wpgate-bg: #090d16;
+  --wpgate-surface: #111827;
+  --wpgate-surface-alt: #1f2937;
+  --wpgate-surface-hover: #374151;
+  --wpgate-border: #1f2937;
+  --wpgate-border-subtle: #182234;
+  --wpgate-border-focus: #38bdf8;
+  --wpgate-text: #f9fafb;
+  --wpgate-text-muted: #9ca3af;
+  --wpgate-text-subtle: #6b7280;
   --wpgate-primary: #38bdf8;
   --wpgate-primary-hover: #7dd3fc;
-  --wpgate-primary-text: #0b1120;
-  --wpgate-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.4);
-  --wpgate-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+  --wpgate-primary-text: #090d16;
+  --wpgate-primary-tint: rgba(56, 189, 248, 0.12);
+  --wpgate-success: #34d399;
+  --wpgate-success-tint: rgba(52, 211, 153, 0.12);
+  --wpgate-warning: #fbbf24;
+  --wpgate-warning-tint: rgba(251, 191, 36, 0.12);
+  --wpgate-danger: #f87171;
+  --wpgate-danger-tint: rgba(248, 113, 113, 0.12);
+  --wpgate-info: #38bdf8;
+  --wpgate-info-tint: rgba(56, 189, 248, 0.12);
+  --wpgate-shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.4);
+  --wpgate-shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.5);
+  --wpgate-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.6);
+  --wpgate-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.7);
 }
 
-/* Base Container */
-.wpgate-app-container {
-  font-family: var(--wpgate-font);
+/* ==========================================================================
+   3. Root Container & Scoped Reset
+   ========================================================================== */
+.wpgate-admin-wrap {
+  width: 100%;
+  box-sizing: border-box;
   background-color: var(--wpgate-bg);
   color: var(--wpgate-text);
-  border-radius: var(--wpgate-radius);
-  margin: 20px 20px 40px 0;
-  box-shadow: var(--wpgate-shadow-sm);
-  border: 1px solid var(--wpgate-border);
+  min-height: calc(100vh - 50px);
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.wpgate-admin-wrap[dir="rtl"] {
+  font-family: var(--wpgate-font-fa);
+  direction: rtl;
+}
+
+.wpgate-admin-wrap[dir="ltr"] {
+  font-family: var(--wpgate-font-en);
+  direction: ltr;
+}
+
+.wpgate-admin-wrap *,
+.wpgate-admin-wrap *::before,
+.wpgate-admin-wrap *::after {
   box-sizing: border-box;
 }
 
-.wpgate-app-container * {
-  box-sizing: border-box;
-}
-
-/* Header */
-.wpgate-header {
+/* ==========================================================================
+   4. Layout Architecture: Sidebar + Main Content
+   ========================================================================== */
+.wpgate-layout-container {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 16px 24px;
-  background-color: var(--wpgate-surface);
-  border-bottom: 1px solid var(--wpgate-border);
-  border-top-left-radius: var(--wpgate-radius);
-  border-top-right-radius: var(--wpgate-radius);
+  min-height: calc(100vh - 50px);
+  position: relative;
+  background-color: var(--wpgate-bg);
 }
 
-.wpgate-header-left, .wpgate-header-right {
+.wpgate-layout-main {
+  flex: 1;
   display: flex;
-  align-items: center;
-  gap: 12px;
+  flex-direction: column;
+  min-width: 0;
+  background-color: var(--wpgate-bg);
 }
 
-.wpgate-logo-box {
-  display: flex;
-  align-items: center;
-  gap: 12px;
+.wpgate-main-scroll-area {
+  flex: 1;
+  padding: 24px 28px 48px;
+  overflow-y: auto;
 }
 
-.wpgate-app-title {
-  font-size: 1.25rem;
-  font-weight: 700;
-  margin: 0;
-  color: var(--wpgate-text);
+.wpgate-content-container {
+  max-width: 1180px;
+  margin: 0 auto;
 }
 
-.wpgate-version-pill {
-  font-size: 0.75rem;
-  font-weight: 600;
-  background-color: var(--wpgate-surface-alt);
-  color: var(--wpgate-primary);
-  border: 1px solid var(--wpgate-border);
-  padding: 2px 8px;
-  border-radius: 9999px;
-  vertical-align: middle;
+.wpgate-mobile-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(4px);
+  z-index: 99990;
 }
 
-/* Tabs Navigation */
-.wpgate-nav-tabs {
-  display: flex;
-  overflow-x: auto;
-  background-color: var(--wpgate-surface);
-  border-bottom: 1px solid var(--wpgate-border);
-  padding: 0 16px;
-  gap: 4px;
-}
-
-.wpgate-nav-tab {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 12px 16px;
-  border: none;
-  background: transparent;
-  color: var(--wpgate-text-muted);
-  font-size: 0.9rem;
-  font-weight: 500;
-  cursor: pointer;
-  border-bottom: 2px solid transparent;
-  transition: all 0.15s ease-in-out;
-  white-space: nowrap;
-}
-
-.wpgate-nav-tab:hover {
-  color: var(--wpgate-text);
-}
-
-.wpgate-nav-tab.active {
-  color: var(--wpgate-primary);
-  border-bottom-color: var(--wpgate-primary);
-  font-weight: 600;
-}
-
-.wpgate-tab-icon {
-  display: inline-flex;
-}
-
-/* Content Area */
-.wpgate-main-content {
-  padding: 24px;
-  min-height: 480px;
-}
-
+/* ==========================================================================
+   5. Section Headers & Typography
+   ========================================================================== */
 .wpgate-section-header {
-  margin-bottom: 20px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
 }
 
 .wpgate-section-title {
-  font-size: 1.3rem;
+  font-size: 1.35rem;
   font-weight: 700;
   margin: 0 0 6px 0;
   color: var(--wpgate-text);
+  line-height: 1.3;
 }
 
 .wpgate-section-desc {
@@ -161,109 +191,28 @@
   line-height: 1.5;
 }
 
-/* Panels / Cards */
-.wpgate-panel {
-  background-color: var(--wpgate-surface);
-  border: 1px solid var(--wpgate-border);
-  border-radius: var(--wpgate-radius);
-  box-shadow: var(--wpgate-shadow-sm);
-  overflow: hidden;
-}
-
-.wpgate-panel-header {
-  padding: 14px 20px;
-  border-bottom: 1px solid var(--wpgate-border);
-  background-color: var(--wpgate-surface);
-}
-
-.wpgate-panel-title {
-  font-size: 1rem;
-  font-weight: 600;
-  margin: 0;
-  color: var(--wpgate-text);
-}
-
-.wpgate-panel-body {
-  padding: 20px;
-}
-
-.wpgate-panel-footer {
-  padding: 12px 20px;
-  background-color: var(--wpgate-surface-alt);
-  border-top: 1px solid var(--wpgate-border);
-}
-
-/* Grid Layouts */
-.wpgate-cards-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 16px;
-}
-
-.wpgate-grid-2col {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-}
-
-@media (max-width: 768px) {
-  .wpgate-grid-2col {
-    grid-template-columns: 1fr;
-  }
-}
-
-.wpgate-card {
-  background-color: var(--wpgate-surface);
-  border: 1px solid var(--wpgate-border);
-  border-radius: var(--wpgate-radius);
-  padding: 16px;
-  box-shadow: var(--wpgate-shadow-sm);
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-
-.wpgate-card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 12px;
-}
-
-.wpgate-card-label {
-  font-size: 0.85rem;
-  color: var(--wpgate-text-muted);
-  margin-bottom: 4px;
-}
-
-.wpgate-card-value {
-  font-size: 1.4rem;
-  font-weight: 700;
-  color: var(--wpgate-text);
-}
-
-.wpgate-card-footer {
-  margin-top: 12px;
-  padding-top: 8px;
-  border-top: 1px solid var(--wpgate-border);
-  font-size: 0.8rem;
-  color: var(--wpgate-text-muted);
-}
-
-/* Buttons */
+/* ==========================================================================
+   6. Buttons & Interactive Controls
+   ========================================================================== */
 .wpgate-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  padding: 8px 16px;
-  border-radius: 6px;
+  gap: 8px;
+  padding: 9px 16px;
+  border-radius: var(--wpgate-radius-sm);
   font-size: 0.875rem;
   font-weight: 500;
   border: 1px solid transparent;
   cursor: pointer;
-  transition: all 0.15s ease-in-out;
+  transition: all 0.15s ease;
   text-decoration: none;
+  line-height: 1.2;
+}
+
+.wpgate-btn-sm {
+  padding: 6px 12px;
+  font-size: 0.8rem;
 }
 
 .wpgate-btn:disabled {
@@ -281,13 +230,14 @@
 }
 
 .wpgate-btn-secondary {
-  background-color: var(--wpgate-surface-alt);
+  background-color: var(--wpgate-surface);
   color: var(--wpgate-text);
   border-color: var(--wpgate-border);
 }
 
 .wpgate-btn-secondary:hover:not(:disabled) {
-  background-color: var(--wpgate-border);
+  background-color: var(--wpgate-surface-alt);
+  border-color: var(--wpgate-border-focus);
 }
 
 .wpgate-btn-danger {
@@ -299,207 +249,217 @@
   background-color: #dc2626;
 }
 
-.wpgate-btn-link {
-  background: none;
-  border: none;
-  padding: 0;
-  color: var(--wpgate-primary);
-  font-weight: 500;
-  cursor: pointer;
-  font-size: 0.85rem;
-}
-
 .wpgate-btn-icon {
-  background: transparent;
+  background: var(--wpgate-surface);
   border: 1px solid var(--wpgate-border);
-  border-radius: 4px;
+  border-radius: var(--wpgate-radius-sm);
   padding: 6px;
   cursor: pointer;
   color: var(--wpgate-text-muted);
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  transition: all 0.15s ease;
 }
 
 .wpgate-btn-icon:hover {
   color: var(--wpgate-text);
+  border-color: var(--wpgate-border-focus);
   background-color: var(--wpgate-surface-alt);
 }
 
-/* Toggle Switch */
-.wpgate-toggle-row {
-  display: flex;
-  align-items: flex-start;
-  gap: 14px;
-}
-
-.wpgate-switch {
-  position: relative;
-  display: inline-block;
-  width: 44px;
-  height: 24px;
-  flex-shrink: 0;
-  margin-top: 2px;
-}
-
-.wpgate-switch input {
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
-
-.wpgate-slider {
-  position: absolute;
-  cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: var(--wpgate-border);
-  transition: 0.2s;
-  border-radius: 24px;
-}
-
-.wpgate-slider:before {
-  position: absolute;
-  content: "";
-  height: 18px;
-  width: 18px;
-  left: 3px;
-  bottom: 3px;
-  background-color: white;
-  transition: 0.2s;
-  border-radius: 50%;
-}
-
-.wpgate-switch input:checked + .wpgate-slider {
-  background-color: var(--wpgate-primary);
-}
-
-.wpgate-switch input:checked + .wpgate-slider:before {
-  transform: translateX(20px);
-}
-
-[dir="rtl"] .wpgate-switch input:checked + .wpgate-slider:before {
-  transform: translateX(-20px);
-}
-
-.wpgate-toggle-info {
-  flex-grow: 1;
-}
-
-.wpgate-toggle-title {
-  font-weight: 600;
-  font-size: 0.95rem;
-  color: var(--wpgate-text);
-  margin-bottom: 2px;
-}
-
-.wpgate-toggle-desc {
-  font-size: 0.85rem;
-  color: var(--wpgate-text-muted);
-  line-height: 1.4;
-}
-
-/* Form inputs */
+/* ==========================================================================
+   7. Form Inputs & Textareas
+   ========================================================================== */
 .wpgate-form-group {
   margin-bottom: 16px;
+}
+
+.wpgate-form-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
 }
 
 .wpgate-label {
   display: block;
   font-size: 0.875rem;
   font-weight: 600;
-  margin-bottom: 6px;
   color: var(--wpgate-text);
 }
 
-.wpgate-input, .wpgate-textarea, .wpgate-select {
+.wpgate-input,
+.wpgate-textarea,
+.wpgate-select {
   width: 100%;
-  padding: 8px 12px;
-  font-size: 0.9rem;
+  padding: 9px 14px;
+  font-size: 0.875rem;
   border: 1px solid var(--wpgate-border);
-  border-radius: 6px;
+  border-radius: var(--wpgate-radius-sm);
   background-color: var(--wpgate-surface);
   color: var(--wpgate-text);
   font-family: inherit;
-  transition: border-color 0.15s ease-in-out;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
-.wpgate-input:focus, .wpgate-textarea:focus, .wpgate-select:focus {
+.wpgate-input:focus,
+.wpgate-textarea:focus,
+.wpgate-select:focus {
   outline: none;
   border-color: var(--wpgate-border-focus);
+  box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.12);
 }
 
-.wpgate-code {
-  font-family: Consolas, Monaco, "Courier New", monospace;
+.wpgate-code-editor {
+  font-family: var(--wpgate-font-mono) !important;
   font-size: 0.85rem;
-  line-height: 1.5;
+  line-height: 1.6;
+  tab-size: 2;
+  white-space: pre;
+  background-color: var(--wpgate-surface-alt);
+}
+
+.wpgate-code-text {
+  font-family: var(--wpgate-font-mono);
+  font-size: 0.85rem;
 }
 
 .wpgate-field-help {
   font-size: 0.825rem;
   color: var(--wpgate-text-muted);
-  margin-top: 4px;
-  line-height: 1.4;
+  margin-top: 5px;
+  line-height: 1.45;
 }
 
-.wpgate-radio-group {
+/* ==========================================================================
+   8. Mode Selector Cards
+   ========================================================================== */
+.wpgate-mode-selector-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
 }
 
-.wpgate-radio-card {
+.wpgate-mode-card {
   display: flex;
   align-items: flex-start;
-  gap: 10px;
-  padding: 14px;
+  gap: 12px;
+  padding: 16px;
   border: 1px solid var(--wpgate-border);
   border-radius: var(--wpgate-radius);
   background-color: var(--wpgate-surface);
   cursor: pointer;
-  transition: all 0.15s ease-in-out;
+  transition: all 0.2s ease;
+  user-select: none;
 }
 
-.wpgate-radio-card.active {
+.wpgate-mode-card:hover {
   border-color: var(--wpgate-primary);
   background-color: var(--wpgate-surface-alt);
 }
 
-.wpgate-radio-content strong {
-  display: block;
-  font-size: 0.9rem;
-  margin-bottom: 2px;
+.wpgate-mode-card.active {
+  border-color: var(--wpgate-primary);
+  background-color: var(--wpgate-primary-tint);
+  box-shadow: 0 0 0 1px var(--wpgate-primary);
 }
 
-.wpgate-radio-content small {
+.wpgate-mode-card-radio {
+  padding-top: 2px;
+}
+
+.wpgate-radio-indicator {
   display: block;
-  font-size: 0.8rem;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid var(--wpgate-border);
+  position: relative;
+  transition: all 0.15s ease;
+}
+
+.wpgate-mode-card.active .wpgate-radio-indicator {
+  border-color: var(--wpgate-primary);
+}
+
+.wpgate-mode-card.active .wpgate-radio-indicator::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--wpgate-primary);
+}
+
+.wpgate-mode-card-content {
+  flex: 1;
+}
+
+.wpgate-mode-card-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.wpgate-mode-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--wpgate-text);
+}
+
+.wpgate-mode-desc {
+  font-size: 0.825rem;
   color: var(--wpgate-text-muted);
-  line-height: 1.3;
+  margin: 0;
+  line-height: 1.4;
 }
 
-/* Presets Chips */
-.wpgate-presets-box {
+.wpgate-mode-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.wpgate-mode-icon.success { color: var(--wpgate-success); }
+.wpgate-mode-icon.danger { color: var(--wpgate-danger); }
+.wpgate-mode-icon.neutral { color: var(--wpgate-text-muted); }
+
+/* ==========================================================================
+   9. Preset Chips
+   ========================================================================== */
+.wpgate-presets-wrapper {
   background-color: var(--wpgate-surface-alt);
   border: 1px solid var(--wpgate-border);
   border-radius: var(--wpgate-radius);
-  padding: 12px 16px;
-  margin-bottom: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
 }
 
-.wpgate-presets-label {
-  font-size: 0.875rem;
+.wpgate-presets-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.wpgate-presets-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
   font-weight: 600;
   color: var(--wpgate-text);
-  margin-bottom: 4px;
 }
 
-.wpgate-presets-help {
+.wpgate-presets-subtitle {
   font-size: 0.8rem;
   color: var(--wpgate-text-muted);
-  margin: 0 0 10px 0;
 }
 
 .wpgate-preset-chips {
@@ -515,8 +475,9 @@
   background-color: var(--wpgate-surface);
   border: 1px solid var(--wpgate-border);
   border-radius: 9999px;
-  padding: 4px 10px;
-  font-size: 0.8rem;
+  padding: 5px 12px;
+  font-size: 0.825rem;
+  font-weight: 500;
   color: var(--wpgate-text);
   cursor: pointer;
   transition: all 0.15s ease;
@@ -526,6 +487,7 @@
   background-color: var(--wpgate-primary);
   color: var(--wpgate-primary-text);
   border-color: var(--wpgate-primary);
+  transform: translateY(-1px);
 }
 
 .wpgate-chip-plus {
@@ -535,20 +497,202 @@
 .wpgate-chip-count {
   background-color: var(--wpgate-surface-alt);
   border-radius: 9999px;
-  padding: 1px 6px;
+  padding: 1px 7px;
   font-size: 0.75rem;
   color: var(--wpgate-text-muted);
+  font-weight: 600;
 }
 
 .wpgate-chip:hover .wpgate-chip-count {
-  background-color: rgba(255, 255, 255, 0.2);
+  background-color: rgba(255, 255, 255, 0.25);
   color: #ffffff;
 }
 
-/* Tables */
+/* ==========================================================================
+   10. Timeout Slider
+   ========================================================================== */
+.wpgate-timeout-slider-box {
+  background-color: var(--wpgate-surface-alt);
+  border: 1px solid var(--wpgate-border);
+  border-radius: var(--wpgate-radius-sm);
+  padding: 14px 16px;
+  margin-top: 12px;
+}
+
+.wpgate-slider-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.wpgate-slider-title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--wpgate-text);
+}
+
+.wpgate-slider-badge {
+  background-color: var(--wpgate-primary-tint);
+  color: var(--wpgate-primary);
+  padding: 2px 10px;
+  border-radius: 9999px;
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+.wpgate-slider-control-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.wpgate-slider-bound {
+  font-size: 0.8rem;
+  color: var(--wpgate-text-muted);
+  font-weight: 600;
+}
+
+.wpgate-range {
+  flex: 1;
+  accent-color: var(--wpgate-primary);
+  cursor: pointer;
+}
+
+.wpgate-slider-hint {
+  font-size: 0.8rem;
+  color: var(--wpgate-text-muted);
+  margin: 8px 0 0;
+  line-height: 1.4;
+}
+
+/* ==========================================================================
+   11. Local Assets & Bundled Libraries
+   ========================================================================== */
+.wpgate-font-info-box {
+  padding: 14px 16px;
+  background-color: var(--wpgate-surface-alt);
+  border: 1px solid var(--wpgate-border);
+  border-radius: var(--wpgate-radius-sm);
+}
+
+.wpgate-font-info-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.wpgate-font-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: var(--wpgate-radius-sm);
+  background-color: var(--wpgate-primary-tint);
+  color: var(--wpgate-primary);
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.wpgate-lib-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+  margin-top: 14px;
+}
+
+.wpgate-lib-card {
+  background-color: var(--wpgate-surface);
+  border: 1px solid var(--wpgate-border);
+  border-radius: var(--wpgate-radius);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 10px;
+  transition: all 0.15s ease;
+}
+
+.wpgate-lib-card:hover {
+  border-color: var(--wpgate-primary);
+  box-shadow: var(--wpgate-shadow-sm);
+}
+
+.wpgate-lib-card-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.wpgate-lib-status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--wpgate-success);
+}
+
+.wpgate-lib-name {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--wpgate-text);
+}
+
+.wpgate-lib-files {
+  font-size: 0.8rem;
+  font-family: var(--wpgate-font-mono);
+  color: var(--wpgate-text-muted);
+  line-height: 1.4;
+}
+
+/* ==========================================================================
+   12. Table & Logs Component
+   ========================================================================== */
+.wpgate-logs-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.wpgate-logs-filters,
+.wpgate-logs-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.wpgate-search-box {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.wpgate-search-icon {
+  position: absolute;
+  margin-inline-start: 12px;
+  color: var(--wpgate-text-muted);
+  pointer-events: none;
+}
+
+.wpgate-search-input {
+  padding-inline-start: 36px;
+  width: 260px;
+}
+
+.wpgate-filter-select {
+  width: auto;
+  min-width: 140px;
+}
+
 .wpgate-table-wrapper {
   overflow-x: auto;
-  min-height: 200px;
+  border: 1px solid var(--wpgate-border);
+  border-radius: var(--wpgate-radius-sm);
 }
 
 .wpgate-table {
@@ -559,25 +703,31 @@
 
 .wpgate-table th {
   background-color: var(--wpgate-surface-alt);
-  padding: 10px 14px;
-  text-align: left;
+  padding: 12px 14px;
+  text-align: start;
   font-weight: 600;
   color: var(--wpgate-text-muted);
   border-bottom: 1px solid var(--wpgate-border);
-}
-
-[dir="rtl"] .wpgate-table th {
-  text-align: right;
+  white-space: nowrap;
 }
 
 .wpgate-table td {
-  padding: 10px 14px;
+  padding: 12px 14px;
   border-bottom: 1px solid var(--wpgate-border);
   color: var(--wpgate-text);
+  vertical-align: middle;
+}
+
+.wpgate-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.wpgate-table tbody tr:hover td {
+  background-color: var(--wpgate-surface-alt);
 }
 
 .wpgate-code-cell {
-  font-family: Consolas, Monaco, "Courier New", monospace;
+  font-family: var(--wpgate-font-mono);
   font-size: 0.8rem;
   max-width: 320px;
   overflow: hidden;
@@ -585,207 +735,188 @@
   white-space: nowrap;
 }
 
-.wpgate-nowrap {
-  white-space: nowrap;
-}
-
-/* Badges */
-.wpgate-badge {
-  display: inline-block;
-  padding: 2px 8px;
-  border-radius: 9999px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: capitalize;
-}
-
-.wpgate-badge-success { background-color: rgba(16, 185, 129, 0.15); color: #059669; }
-.wpgate-badge-danger { background-color: rgba(239, 68, 68, 0.15); color: #dc2626; }
-.wpgate-badge-warning { background-color: rgba(245, 158, 11, 0.15); color: #d97706; }
-.wpgate-badge-info { background-color: rgba(14, 165, 233, 0.15); color: #0284c7; }
-.wpgate-badge-neutral { background-color: var(--wpgate-surface-alt); color: var(--wpgate-text-muted); }
-
-/* Alerts */
-.wpgate-alert {
+.wpgate-pagination-bar {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px 16px;
-  border-radius: var(--wpgate-radius);
-  margin-bottom: 16px;
-  font-size: 0.875rem;
-}
-
-.wpgate-alert-warning {
-  background-color: rgba(245, 158, 11, 0.1);
-  border: 1px solid #f59e0b;
-  color: #b45309;
-}
-
-[data-theme="dark"] .wpgate-alert-warning {
-  color: #fcd34d;
-}
-
-/* Modals */
-.wpgate-modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 999999;
-  backdrop-filter: blur(2px);
-}
-
-.wpgate-modal-box {
-  background-color: var(--wpgate-surface);
-  border: 1px solid var(--wpgate-border);
-  border-radius: var(--wpgate-radius);
-  width: 90%;
-  max-width: 500px;
-  box-shadow: var(--wpgate-shadow-md);
-  overflow: hidden;
-}
-
-.wpgate-modal-header {
-  display: flex;
   justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.wpgate-pagination {
+  display: flex;
   align-items: center;
-  padding: 14px 20px;
-  border-bottom: 1px solid var(--wpgate-border);
+  gap: 6px;
 }
 
-.wpgate-modal-title {
-  margin: 0;
-  font-size: 1.1rem;
+.wpgate-page-num {
+  padding: 4px 10px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--wpgate-primary);
 }
 
-.wpgate-modal-close {
-  background: none;
-  border: none;
-  font-size: 1.5rem;
-  color: var(--wpgate-text-muted);
-  cursor: pointer;
-  line-height: 1;
+/* ==========================================================================
+   13. Tools & Diagnostics
+   ========================================================================== */
+.wpgate-tool-action-box {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
-.wpgate-modal-body {
-  padding: 20px;
-  font-size: 0.9rem;
-  line-height: 1.5;
-}
-
-.wpgate-modal-footer {
-  padding: 12px 20px;
+.wpgate-code-snippet-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   background-color: var(--wpgate-surface-alt);
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-  border-top: 1px solid var(--wpgate-border);
+  border: 1px solid var(--wpgate-border);
+  border-radius: var(--wpgate-radius-sm);
+  padding: 10px 14px;
+  gap: 12px;
 }
 
-/* Toasts */
-.wpgate-toast {
-  position: fixed;
-  bottom: 24px;
-  right: 24px;
+.wpgate-code-snippet {
+  margin: 0;
+  font-family: var(--wpgate-font-mono);
+  font-size: 0.85rem;
+  color: var(--wpgate-primary);
+  overflow-x: auto;
+}
+
+.wpgate-sysinfo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 14px;
+}
+
+.wpgate-sysinfo-item {
+  background-color: var(--wpgate-surface-alt);
+  border: 1px solid var(--wpgate-border);
+  border-radius: var(--wpgate-radius-sm);
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.wpgate-sysinfo-label {
+  font-size: 0.75rem;
+  color: var(--wpgate-text-muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.wpgate-sysinfo-value {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--wpgate-text);
+}
+
+.wpgate-danger-zone-box {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 12px 18px;
-  background-color: var(--wpgate-surface);
-  color: var(--wpgate-text);
-  border-radius: var(--wpgate-radius);
-  box-shadow: var(--wpgate-shadow-md);
-  border: 1px solid var(--wpgate-border);
-  z-index: 999999;
-  font-size: 0.9rem;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
 }
 
-[dir="rtl"] .wpgate-toast {
-  right: auto;
-  left: 24px;
+/* ==========================================================================
+   14. About & Hero Presentation
+   ========================================================================== */
+.wpgate-hero-panel {
+  background: linear-gradient(135deg, var(--wpgate-surface) 0%, var(--wpgate-surface-alt) 100%);
+  border-color: var(--wpgate-primary);
 }
 
-.wpgate-toast-success { border-inline-start: 4px solid var(--wpgate-success); }
-.wpgate-toast-error { border-inline-start: 4px solid var(--wpgate-danger); }
-.wpgate-toast-close {
-  background: none;
-  border: none;
-  color: var(--wpgate-text-muted);
-  font-size: 1.2rem;
-  cursor: pointer;
-  margin-inline-start: 8px;
-}
-
-/* About / Author Section */
 .wpgate-about-hero {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 24px;
+  padding: 28px;
+}
+
+.wpgate-about-title-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
 }
 
 .wpgate-about-name {
-  font-size: 1.5rem;
+  font-size: 1.6rem;
+  font-weight: 800;
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+
+.wpgate-version-pill {
+  font-size: 0.75rem;
   font-weight: 700;
-  margin: 0 0 6px 0;
+  background-color: var(--wpgate-primary-tint);
+  color: var(--wpgate-primary);
+  border: 1px solid var(--wpgate-primary);
+  padding: 2px 10px;
+  border-radius: 9999px;
 }
 
 .wpgate-about-summary {
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   color: var(--wpgate-text-muted);
-  line-height: 1.5;
+  line-height: 1.6;
   margin: 0;
+  max-width: 680px;
 }
 
 .wpgate-author-card {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 20px;
 }
 
 .wpgate-author-avatar {
-  width: 56px;
-  height: 56px;
+  width: 64px;
+  height: 64px;
   border-radius: 50%;
-  background-color: var(--wpgate-primary);
-  color: var(--wpgate-primary-text);
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+  color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 700;
-  font-size: 1.2rem;
+  font-weight: 800;
+  font-size: 1.3rem;
+  box-shadow: 0 4px 10px rgba(2, 132, 199, 0.3);
 }
 
 .wpgate-author-name {
-  font-size: 1.1rem;
-  font-weight: 600;
+  font-size: 1.15rem;
+  font-weight: 700;
   margin: 0 0 2px 0;
 }
 
 .wpgate-author-role {
   font-size: 0.85rem;
   color: var(--wpgate-text-muted);
-  margin: 0 0 8px 0;
+  margin: 0 0 10px 0;
 }
 
 .wpgate-author-links {
   display: flex;
+  align-items: center;
+  gap: 16px;
   flex-wrap: wrap;
-  gap: 14px;
 }
 
 .wpgate-author-link {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: 6px;
   font-size: 0.825rem;
   color: var(--wpgate-primary);
   text-decoration: none;
+  font-weight: 500;
 }
 
 .wpgate-author-link:hover {
@@ -796,81 +927,199 @@
   padding-inline-start: 20px;
   margin: 0;
   font-size: 0.875rem;
-  line-height: 1.6;
+  line-height: 1.8;
 }
 
-/* Helper Utilities */
+/* ==========================================================================
+   15. Utilities & Animations
+   ========================================================================== */
 .wpgate-mt-2 { margin-top: 8px; }
 .wpgate-mt-3 { margin-top: 12px; }
 .wpgate-mt-4 { margin-top: 16px; }
+.wpgate-gap-2 { gap: 8px; }
 .wpgate-flex-center { display: flex; align-items: center; }
 .wpgate-flex-between { display: flex; align-items: center; justify-content: space-between; }
-.wpgate-gap-2 { gap: 8px; }
+.wpgate-nowrap { white-space: nowrap; }
+.wpgate-text-muted { color: var(--wpgate-text-muted); }
+.wpgate-text-xs { font-size: 0.75rem; }
+.wpgate-text-sm { font-size: 0.85rem; }
 .text-danger { color: var(--wpgate-danger) !important; }
 .text-success { color: var(--wpgate-success) !important; }
-.wpgate-divider { border: 0; border-top: 1px solid var(--wpgate-border); margin: 16px 0; }
+.wpgate-divider { border: 0; border-top: 1px solid var(--wpgate-border); margin: 20px 0; }
 .wpgate-file-input { display: none; }
-.wpgate-code-block {
-  background-color: var(--wpgate-surface-alt);
-  border: 1px solid var(--wpgate-border);
-  padding: 10px;
-  border-radius: 4px;
-  font-size: 0.8rem;
-  word-break: break-all;
-  white-space: pre-wrap;
-  max-height: 140px;
-  overflow-y: auto;
+
+.wpgate-grid-2col {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 16px;
 }
-.wpgate-detail-row {
-  margin-bottom: 10px;
-}
-.wpgate-detail-row strong {
-  display: inline-block;
-  min-width: 140px;
-}
-.wpgate-info-table {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-.wpgate-info-row {
-  display: flex;
-  justify-content: space-between;
-  border-bottom: 1px dashed var(--wpgate-border);
-  padding-bottom: 6px;
-  font-size: 0.875rem;
-}
-.wpgate-info-key {
-  color: var(--wpgate-text-muted);
-}
-.wpgate-info-val {
-  font-weight: 500;
-}
-.wpgate-lib-grid {
+
+.wpgate-grid-options {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 12px;
-  margin-top: 12px;
+  gap: 16px;
 }
-.wpgate-lib-item {
+
+.wpgate-table-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 40px;
+  color: var(--wpgate-text-muted);
+}
+
+.wpgate-spinner {
+  width: 28px;
+  height: 28px;
+  border: 3px solid var(--wpgate-border);
+  border-top-color: var(--wpgate-primary);
+  border-radius: 50%;
+  animation: wpgate-spin 0.8s linear infinite;
+}
+
+.wpgate-spin {
+  animation: wpgate-spin 0.8s linear infinite;
+}
+
+@keyframes wpgate-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ==========================================================================
+   16. Modals & Toast Notices
+   ========================================================================== */
+.wpgate-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(15, 23, 42, 0.6);
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 10px;
+  justify-content: center;
+  z-index: 999999;
+  backdrop-filter: blur(4px);
+  padding: 16px;
+}
+
+.wpgate-modal-box {
+  background-color: var(--wpgate-surface);
   border: 1px solid var(--wpgate-border);
-  border-radius: 6px;
-  background-color: var(--wpgate-surface-alt);
+  border-radius: var(--wpgate-radius-lg);
+  width: 100%;
+  max-width: 520px;
+  box-shadow: var(--wpgate-shadow-lg);
+  overflow: hidden;
+  animation: wpgate-modal-pop 0.18s cubic-bezier(0.16, 1, 0.3, 1);
 }
-.wpgate-lib-icon {
-  color: var(--wpgate-success);
+
+@keyframes wpgate-modal-pop {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.wpgate-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 24px;
+  border-bottom: 1px solid var(--wpgate-border);
+}
+
+.wpgate-modal-title {
+  margin: 0;
+  font-size: 1.15rem;
   font-weight: 700;
-  font-size: 1.1rem;
+  color: var(--wpgate-text);
 }
-.wpgate-lib-item strong {
-  display: block;
-  font-size: 0.85rem;
-}
-.wpgate-lib-item small {
+
+.wpgate-modal-close {
+  background: none;
+  border: none;
+  font-size: 1.6rem;
   color: var(--wpgate-text-muted);
-  font-size: 0.75rem;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.wpgate-modal-body {
+  padding: 24px;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--wpgate-text);
+}
+
+.wpgate-modal-footer {
+  padding: 16px 24px;
+  background-color: var(--wpgate-surface-alt);
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  border-top: 1px solid var(--wpgate-border);
+}
+
+.wpgate-toast {
+  position: fixed;
+  bottom: 24px;
+  margin-inline-end: 24px;
+  inset-inline-end: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 20px;
+  background-color: var(--wpgate-surface);
+  color: var(--wpgate-text);
+  border-radius: var(--wpgate-radius);
+  box-shadow: var(--wpgate-shadow-lg);
+  border: 1px solid var(--wpgate-border);
+  z-index: 999999;
+  font-size: 0.9rem;
+  font-weight: 500;
+  border-inline-start: 4px solid var(--wpgate-primary);
+}
+
+.wpgate-toast-success { border-inline-start-color: var(--wpgate-success); }
+.wpgate-toast-error { border-inline-start-color: var(--wpgate-danger); }
+.wpgate-toast-close {
+  background: none;
+  border: none;
+  color: var(--wpgate-text-muted);
+  font-size: 1.25rem;
+  cursor: pointer;
+  line-height: 1;
+}
+
+/* ==========================================================================
+   17. Responsive Layout Breakpoints
+   ========================================================================== */
+@media (max-width: 1024px) {
+  .wpgate-main-scroll-area {
+    padding: 18px 20px 36px;
+  }
+}
+
+@media (max-width: 768px) {
+  .wpgate-section-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .wpgate-grid-2col {
+    grid-template-columns: 1fr;
+  }
+
+  .wpgate-search-input {
+    width: 100%;
+  }
+
+  .wpgate-logs-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .wpgate-logs-filters,
+  .wpgate-logs-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
 }

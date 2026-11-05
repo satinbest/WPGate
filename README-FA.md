@@ -8,7 +8,7 @@
 
 **فایروال ارتباطات خروجی HTTP و درگاه دارایی‌های محلی وردپرس**
 
-[![نسخه](https://img.shields.io/badge/نسخه-0.1.1-blue.svg)](https://github.com/satinbest/WPGate/releases)
+[![نسخه](https://img.shields.io/badge/نسخه-0.1.2-blue.svg)](https://github.com/satinbest/WPGate/releases)
 [![PHP](https://img.shields.io/badge/PHP-7.4%20|%208.0%20|%208.1%20|%208.2%20|%208.3%20|%208.4-8892BF.svg)](https://www.php.net/)
 [![وردپرس](https://img.shields.io/badge/وردپرس-5.0+-21759B.svg)](https://wordpress.org/)
 [![رابط کاربری](https://img.shields.io/badge/رابط_ادمین-Vue_3_+_Vite-42b883.svg)](https://vuejs.org/)
@@ -22,16 +22,16 @@
 
 ## 📥 دانلود و راه‌اندازی سریع
 
-بسته‌های نصبی آماده نسخه 0.1.1 در بخش [GitHub Releases](https://github.com/satinbest/WPGate/releases) در دسترس هستند:
+بسته‌های نصبی آماده نسخه 0.1.2 در بخش [GitHub Releases](https://github.com/satinbest/WPGate/releases) در دسترس هستند:
 
 | بسته نصبی | مسیر استقرار | کاربرد |
 |---|---|---|
-| [**`WPGate-MU-Plugin-v0.1.1.zip`**](https://github.com/satinbest/WPGate/releases) | `wp-content/mu-plugins/` | **پیشنهادی:** لود زودهنگام و رهگیری ترافیک کلیه افزونه‌ها |
-| [**`WPGate-Theme-Module-v0.1.1.zip`**](https://github.com/satinbest/WPGate/releases) | قالب فرزند فعال | برای هاست‌هایی که دسترسی نوشتن به `mu-plugins` را محدود کرده‌اند |
-| [**`WPGate-Complete-Release-v0.1.1.zip`**](https://github.com/satinbest/WPGate/releases) | محیط توسعه / بازرسی | پکیج کامل سورس‌کد، فرانت‌اند Vue 3، تست‌ها و مستندات |
+| [**`WPGate-MU-Plugin-v0.1.2.zip`**](https://github.com/satinbest/WPGate/releases) | `wp-content/mu-plugins/` | **پیشنهادی:** لود زودهنگام و رهگیری ترافیک کلیه افزونه‌ها |
+| [**`WPGate-Theme-Module-v0.1.2.zip`**](https://github.com/satinbest/WPGate/releases) | قالب فرزند فعال | برای هاست‌هایی که دسترسی نوشتن به `mu-plugins` را محدود کرده‌اند |
+| [**`WPGate-Complete-Release-v0.1.2.zip`**](https://github.com/satinbest/WPGate/releases) | محیط توسعه / بازرسی | پکیج کامل سورس‌کد، فرانت‌اند Vue 3، تست‌ها و مستندات |
 
 ### نصب تازه (روش افزونه ضروری - MU Plugin)
-1. فایل `WPGate-MU-Plugin-v0.1.1.zip` را دانلود کنید.
+1. فایل `WPGate-MU-Plugin-v0.1.2.zip` را دانلود کنید.
 2. محتوای فایل فشرده را مستقیماً درون پوشه `wp-content/mu-plugins/` هاست خود اکسترکت نمایید:
    ```text
    wp-content/mu-plugins/
@@ -49,9 +49,9 @@
 3. وارد پیشخوان وردپرس شده و به بخش **تنظیمات > WPGate** بروید.
 4. داشبورد اختصاصی Vue 3 بدون نیاز به هیچ فعال‌سازی در دیتابیس اجرا می‌شود.
 
-### به‌روزرسانی از نسخه 0.1.0 به 0.1.1
+### به‌روزرسانی از نسخه پیشین به 0.1.2
 1. از پوشه فعلی `wp-content/mu-plugins/wpgate-core/` بکاپ بگیرید.
-2. فایل `WPGate-MU-Plugin-v0.1.1.zip` را دانلود و فایل‌های جدید را جایگزین نمایید.
+2. فایل `WPGate-MU-Plugin-v0.1.2.zip` را دانلود و فایل‌های جدید را جایگزین نمایید.
 3. با کلیدهای `Ctrl+F5` (در ویندوز) یا `Cmd+Shift+R` (در مک) کش مرورگر خود را تازه‌سازی کنید تا فایل‌های جدید لود شوند.
 4. تمامی تنظیمات، دامنه‌های لیست سفید و گزارش‌ها در دیتابیس به صورت کاملاً امن حفظ می‌شوند.
 

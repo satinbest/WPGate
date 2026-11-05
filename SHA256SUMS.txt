@@ -1,3 +1,6 @@
+20b40493fa0273e5881f04116c01cfe9102e3db885a6974422ea0dbc1001eb16 *WPGate-MU-Plugin-v0.1.2.zip
+ca60cdfa2ae28ebbeb5b2bebd078dc0d7fee7b5f287c9612d74faab3d8c5fdcf *WPGate-Theme-Module-v0.1.2.zip
+3452505feca39b9e2f22ee2714c31bf6abf545d6e80db58c768f03acf2c5c692 *WPGate-Complete-Release-v0.1.2.zip
 3af9c2b4a3e15b4a6875bd66c1ae3facf83cf1c53e015733d99ba99623d3db2b *WPGate-MU-Plugin-v0.1.1.zip
 1b502844a7e5eb060aac52969cb201fb55df9737dd2d3ba74aa801fd5d7211fc *WPGate-Theme-Module-v0.1.1.zip
-138b4e89729faa3473ce8b3e1f672802a6d9482d47daaf91142e6cc3a5a8023e *WPGate-Complete-Release-v0.1.1.zip
+38b4e89729faa3473ce8b3e1f672802a6d9482d47daaf91142e6cc3a5a8023e *WPGate-Complete-Release-v0.1.1.zip
