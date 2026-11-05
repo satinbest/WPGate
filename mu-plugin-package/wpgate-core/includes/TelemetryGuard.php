@@ -6,7 +6,7 @@
  * without interfering with translation updates, language packs, or critical services.
  *
  * @package WPGate\Core
- * @version 0.1.4
+ * @version 0.1.5
  */
 
 namespace WPGate\Core;

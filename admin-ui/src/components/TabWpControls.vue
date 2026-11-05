@@ -14,7 +14,7 @@
         v-model="settings.disable_updates"
         :title="t('wpControls.disableUpdates')"
         :description="t('wpControls.disableUpdatesDesc')"
-        warning="Prevents WordPress core, plugin, and theme update background requests from contacting wordpress.org."
+        :warning="t('wpControls.disableUpdatesWarning')"
       />
 
       <hr class="wpgate-divider" />

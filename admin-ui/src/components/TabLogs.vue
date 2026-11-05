@@ -15,29 +15,26 @@
       <SettingToggle
         v-model="settings.enable_logging"
         :title="t('logs.enableLogging')"
-        description="Records intercepted outbound HTTP requests to the database with automatic cryptographic query parameter redaction."
+        :description="t('logs.enableLoggingDesc')"
       >
         <template #extra v-if="settings.enable_logging === 'yes'">
           <div class="wpgate-grid-options wpgate-mt-4">
             <div class="wpgate-form-group">
               <label class="wpgate-label">{{ t('logs.retentionDays') }}</label>
-              <select v-model="settings.log_retention_days" class="wpgate-select">
-                <option value="1">{{ t('logs.daySingle') }}</option>
-                <option value="3">{{ t('logs.day3') }}</option>
-                <option value="7">{{ t('logs.dayStandard') }}</option>
-                <option value="15">{{ t('logs.day15') }}</option>
-                <option value="30">{{ t('logs.day30') }}</option>
-              </select>
+              <AppSelect
+                v-model="settings.log_retention_days"
+                :options="retentionOptions"
+                full-width
+              />
             </div>
 
             <div class="wpgate-form-group">
               <label class="wpgate-label">{{ t('logs.maxEntries') }}</label>
-              <select v-model="settings.log_max_entries" class="wpgate-select">
-                <option value="100">{{ t('logs.event100') }}</option>
-                <option value="300">{{ t('logs.eventRecommended') }}</option>
-                <option value="500">{{ t('logs.event500') }}</option>
-                <option value="1000">{{ t('logs.event1000') }}</option>
-              </select>
+              <AppSelect
+                v-model="settings.log_max_entries"
+                :options="maxEntriesOptions"
+                full-width
+              />
             </div>
 
             <div class="wpgate-form-group">
@@ -61,23 +58,22 @@
       <!-- Action & Search Toolbar -->
       <div class="wpgate-logs-toolbar">
         <div class="wpgate-logs-filters">
-          <div class="wpgate-search-box">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="wpgate-search-icon"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-            <input
-              type="text"
-              v-model="searchTerm"
-              :placeholder="t('common.search') + ' (host, URL)...'"
-              class="wpgate-input wpgate-search-input"
-              @input="debouncedFetch"
-            />
-          </div>
+          <!-- Reusable Search Input Component -->
+          <SearchInput
+            v-model="searchTerm"
+            :placeholder="t('common.search')"
+            :loading="loading"
+            @input="debouncedFetch"
+            @clear="onSearchClear"
+            @search="fetchLogs"
+          />
 
-          <select v-model="statusFilter" class="wpgate-select wpgate-filter-select" @change="fetchLogs">
-            <option value="all">{{ t('common.all') }} Actions</option>
-            <option value="blocked">{{ t('common.blocked') }}</option>
-            <option value="allowed">{{ t('common.allowed') }}</option>
-            <option value="rewritten">{{ t('common.rewritten') }}</option>
-          </select>
+          <!-- Reusable Status Filter Select -->
+          <AppSelect
+            v-model="statusFilter"
+            :options="statusFilterOptions"
+            @change="fetchLogs"
+          />
         </div>
 
         <div class="wpgate-logs-actions">
@@ -99,14 +95,14 @@
           <span>{{ t('common.loading') }}</span>
         </div>
 
-        <table v-else-if="items && items.length" class="wpgate-table">
+        <table v-else-if="items.length" class="wpgate-table">
           <thead>
             <tr>
-              <th style="width: 170px;">{{ t('logs.time') }}</th>
-              <th style="width: 130px;">{{ t('logs.mode') }}</th>
-              <th style="width: 220px;">{{ t('logs.host') }}</th>
+              <th>{{ t('logs.time') }}</th>
+              <th>{{ t('logs.action') }}</th>
+              <th>{{ t('logs.host') }}</th>
               <th>{{ t('logs.url') }}</th>
-              <th style="width: 80px; text-align: center;">{{ t('common.details') }}</th>
+              <th style="width: 70px; text-align: center;">{{ t('common.details') }}</th>
             </tr>
           </thead>
           <tbody>
@@ -149,50 +145,27 @@
       </div>
     </SettingsPanel>
 
-    <!-- Log Details Modal -->
-    <div v-if="selectedLog" class="wpgate-modal-overlay" @click.self="selectedLog = null">
-      <div class="wpgate-modal-box">
-        <div class="wpgate-modal-header">
-          <h3 class="wpgate-modal-title">{{ t('logs.detailsTitle') }}</h3>
-          <button type="button" class="wpgate-modal-close" @click="selectedLog = null">&times;</button>
-        </div>
-        <div class="wpgate-modal-body">
-          <div class="wpgate-detail-row">
-            <strong>{{ t('logs.time') }}:</strong> <span>{{ selectedLog.time }}</span>
-          </div>
-          <div class="wpgate-detail-row">
-            <strong>{{ t('logs.host') }}:</strong> <code dir="ltr">{{ selectedLog.host }}</code>
-          </div>
-          <div class="wpgate-detail-row">
-            <strong>{{ t('logs.mode') }}:</strong>
-            <StatusBadge :status="getModeStatus(selectedLog.mode)">{{ formatMode(selectedLog.mode) }}</StatusBadge>
-          </div>
-          <div class="wpgate-detail-row">
-            <strong>{{ t('logs.sanitizedUrl') }}:</strong>
-            <pre class="wpgate-code-block" dir="ltr">{{ selectedLog.url }}</pre>
-          </div>
-        </div>
-        <div class="wpgate-modal-footer">
-          <button type="button" class="wpgate-btn wpgate-btn-secondary" @click="copyUrl(selectedLog.url)">
-            {{ t('common.copy') }} URL
-          </button>
-          <button type="button" class="wpgate-btn wpgate-btn-primary" @click="selectedLog = null">
-            {{ t('common.close') }}
-          </button>
-        </div>
-      </div>
-    </div>
+    <!-- Professional Security Event Details Dialog -->
+    <SecurityEventDialog
+      :visible="!!selectedLog"
+      :event="selectedLog"
+      @close="selectedLog = null"
+      @copied="onCopied"
+    />
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { api } from '../api';
 import { t } from '../i18n';
 import SettingsPanel from './SettingsPanel.vue';
 import SettingToggle from './SettingToggle.vue';
 import StatusBadge from './StatusBadge.vue';
 import EmptyState from './EmptyState.vue';
+import SearchInput from './SearchInput.vue';
+import AppSelect from './AppSelect.vue';
+import SecurityEventDialog from './SecurityEventDialog.vue';
 
 const props = defineProps({
   settings: { type: Object, required: true },
@@ -210,6 +183,28 @@ const searchTerm = ref('');
 const statusFilter = ref('all');
 const selectedLog = ref(null);
 let debounceTimer = null;
+
+const retentionOptions = computed(() => [
+  { value: '1', label: t('logs.daySingle') },
+  { value: '3', label: t('logs.day3') },
+  { value: '7', label: t('logs.dayStandard') },
+  { value: '15', label: t('logs.day15') },
+  { value: '30', label: t('logs.day30') },
+]);
+
+const maxEntriesOptions = computed(() => [
+  { value: '100', label: t('logs.event100') },
+  { value: '300', label: t('logs.eventRecommended') },
+  { value: '500', label: t('logs.event500') },
+  { value: '1000', label: t('logs.event1000') },
+]);
+
+const statusFilterOptions = computed(() => [
+  { value: 'all', label: t('common.all') },
+  { value: 'blocked', label: t('common.blocked') },
+  { value: 'allowed', label: t('common.allowed') },
+  { value: 'rewritten', label: t('common.rewritten') },
+]);
 
 const fetchLogs = async () => {
   loading.value = true;
@@ -241,6 +236,11 @@ const debouncedFetch = () => {
   }, 350);
 };
 
+const onSearchClear = () => {
+  page.value = 1;
+  fetchLogs();
+};
+
 const changePage = (p) => {
   page.value = p;
   fetchLogs();
@@ -266,11 +266,8 @@ const onClearLogs = () => {
   });
 };
 
-const copyUrl = (text) => {
-  if (navigator.clipboard) {
-    navigator.clipboard.writeText(text);
-    emit('notify', { type: 'success', message: t('common.copied') });
-  }
+const onCopied = (msg) => {
+  emit('notify', { type: 'success', message: msg || t('common.copied') });
 };
 
 const getModeStatus = (mode) => {

@@ -9,7 +9,7 @@
 **Enterprise Outbound HTTP Firewall & Local Asset Gateway for WordPress**
 
 [![CI / Quality & Tests](https://github.com/satinbest/WPGate/actions/workflows/ci.yml/badge.svg)](https://github.com/satinbest/WPGate/actions/workflows/ci.yml)
-[![Version](https://img.shields.io/badge/version-0.1.4-blue.svg)](https://github.com/satinbest/WPGate/releases)
+[![Version](https://img.shields.io/badge/version-0.1.5-blue.svg)](https://github.com/satinbest/WPGate/releases)
 [![PHP](https://img.shields.io/badge/PHP-7.4%20|%208.0%20|%208.1%20|%208.2%20|%208.3%20|%208.4-8892BF.svg)](https://www.php.net/)
 [![WordPress](https://img.shields.io/badge/WordPress-5.0+-21759B.svg)](https://wordpress.org/)
 [![Admin UI](https://img.shields.io/badge/Admin%20UI-Vue%203%20%2B%20Vite-42b883.svg)](https://vuejs.org/)
@@ -27,12 +27,12 @@ Ready-to-use production installers are available on our [GitHub Releases](https:
 
 | Package | Recommended Target | Purpose |
 |---|---|---|
-| [**`WPGate-MU-Plugin-v0.1.4.zip`**](https://github.com/satinbest/WPGate/releases) | `wp-content/mu-plugins/` | **Recommended:** Early bootstrap, intercepts requests before plugins load |
-| [**`WPGate-Theme-Module-v0.1.4.zip`**](https://github.com/satinbest/WPGate/releases) | Active Child Theme | For hosting environments without `mu-plugins` write permissions |
-| [**`WPGate-Complete-Release-v0.1.4.zip`**](https://github.com/satinbest/WPGate/releases) | Development / Auditing | Full release archive with source code, tests, and documentation |
+| [**`WPGate-MU-Plugin-v0.1.5.zip`**](https://github.com/satinbest/WPGate/releases) | `wp-content/mu-plugins/` | **Recommended:** Early bootstrap, intercepts requests before plugins load |
+| [**`WPGate-Theme-Module-v0.1.5.zip`**](https://github.com/satinbest/WPGate/releases) | Active Child Theme | For hosting environments without `mu-plugins` write permissions |
+| [**`WPGate-Complete-Release-v0.1.5.zip`**](https://github.com/satinbest/WPGate/releases) | Development / Auditing | Full release archive with source code, tests, and documentation |
 
 ### Fresh Installation (MU-Plugin Method)
-1. Download `WPGate-MU-Plugin-v0.1.4.zip`.
+1. Download `WPGate-MU-Plugin-v0.1.5.zip`.
 2. Extract the archive directly into your WordPress `wp-content/mu-plugins/` directory:
    ```text
    wp-content/mu-plugins/
@@ -52,7 +52,7 @@ Ready-to-use production installers are available on our [GitHub Releases](https:
 
 ### Updating an Existing Installation
 1. Back up your existing `wp-content/mu-plugins/wpgate-core/` directory.
-2. Download `WPGate-MU-Plugin-v0.1.4.zip`.
+2. Download `WPGate-MU-Plugin-v0.1.5.zip`.
 3. Extract and overwrite the files inside `wp-content/mu-plugins/`.
 4. Hard-refresh your browser (`Ctrl+F5` / `Cmd+Shift+R`) to clear cached client-side assets.
 5. All settings and logs stored in the WordPress database options are preserved automatically.

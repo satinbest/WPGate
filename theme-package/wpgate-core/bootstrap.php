@@ -3,7 +3,7 @@
  * WPGate Standalone Core - Bootstrap
  *
  * @package WPGate\Core
- * @version 0.1.4
+ * @version 0.1.5
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -21,7 +21,7 @@ if ( defined( 'WPGATE_CORE_LOADED' ) ) {
 define( 'WPGATE_CORE_LOADED', true );
 
 // Define core constants
-define( 'WPGATE_CORE_VERSION', '0.1.4' );
+define( 'WPGATE_CORE_VERSION', '0.1.5' );
 define( 'WPGATE_CORE_FILE', __FILE__ );
 define( 'WPGATE_CORE_DIR', __DIR__ );
 

@@ -90,7 +90,7 @@
     <div class="sidebar-footer">
       <div v-show="!isCollapsed" class="footer-info-row">
         <span class="footer-version-tag">
-          v{{ system.version || '0.1.4' }}
+          v{{ system.version || '0.1.5' }}
         </span>
         <span class="footer-mode-pill">
           {{ system.loading_method === 'theme' ? t('sidebar.themeMode') : t('sidebar.muMode') }}

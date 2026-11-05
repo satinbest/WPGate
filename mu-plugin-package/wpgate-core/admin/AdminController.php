@@ -6,7 +6,7 @@
  * and dashboard widget integration with reliable asset resolution.
  *
  * @package WPGate\Core
- * @version 0.1.4
+ * @version 0.1.5
  */
 
 namespace WPGate\Core\Admin;
@@ -104,7 +104,7 @@ class AdminController {
 			return;
 		}
 
-		$version = defined( 'WPGATE_CORE_VERSION' ) ? WPGATE_CORE_VERSION : '0.1.4';
+		$version = defined( 'WPGATE_CORE_VERSION' ) ? WPGATE_CORE_VERSION : '0.1.5';
 
 		// Locate and enqueue compiled CSS
 		$css_asset = self::locate_admin_dist_asset( 'wpgate-admin.css' );
@@ -243,7 +243,7 @@ class AdminController {
 		}
 
 		// Diagnostic Notice: Assets not found on disk
-		$version = defined( 'WPGATE_CORE_VERSION' ) ? WPGATE_CORE_VERSION : '0.1.4';
+		$version = defined( 'WPGATE_CORE_VERSION' ) ? WPGATE_CORE_VERSION : '0.1.5';
 		echo '<div class="wrap">';
 		echo '<div class="notice notice-warning is-dismissible" style="padding:16px; margin:20px 0; border-inline-start-width:4px;">';
 		echo '<h3 style="margin-top:0; color:#b45309;">⚠️ WPGate: SPA Administration Dashboard Assets Not Found</h3>';

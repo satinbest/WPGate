@@ -854,7 +854,7 @@ it( "GET /wpgate/v1/settings returns system object required by api.js", function
 	return $res->get_status() === 200 &&
 	       isset( $data['data']['system'] ) &&
 	       isset( $data['data']['system']['version'] ) &&
-	       $data['data']['system']['version'] === '0.1.4';
+	       $data['data']['system']['version'] === '0.1.5';
 });
 
 it( "POST /wpgate/v1/settings preserves saved values accurately", function() {

@@ -166,7 +166,7 @@ const settings = reactive({
 });
 
 const system = reactive({
-  version: '0.1.4',
+  version: '0.1.5',
   php_version: '',
   wp_version: '',
   loading_method: 'mu-plugin',

@@ -11,6 +11,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.1.5] - 2026-11-06
+
+### Added
+- **Reusable `SearchInput.vue` Component:**
+  - Modern, compact search input with embedded SVG search icon and dynamic clear button.
+  - Directional isolation and CSS logical properties (`padding-inline-start: 36px`, `padding-inline-end: 34px`, `inset-inline-end: 8px`) ensuring zero icon or text overlap in Persian RTL mode.
+  - Asynchronous loading spinner state and accessible `Escape` key dismissal.
+- **Unified `AppSelect.vue` & Enhanced Dropdown System:**
+  - Standardized `38px` height matching text inputs and buttons.
+  - Implemented `appearance: none` with custom SVG chevron indicators positioned logically for both RTL and LTR viewports.
+  - Light and dark theme tokens with proper WCAG focus rings.
+- **Professional `SecurityEventDialog.vue` Modal:**
+  - Complete redesign of the security event inspection dialog into a three-tiered layout: Event Summary, Request Information, and Diagnostics & Privacy.
+  - Integrated severity badges (`High` / `Medium` / `Low`), deterministic event signature hashes, and sanitized URL code view with word-break formatting.
+  - One-click copy controls for Target Host, Sanitized URL, and full event JSON.
+  - Accessible modal dialog semantics (`role="dialog"`, `aria-modal="true"`, body scroll locking, and `Escape` key dismissal).
+- **Comprehensive Audit Reports:**
+  - Published `reports/FORM-UI-AUDIT.md` & `reports/FORM-UI-AUDIT-FA.md`.
+  - Published `reports/SECURITY-DIALOG-REVIEW.md` & `reports/SECURITY-DIALOG-REVIEW-FA.md`.
+  - Published `reports/IO-METRICS-AUDIT.md` & `reports/IO-METRICS-AUDIT-FA.md`.
+
+### Fixed
+- **IOPS Metric Accuracy & Storage Clarification:**
+  - Audited and corrected misleading "Disk Write IOPS: 0 Bytes" metric.
+  - Replaced with accurate, verifiable terminology: `Disk File Logging: Disabled (0 Files on Disk)` with contextual tooltip explaining that events reside in the WordPress options database and OS hardware IOPS is not profiled by PHP runtime.
+  - Removed hardcoded `'0 Writes (Pure Memory)'` string in `TabTools.vue` and bound it to localized state.
+- **Centralized Localization Expansion (306 Keys):**
+  - Expanded dictionary to 306 keys with verified 100% parity across English and Persian locales.
+
 ## [0.1.4] - 2026-11-06
 
 ### Fixed

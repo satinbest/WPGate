@@ -3,7 +3,7 @@ const path = require('path');
 const crypto = require('crypto');
 const { execSync } = require('child_process');
 
-const VERSION = '0.1.4';
+const VERSION = '0.1.5';
 const ROOT = path.resolve(__dirname, '..');
 
 console.log(`Building WPGate release packages for v${VERSION}...`);

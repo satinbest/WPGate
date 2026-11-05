@@ -310,8 +310,7 @@
 }
 
 .wpgate-input,
-.wpgate-textarea,
-.wpgate-select {
+.wpgate-textarea {
   width: 100%;
   padding: 0 12px;
   font-size: 13px;
@@ -321,7 +320,44 @@
   background-color: var(--wpgate-surface);
   color: var(--wpgate-text);
   font-family: inherit;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+}
+
+.wpgate-select {
+  width: 100%;
+  height: 38px;
+  padding-inline-start: 12px;
+  padding-inline-end: 32px;
+  font-size: 13px;
+  line-height: 1.4;
+  font-family: inherit;
+  color: var(--wpgate-text);
+  background-color: var(--wpgate-surface);
+  border: 1px solid var(--wpgate-border);
+  border-radius: var(--wpgate-radius-sm);
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 14px;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+}
+
+[dir="rtl"] .wpgate-select {
+  background-position: left 10px center;
+}
+
+[data-theme="dark"] .wpgate-select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+}
+
+.wpgate-input:hover:not(:disabled),
+.wpgate-textarea:hover:not(:disabled),
+.wpgate-select:hover:not(:disabled) {
+  border-color: var(--wpgate-text-subtle);
 }
 
 .wpgate-input:focus,
@@ -330,6 +366,27 @@
   outline: none;
   border-color: var(--wpgate-border-focus);
   box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.12);
+  background-color: var(--wpgate-surface);
+}
+
+[data-theme="dark"] .wpgate-input:focus,
+[data-theme="dark"] .wpgate-textarea:focus,
+[data-theme="dark"] .wpgate-select:focus {
+  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
+}
+
+.wpgate-input:disabled,
+.wpgate-textarea:disabled,
+.wpgate-select:disabled {
+  background-color: var(--wpgate-surface-alt);
+  color: var(--wpgate-text-muted);
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+.wpgate-input.has-error,
+.wpgate-select.has-error {
+  border-color: var(--wpgate-danger) !important;
 }
 
 .wpgate-code-editor {
