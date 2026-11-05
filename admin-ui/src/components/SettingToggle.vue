@@ -92,7 +92,7 @@ const onToggle = (e) => {
   display: flex;
   align-items: flex-start;
   gap: 16px;
-  padding: 18px 0;
+  padding: 16px 0;
 }
 
 .wpgate-setting-toggle:not(:last-child) {
@@ -108,7 +108,7 @@ const onToggle = (e) => {
   flex-grow: 1;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 5px;
 }
 
 .toggle-title-row {
@@ -118,7 +118,7 @@ const onToggle = (e) => {
 }
 
 .toggle-title {
-  font-size: 0.98rem;
+  font-size: 13px;
   font-weight: 600;
   color: var(--wpgate-text);
   line-height: 1.4;
@@ -126,9 +126,9 @@ const onToggle = (e) => {
 
 .toggle-description {
   margin: 0;
-  font-size: 0.85rem;
+  font-size: 12px;
   color: var(--wpgate-text-muted);
-  line-height: 1.55;
+  line-height: 1.5;
 }
 
 .toggle-warning-alert {
@@ -141,7 +141,7 @@ const onToggle = (e) => {
   background-color: rgba(217, 119, 6, 0.1);
   border: 1px solid rgba(217, 119, 6, 0.25);
   color: #b45309;
-  font-size: 0.82rem;
+  font-size: 12px;
   line-height: 1.4;
 }
 

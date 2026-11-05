@@ -19,7 +19,7 @@
       <div class="header-title-wrap">
         <span class="header-breadcrumb-root">WPGate</span>
         <span class="header-breadcrumb-sep">/</span>
-        <h2 class="header-active-title">{{ pageTitle }}</h2>
+        <h1 class="header-active-title">{{ pageTitle }}</h1>
       </div>
     </div>
 
@@ -137,10 +137,10 @@ const statusBadgeText = computed(() => {
 
 <style scoped>
 .wpgate-header {
-  height: 64px;
+  height: 56px;
   background-color: var(--wpgate-surface);
   border-bottom: 1px solid var(--wpgate-border);
-  padding: 0 24px;
+  padding: 0 20px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -154,7 +154,7 @@ const statusBadgeText = computed(() => {
 .header-start-col {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 12px;
 }
 
 .header-hamburger-btn {
@@ -174,19 +174,19 @@ const statusBadgeText = computed(() => {
 }
 
 .header-breadcrumb-root {
-  font-size: 0.88rem;
+  font-size: 13px;
   font-weight: 500;
   color: var(--wpgate-text-muted);
 }
 
 .header-breadcrumb-sep {
-  font-size: 0.88rem;
+  font-size: 13px;
   color: var(--wpgate-border);
 }
 
 .header-active-title {
   margin: 0;
-  font-size: 1.15rem;
+  font-size: 20px;
   font-weight: 700;
   color: var(--wpgate-text);
   line-height: 1.2;
@@ -195,7 +195,7 @@ const statusBadgeText = computed(() => {
 .header-end-col {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
 }
 
 .header-status-badge {
@@ -204,12 +204,12 @@ const statusBadgeText = computed(() => {
 
 .wpgate-btn-header {
   height: 36px;
-  padding: 0 14px;
+  padding: 0 12px;
   border: 1px solid var(--wpgate-border);
   background-color: var(--wpgate-surface);
   color: var(--wpgate-text);
-  font-size: 0.85rem;
-  font-weight: 600;
+  font-size: 13px;
+  font-weight: 500;
   border-radius: var(--wpgate-radius-sm);
   cursor: pointer;
   display: inline-flex;
@@ -244,13 +244,13 @@ const statusBadgeText = computed(() => {
 
 .wpgate-btn-save-header {
   height: 36px;
-  padding: 0 18px;
+  padding: 0 16px;
   background-color: var(--wpgate-primary);
   color: #ffffff;
   border: 1px solid transparent;
   border-radius: var(--wpgate-radius-sm);
-  font-size: 0.88rem;
-  font-weight: 600;
+  font-size: 13px;
+  font-weight: 500;
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -280,7 +280,7 @@ const statusBadgeText = computed(() => {
     display: none;
   }
   .wpgate-header {
-    padding: 0 14px;
+    padding: 0 12px;
   }
 }
 </style>

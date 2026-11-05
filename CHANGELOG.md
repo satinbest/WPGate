@@ -9,6 +9,53 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+---
+
+## [0.1.3] - 2026-11-06
+
+### Fixed
+- **API Client Method Error (Error A):**
+  - Resolved `tt.getSystemInfo is not a function` by implementing `api.getSystemInfo()` in `admin-ui/src/api.js`.
+  - Refactored `App.vue:loadData()` to load core settings and system info reliably first, then load non-critical metrics (`stats`, `presets`) via `Promise.allSettled()`, ensuring telemetry failures never halt or break the admin interface.
+- **WordPress Core & Elementor Runtime Cascade (Errors B, C, D, E):**
+  - **Strict Admin & System Context Protection:** Added `AssetManager::is_admin_or_system_context()`, ensuring asset URL rewrites are strictly bypassed inside `wp-admin`, login/registration screens, AJAX (`wp_doing_ajax`), Cron (`wp_doing_cron`), REST API (`REST_REQUEST`), WP-CLI, and Customizer previews.
+  - **Immutable Core Handle Protection:** Added `AssetManager::is_protected_handle()` to protect foundational script handles (`wp-i18n`, `wp-hooks`, `wp-element`, `svg-painter`, `jquery`, `underscore`, and `elementor*`) from URL modifications.
+  - Resolved secondary cascading errors (`Cannot read properties of undefined (reading 'setLocaleData')`, Elementor localization `__()`, and `svgPainter.init()`).
+- **Telemetry Guard Specificity & Translation Safety:**
+  - Refactored `TelemetryGuard.php` from blanket domain blocking to granular path matching.
+  - Explicitly permits WordPress translation queries (`api.wordpress.org/translations/*`) and language pack downloads (`downloads.wordpress.org/translation/*`), while strictly blocking actual telemetry and tracking endpoints (`telemetry.elementor.com`, `stats.wordpress.com`, `browse-happy`, `serve-happy`, `events`).
+- **Settings Persistence Lifecycle:**
+  - Resolved reactive state overwrite issue in `App.vue:loadData()` by unpacking `settingsRes.data.settings || settingsRes.data`.
+  - Updated `saveSettings()` to retain dirty state unless the backend returns an explicit `success: true` response.
+
+### Changed
+- **UI Typography & Layout Density Calibration:**
+  - Calibrated typography and component sizing to exact project baseline:
+    - Main Page Title: `20px` (Font weight: 700)
+    - Section Title: `16px` (Font weight: 600)
+    - Card / Panel Title: `14px` (Font weight: 600)
+    - Sidebar Item: `13px` (Font weight: 500)
+    - Body Text & Form Labels: `13px`
+    - Buttons: `13px` with fixed `36px` height (Compact: `12px` / `30px`)
+    - Inputs & Selects: `13px` with fixed `38px` height
+    - Help Text & Metadata: `12px`
+    - Badges & Chips: `11–12px`
+    - Panel Padding: `16–20px`
+    - Sidebar Width: `232px`
+  - Refined Persian typography with Vazirmatn font metrics, balanced line heights, and directional adjustments.
+
+### Added
+- **Automated Test Suites 15–18:**
+  - Added Test Suite 15: WordPress Admin Protection & Scope Detection (verifies admin, AJAX, and Cron bypass).
+  - Added Test Suite 16: Protected Core and Elementor Handles.
+  - Added Test Suite 17: Telemetry Guard Specificity & Translation Safety.
+  - Added Test Suite 18: API Client Contract & Settings Persistence.
+  - Total automated unit test suite now stands at 56 tests across 18 suites (100% passing).
+- **Engineering & Audit Reports:**
+  - Published `reports/WORDPRESS-COMPATIBILITY-AUDIT.md`.
+  - Published `reports/RUNTIME-BUGFIX.md`.
+  - Published `reports/UI-IMPROVEMENT.md`.
+
 ## [0.1.2] - 2026-11-06
 
 ### Added
