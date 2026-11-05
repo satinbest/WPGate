@@ -1,32 +1,28 @@
 <template>
   <div class="wpgate-tab-pane">
     <div class="wpgate-section-header">
-      <h2 class="wpgate-section-title">{{ t('tools.title') }}</h2>
+      <div>
+        <h2 class="wpgate-section-title">{{ t('tools.title') }}</h2>
+        <p class="wpgate-section-desc">Configuration portability, runtime diagnostics, and disaster recovery controls.</p>
+      </div>
     </div>
 
     <!-- Backup & Restore Grid -->
     <div class="wpgate-grid-2col">
-      <!-- Export Card -->
-      <div class="wpgate-panel">
-        <div class="wpgate-panel-header">
-          <h3 class="wpgate-panel-title">{{ t('common.export') }}</h3>
-        </div>
-        <div class="wpgate-panel-body">
-          <p class="wpgate-field-help">{{ t('tools.exportDesc') }}</p>
+      <!-- Export Configuration Card -->
+      <SettingsPanel :title="t('common.export')" description="Download all active WPGate rules and policies as a clean JSON backup file.">
+        <div class="wpgate-tool-action-box">
           <button type="button" class="wpgate-btn wpgate-btn-secondary" @click="exportJson">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="wpgate-icon"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-            {{ t('common.export') }}
+            <span>{{ t('common.export') }} JSON</span>
           </button>
+          <span class="wpgate-text-muted wpgate-text-xs">Portable across all staging and production environments</span>
         </div>
-      </div>
+      </SettingsPanel>
 
-      <!-- Import Card -->
-      <div class="wpgate-panel">
-        <div class="wpgate-panel-header">
-          <h3 class="wpgate-panel-title">{{ t('common.import') }}</h3>
-        </div>
-        <div class="wpgate-panel-body">
-          <p class="wpgate-field-help">{{ t('tools.importDesc') }}</p>
+      <!-- Import Configuration Card -->
+      <SettingsPanel :title="t('common.import')" description="Restore or migrate WPGate settings from a previously saved JSON backup file.">
+        <div class="wpgate-tool-action-box">
           <input
             type="file"
             ref="fileInput"
@@ -36,59 +32,77 @@
           />
           <button type="button" class="wpgate-btn wpgate-btn-secondary" @click="$refs.fileInput.click()">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="wpgate-icon"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
-            {{ t('common.import') }}
+            <span>{{ t('common.import') }} JSON</span>
           </button>
+          <span class="wpgate-text-muted wpgate-text-xs">Validates format before applying</span>
         </div>
-      </div>
+      </SettingsPanel>
     </div>
 
-    <!-- Reset to Factory Defaults Card -->
-    <div class="wpgate-panel wpgate-mt-4">
-      <div class="wpgate-panel-header">
-        <h3 class="wpgate-panel-title text-danger">{{ t('common.reset') }}</h3>
+    <!-- Emergency Kill-Switch Panel -->
+    <SettingsPanel title="Emergency Kill-Switch (wp-config.php)" class="wpgate-mt-4" badge="Zero-Risk Recovery" badge-status="warning">
+      <p class="wpgate-field-help">
+        If you ever need to instantly bypass all WPGate filters and network interceptions without accessing the WordPress admin, add this constant anywhere in your <code>wp-config.php</code> file:
+      </p>
+      <div class="wpgate-code-snippet-box">
+        <pre class="wpgate-code-snippet" dir="ltr"><code>define('WPGATE_DISABLED', true);</code></pre>
+        <button type="button" class="wpgate-btn wpgate-btn-secondary wpgate-btn-sm" @click="copyKillSwitch">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+          <span>{{ t('common.copy') }}</span>
+        </button>
       </div>
-      <div class="wpgate-panel-body">
-        <p class="wpgate-field-help">{{ t('tools.resetDesc') }}</p>
+      <p class="wpgate-text-muted wpgate-text-xs wpgate-mt-2">
+        When defined, WPGate halts execution on the first line of its bootstrap routine with zero overhead.
+      </p>
+    </SettingsPanel>
+
+    <!-- System Diagnostics Information -->
+    <SettingsPanel :title="t('tools.sysInfo')" class="wpgate-mt-4">
+      <template #badge>
+        <StatusBadge status="success">Operational</StatusBadge>
+      </template>
+      <div class="wpgate-sysinfo-grid">
+        <div class="wpgate-sysinfo-item">
+          <span class="wpgate-sysinfo-label">{{ t('tools.wpgateVersion') }}</span>
+          <span class="wpgate-sysinfo-value">v{{ system.version || '0.1.2' }}</span>
+        </div>
+        <div class="wpgate-sysinfo-item">
+          <span class="wpgate-sysinfo-label">{{ t('tools.loadingMethod') }}</span>
+          <span class="wpgate-sysinfo-value"><code>{{ system.loading_method || 'mu-plugin' }}</code></span>
+        </div>
+        <div class="wpgate-sysinfo-item">
+          <span class="wpgate-sysinfo-label">{{ t('tools.phpVersion') }}</span>
+          <span class="wpgate-sysinfo-value">PHP {{ system.php_version }}</span>
+        </div>
+        <div class="wpgate-sysinfo-item">
+          <span class="wpgate-sysinfo-label">{{ t('tools.wpVersion') }}</span>
+          <span class="wpgate-sysinfo-value">WordPress {{ system.wp_version }}</span>
+        </div>
+        <div class="wpgate-sysinfo-item">
+          <span class="wpgate-sysinfo-label">{{ t('tools.multisite') }}</span>
+          <span class="wpgate-sysinfo-value">{{ system.is_multisite ? 'Yes' : 'No' }}</span>
+        </div>
+        <div class="wpgate-sysinfo-item">
+          <span class="wpgate-sysinfo-label">{{ t('tools.diskWrites') }}</span>
+          <span class="wpgate-sysinfo-value text-success">
+            <strong>0 Writes (Pure Memory)</strong>
+          </span>
+        </div>
+      </div>
+    </SettingsPanel>
+
+    <!-- Danger Zone: Factory Reset -->
+    <SettingsPanel title="Danger Zone" class="wpgate-mt-4" badge="Irreversible" badge-status="danger">
+      <div class="wpgate-danger-zone-box">
+        <div>
+          <strong class="text-danger">{{ t('common.reset') }}</strong>
+          <p class="wpgate-text-muted wpgate-text-xs">{{ t('tools.resetDesc') }}</p>
+        </div>
         <button type="button" class="wpgate-btn wpgate-btn-danger" @click="onResetDefaults">
           {{ t('common.reset') }}
         </button>
       </div>
-    </div>
-
-    <!-- System Diagnostics Information -->
-    <div class="wpgate-panel wpgate-mt-4">
-      <div class="wpgate-panel-header">
-        <h3 class="wpgate-panel-title">{{ t('tools.sysInfo') }}</h3>
-      </div>
-      <div class="wpgate-panel-body">
-        <div class="wpgate-info-table">
-          <div class="wpgate-info-row">
-            <span class="wpgate-info-key">{{ t('tools.wpgateVersion') }}:</span>
-            <span class="wpgate-info-val">v{{ system.version || '0.1.0' }}</span>
-          </div>
-          <div class="wpgate-info-row">
-            <span class="wpgate-info-key">{{ t('tools.loadingMethod') }}:</span>
-            <span class="wpgate-info-val"><code>{{ system.loading_method || 'mu-plugin' }}</code></span>
-          </div>
-          <div class="wpgate-info-row">
-            <span class="wpgate-info-key">{{ t('tools.phpVersion') }}:</span>
-            <span class="wpgate-info-val">{{ system.php_version }}</span>
-          </div>
-          <div class="wpgate-info-row">
-            <span class="wpgate-info-key">{{ t('tools.wpVersion') }}:</span>
-            <span class="wpgate-info-val">{{ system.wp_version }}</span>
-          </div>
-          <div class="wpgate-info-row">
-            <span class="wpgate-info-key">{{ t('tools.multisite') }}:</span>
-            <span class="wpgate-info-val">{{ system.is_multisite ? 'Yes' : 'No' }}</span>
-          </div>
-          <div class="wpgate-info-row">
-            <span class="wpgate-info-key">{{ t('tools.diskWrites') }}:</span>
-            <span class="wpgate-info-val text-success"><strong>{{ t('tools.diskWritesVal') }}</strong></span>
-          </div>
-        </div>
-      </div>
-    </div>
+    </SettingsPanel>
   </div>
 </template>
 
@@ -96,6 +110,8 @@
 import { ref } from 'vue';
 import { api } from '../api';
 import { t } from '../i18n';
+import SettingsPanel from './SettingsPanel.vue';
+import StatusBadge from './StatusBadge.vue';
 
 const props = defineProps({
   settings: { type: Object, required: true },
@@ -108,7 +124,7 @@ const fileInput = ref(null);
 const exportJson = () => {
   const exportPayload = {
     generator: 'WPGate',
-    version: props.system.version || '0.1.0',
+    version: props.system.version || '0.1.2',
     export_date: new Date().toISOString(),
     settings: props.settings,
   };
@@ -148,6 +164,13 @@ const importJson = (event) => {
   reader.readAsText(file);
 };
 
+const copyKillSwitch = () => {
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText("define('WPGATE_DISABLED', true);");
+    emit('notify', { type: 'success', message: t('common.copied') });
+  }
+};
+
 const onResetDefaults = () => {
   emit('confirm', {
     title: t('common.reset'),
@@ -158,7 +181,7 @@ const onResetDefaults = () => {
     action: async () => {
       try {
         await api.resetSettings();
-        emit('notify', { type: 'success', message: 'Settings reset to factory defaults.' });
+        emit('notify', { type: 'success', message: 'WPGate settings reset to default.' });
         emit('reload-settings');
       } catch (err) {
         emit('notify', { type: 'error', message: 'Failed to reset settings.' });

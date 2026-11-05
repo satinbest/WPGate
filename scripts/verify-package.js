@@ -2,12 +2,14 @@ const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
 
-console.log('Testing WPGate-MU-Plugin-v0.1.1.zip integrity and extraction...');
+const version = process.argv[2] || '0.1.2';
+const zipName = `WPGate-MU-Plugin-v${version}.zip`;
+console.log(`Testing ${zipName} integrity and extraction...`);
 const tempDir = path.join(__dirname, '..', 'tests', 'scratch', 'mu_test_unzip');
 if (fs.existsSync(tempDir)) fs.rmSync(tempDir, { recursive: true, force: true });
 fs.mkdirSync(tempDir, { recursive: true });
 
-execSync(`powershell -Command "Expand-Archive -Path WPGate-MU-Plugin-v0.1.1.zip -DestinationPath tests/scratch/mu_test_unzip -Force"`);
+execSync(`powershell -Command "Expand-Archive -Path ${zipName} -DestinationPath tests/scratch/mu_test_unzip -Force"`);
 
 const requiredFiles = [
   'wpgate-loader.php',

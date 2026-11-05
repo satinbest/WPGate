@@ -22,6 +22,7 @@ export default defineConfig({
     },
     minify: 'esbuild',
     cssMinify: true,
+    assetsInlineLimit: 65536,
   },
   define: {
     'process.env.NODE_ENV': JSON.stringify('production'),

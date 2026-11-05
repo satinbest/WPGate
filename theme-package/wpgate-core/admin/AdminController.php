@@ -6,7 +6,7 @@
  * and dashboard widget integration with reliable asset resolution.
  *
  * @package WPGate\Core
- * @version 0.1.1
+ * @version 0.1.2
  */
 
 namespace WPGate\Core\Admin;
