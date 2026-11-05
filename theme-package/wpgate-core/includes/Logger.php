@@ -13,7 +13,6 @@ defined( 'ABSPATH' ) || exit;
 class Logger {
 
 	public const LOG_KEY = 'wpgate_http_logs';
-	public const LEGACY_LOG_KEY = 'ghateino_http_logs';
 
 	/**
 	 * Log an event if logging is enabled.
@@ -148,8 +147,8 @@ class Logger {
 
 		foreach ( $params as $key => $value ) {
 			$low_key = strtolower( (string) $key );
-			foreach ( $sensitive_keys as $sens ) {
-				if ( false !== strpos( $low_key, $sens ) ) {
+			foreach ( $sensitive_keys as $pattern ) {
+				if ( false !== strpos( $low_key, $pattern ) ) {
 					$params[ $key ] = '[REDACTED]';
 					break;
 				}
@@ -161,7 +160,7 @@ class Logger {
 	}
 
 	/**
-	 * Check if mode string represents an asset rewrite event.
+	 * Check whether a log mode represents an asset rewrite/stubbing event.
 	 *
 	 * @param string $mode
 	 * @return bool
@@ -171,26 +170,21 @@ class Logger {
 	}
 
 	/**
-	 * Retrieve all current logs with fallback to legacy log key if needed.
+	 * Retrieve all current logs.
 	 *
 	 * @return array
 	 */
 	public static function get_logs(): array {
-		$logs = get_option( self::LOG_KEY, null );
-		if ( null === $logs || false === $logs ) {
-			$legacy = get_option( self::LEGACY_LOG_KEY, [] );
-			return is_array( $legacy ) ? $legacy : [];
-		}
+		$logs = get_option( self::LOG_KEY, [] );
 		return is_array( $logs ) ? $logs : [];
 	}
 
 	/**
-	 * Clear all logs from current and legacy keys.
+	 * Clear all logs.
 	 *
 	 * @return bool
 	 */
 	public static function clear_logs(): bool {
-		delete_option( self::LEGACY_LOG_KEY );
 		return delete_option( self::LOG_KEY );
 	}
 }

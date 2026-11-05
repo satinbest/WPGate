@@ -1,48 +1,39 @@
 # Security Policy
 
-The security of **WPGate** and the WordPress sites running it is our top priority. We appreciate any efforts to responsibly disclose vulnerabilities.
+[English](SECURITY.md) | [فارسی](SECURITY-FA.md)
 
----
+## Supported Versions
 
-## 🛡️ Supported Versions
+Only the latest release branch of WPGate receives active security updates:
 
-We provide security updates and patches for the following versions:
-
-| Version | Supported | Status |
+| Version | Supported | Notes |
 |---|---|---|
-| **0.1.x** | ✅ Yes | Current Active Release |
-| **< 0.1.0 (Legacy Ghateino)** | ❌ No | Deprecated — Please migrate to WPGate v0.1.0+ |
+| **0.1.x** | ✅ Yes | Current active stable release |
 
 ---
 
-## 🔒 Architectural Security Guarantees
+## Reporting a Vulnerability
 
-WPGate is engineered with defensive programming principles:
+If you discover a potential security issue in WPGate, please report it responsibly:
 
-1. **Zero Runtime Disk I/O:** The module never writes, creates, or copies files on the web server's filesystem during ordinary front-end or administrative requests.
-2. **Credential Redaction:** Sensitive query parameters (`token`, `api_key`, `secret`, `password`, `hash`, etc.) in request URLs are masked with `[REDACTED]` prior to logging.
-3. **Capability Gating:** Administrative endpoints and settings modification strictly demand `manage_options`.
-4. **CSRF Protection:** State-changing requests (such as log clearing or settings restoration) enforce WordPress nonce verification (`check_admin_referer`).
-5. **Exact & Subdomain-Safe Matching:** Domain rules strictly validate exact hostname or dot-prefixed boundaries to eliminate prefix spoofing.
-6. **No Remote Code Execution / Downloads:** The module never pulls or evaluates untrusted remote scripts or styles at runtime.
-
----
-
-## 🚨 Reporting a Vulnerability
-
-If you discover a security vulnerability in WPGate, please report it privately:
-
-- **Email:** `security@satinbest.com`
-- **Subject:** `[Vulnerability Report] WPGate - <Brief Summary>`
+- **Security Contact:** [info@hosseinmohammadpour.ir](mailto:info@hosseinmohammadpour.ir)
+- **Subject:** `[SECURITY] Potential vulnerability in WPGate`
 
 Please include:
-1. Clear steps to reproduce the issue (PoC script or screenshots if possible).
-2. The affected module version and PHP/WordPress runtime versions.
-3. Potential impact or threat vectors.
+1. Detailed description of the vulnerability.
+2. Steps to reproduce the issue (including sample code or payloads).
+3. The affected environment (PHP version, WordPress version, server configuration).
 
-### What to Expect:
-- We will acknowledge receipt of your report within **48 hours**.
-- We will investigate and provide a validation status within **5 business days**.
-- Once a fix is verified, a patched release will be published promptly, and you will be credited in our release notes (unless you prefer to remain anonymous).
+Please do **NOT** disclose the issue publicly until a patch has been published and released.
 
-Please **do not** report security vulnerabilities via public GitHub issues.
+---
+
+## Security Architecture Highlights
+
+WPGate implements defense-in-depth security principles:
+
+1. **Strict Capability Checks:** Every admin action and REST API endpoint requires `manage_options`.
+2. **REST Nonce Verification:** Every mutating request validates the `X-WP-Nonce` header.
+3. **Sensitive Data Redaction:** Outbound request logging automatically redacts tokens, passwords, nonces, API keys, and hashes (`[REDACTED]`).
+4. **Zero Runtime File Writes:** WPGate never executes dynamic file writes or code generation at runtime.
+5. **Safe Kill-Switch:** Administrators can immediately bypass all module hooks by defining `WPGATE_DISABLED` in `wp-config.php`.

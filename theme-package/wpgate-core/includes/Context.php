@@ -39,7 +39,9 @@ class Context {
 	 * @param string $dir
 	 */
 	public static function init( string $dir ): void {
-		self::$base_dir = rtrim( wp_normalize_path( $dir ), '/' );
+		self::$base_dir       = rtrim( wp_normalize_path( $dir ), '/' );
+		self::$base_url       = null;
+		self::$loading_method = null;
 	}
 
 	/**
@@ -69,7 +71,7 @@ class Context {
 		// Check MU Plugin path
 		if ( defined( 'WPMU_PLUGIN_DIR' ) ) {
 			$mu_dir = rtrim( wp_normalize_path( WPMU_PLUGIN_DIR ), '/' );
-			if ( 0 === strpos( $dir, $mu_dir ) ) {
+			if ( 0 === stripos( $dir, $mu_dir ) ) {
 				self::$loading_method = 'mu-plugin';
 				return self::$loading_method;
 			}
@@ -77,7 +79,7 @@ class Context {
 
 		if ( defined( 'WP_CONTENT_DIR' ) ) {
 			$fallback_mu = rtrim( wp_normalize_path( WP_CONTENT_DIR . '/mu-plugins' ), '/' );
-			if ( 0 === strpos( $dir, $fallback_mu ) ) {
+			if ( 0 === stripos( $dir, $fallback_mu ) ) {
 				self::$loading_method = 'mu-plugin';
 				return self::$loading_method;
 			}
@@ -86,7 +88,7 @@ class Context {
 		// Check Theme path
 		if ( function_exists( 'get_theme_root' ) ) {
 			$theme_root = rtrim( wp_normalize_path( get_theme_root() ), '/' );
-			if ( 0 === strpos( $dir, $theme_root ) ) {
+			if ( 0 === stripos( $dir, $theme_root ) ) {
 				self::$loading_method = 'theme';
 				return self::$loading_method;
 			}
@@ -94,7 +96,7 @@ class Context {
 
 		if ( defined( 'WP_CONTENT_DIR' ) ) {
 			$fallback_theme = rtrim( wp_normalize_path( WP_CONTENT_DIR . '/themes' ), '/' );
-			if ( 0 === strpos( $dir, $fallback_theme ) ) {
+			if ( 0 === stripos( $dir, $fallback_theme ) ) {
 				self::$loading_method = 'theme';
 				return self::$loading_method;
 			}
@@ -119,7 +121,7 @@ class Context {
 
 		if ( 'mu-plugin' === $method ) {
 			$content_dir = defined( 'WP_CONTENT_DIR' ) ? rtrim( wp_normalize_path( WP_CONTENT_DIR ), '/' ) : '';
-			if ( '' !== $content_dir && 0 === strpos( $dir, $content_dir ) ) {
+			if ( '' !== $content_dir && 0 === stripos( $dir, $content_dir ) ) {
 				$rel = ltrim( substr( $dir, strlen( $content_dir ) ), '/' );
 				self::$base_url = rtrim( content_url( $rel ), '/' );
 				return self::$base_url;
@@ -131,7 +133,7 @@ class Context {
 		if ( 'theme' === $method ) {
 			if ( function_exists( 'get_stylesheet_directory' ) && function_exists( 'get_stylesheet_directory_uri' ) ) {
 				$child_dir = rtrim( wp_normalize_path( get_stylesheet_directory() ), '/' );
-				if ( 0 === strpos( $dir, $child_dir ) ) {
+				if ( 0 === stripos( $dir, $child_dir ) ) {
 					$rel = ltrim( substr( $dir, strlen( $child_dir ) ), '/' );
 					self::$base_url = rtrim( get_stylesheet_directory_uri() . '/' . $rel, '/' );
 					return self::$base_url;
@@ -140,7 +142,7 @@ class Context {
 
 			if ( function_exists( 'get_template_directory' ) && function_exists( 'get_template_directory_uri' ) ) {
 				$parent_dir = rtrim( wp_normalize_path( get_template_directory() ), '/' );
-				if ( 0 === strpos( $dir, $parent_dir ) ) {
+				if ( 0 === stripos( $dir, $parent_dir ) ) {
 					$rel = ltrim( substr( $dir, strlen( $parent_dir ) ), '/' );
 					self::$base_url = rtrim( get_template_directory_uri() . '/' . $rel, '/' );
 					return self::$base_url;
@@ -178,12 +180,26 @@ class Context {
 	}
 
 	/**
-	 * Get URL to an asset file.
+	 * Get URL to an asset file (inside /assets/ directory).
 	 *
 	 * @param string $relative_path
 	 * @return string
 	 */
 	public static function get_asset_url( string $relative_path ): string {
 		return self::get_base_url() . '/assets/' . ltrim( $relative_path, '/' );
+	}
+
+	/**
+	 * Get URL relative to module root directory (without /assets/ prefix).
+	 *
+	 * @param string $relative_path
+	 * @return string
+	 */
+	public static function get_module_url( string $relative_path = '' ): string {
+		$url = self::get_base_url();
+		if ( '' !== $relative_path ) {
+			$url .= '/' . ltrim( $relative_path, '/' );
+		}
+		return $url;
 	}
 }

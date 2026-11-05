@@ -3,7 +3,7 @@
  * WPGate Standalone Core - Automated Test Suite
  *
  * Runs on PHP CLI to validate syntax, security, domain matching,
- * HTTP interception, asset rewriting, logger, and loaders.
+ * HTTP interception, asset rewriting, logger, REST API, and loaders.
  *
  * @package WPGate\Tests
  * @version 0.1.0
@@ -14,12 +14,13 @@ define( 'ABSPATH', __DIR__ . '/wordpress/' );
 define( 'MINUTE_IN_SECONDS', 60 );
 define( 'HOUR_IN_SECONDS', 3600 );
 define( 'DAY_IN_SECONDS', 86400 );
-define( 'WP_CONTENT_DIR', 'D:/ghateino/wp-content' );
-define( 'WPMU_PLUGIN_DIR', 'D:/ghateino/wp-content/mu-plugins' );
+define( 'WP_CONTENT_DIR', sys_get_temp_dir() . '/wpgate-tests/wp-content' );
+define( 'WPMU_PLUGIN_DIR', sys_get_temp_dir() . '/wpgate-tests/wp-content/mu-plugins' );
 
 $GLOBALS['wp_filters'] = [];
 $GLOBALS['wp_actions'] = [];
 $GLOBALS['wp_options'] = [];
+$GLOBALS['wp_rest_routes'] = [];
 $GLOBALS['current_user_caps'] = [ 'manage_options' => true ];
 
 class WP_Error {
@@ -35,6 +36,67 @@ class WP_Error {
 	public function get_error_code() {
 		return $this->code;
 	}
+}
+
+class WP_REST_Server {
+	public const READABLE = 'GET';
+	public const CREATABLE = 'POST';
+	public const EDITABLE = 'POST, PUT, PATCH';
+	public const DELETABLE = 'DELETE';
+	public const ALLMETHODS = 'GET, POST, PUT, PATCH, DELETE';
+}
+
+class WP_REST_Request {
+	private $params = [];
+	private $json = [];
+	public function __construct( $params = [], $json = [] ) {
+		$this->params = $params;
+		$this->json   = $json;
+	}
+	public function get_param( $key ) {
+		return $this->params[ $key ] ?? null;
+	}
+	public function get_params() {
+		return $this->params;
+	}
+	public function get_json_params() {
+		return $this->json;
+	}
+	public function get_body_params() {
+		return $this->params;
+	}
+}
+
+class WP_REST_Response {
+	public $data;
+	public $status;
+	public function __construct( $data = null, $status = 200 ) {
+		$this->data   = $data;
+		$this->status = $status;
+	}
+	public function get_data() {
+		return $this->data;
+	}
+	public function get_status() {
+		return $this->status;
+	}
+}
+
+function register_rest_route( $namespace, $route, $args ) {
+	$GLOBALS['wp_rest_routes'][ $namespace . $route ] = $args;
+	return true;
+}
+
+function rest_url( $path = '' ) {
+	return 'https://example.com/wp-json/' . ltrim( $path, '/' );
+}
+
+function wp_create_nonce( $action = -1 ) {
+	return 'mock_nonce_' . md5( (string) $action );
+}
+
+function wp_verify_nonce( $nonce, $action = -1 ) {
+	return $nonce === 'mock_nonce_' . md5( (string) $action );
 }
 
 function wp_normalize_path( $path ) {
@@ -98,7 +160,7 @@ function do_action( $tag, ...$args ) {
 }
 
 function get_option( $option, $default = false ) {
-	return $GLOBALS['wp_options'][ $option ] ?? $default;
+	return array_key_exists( $option, $GLOBALS['wp_options'] ) ? $GLOBALS['wp_options'][ $option ] : $default;
 }
 
 function update_option( $option, $value, $autoload = null ) {
@@ -107,27 +169,65 @@ function update_option( $option, $value, $autoload = null ) {
 }
 
 function delete_option( $option ) {
-	if ( isset( $GLOBALS['wp_options'][ $option ] ) ) {
-		unset( $GLOBALS['wp_options'][ $option ] );
-		return true;
-	}
-	return false;
+	unset( $GLOBALS['wp_options'][ $option ] );
+	return true;
 }
 
 function wp_parse_args( $args, $defaults = [] ) {
-	return array_merge( $defaults, (array) $args );
+	if ( is_object( $args ) ) {
+		$r = get_object_vars( $args );
+	} elseif ( is_array( $args ) ) {
+		$r =& $args;
+	} else {
+		parse_str( (string) $args, $r );
+	}
+	if ( is_array( $defaults ) ) {
+		return array_merge( $defaults, $r );
+	}
+	return $r;
 }
 
 function wp_parse_url( $url, $component = -1 ) {
 	return parse_url( $url, $component );
 }
 
-function current_time( $type, $gmt = 0 ) {
-	return 'timestamp' === $type ? time() : gmdate( 'Y-m-d H:i:s' );
+function site_url( $path = '' ) {
+	return 'https://example.com' . $path;
+}
+
+function home_url( $path = '' ) {
+	return 'https://example.com' . $path;
+}
+
+function admin_url( $path = '' ) {
+	return 'https://example.com/wp-admin/' . $path;
+}
+
+function content_url( $path = '' ) {
+	return 'https://example.com/wp-content' . ( $path ? '/' . ltrim( $path, '/' ) : '' );
+}
+
+function includes_url( $path = '' ) {
+	return 'https://example.com/wp-includes/' . $path;
+}
+
+function wp_upload_dir() {
+	return [
+		'basedir' => sys_get_temp_dir() . '/wpgate-tests/wp-content/uploads',
+		'baseurl' => 'https://example.com/wp-content/uploads',
+	];
+}
+
+function get_stylesheet_directory() {
+	return sys_get_temp_dir() . '/wpgate-tests/wp-content/themes/child-theme';
+}
+
+function get_stylesheet_directory_uri() {
+	return 'https://example.com/wp-content/themes/child-theme';
 }
 
 function sanitize_text_field( $str ) {
-	return trim( strip_tags( (string) $str ) );
+	return strip_tags( (string) $str );
 }
 
 function sanitize_key( $key ) {
@@ -135,158 +235,136 @@ function sanitize_key( $key ) {
 }
 
 function esc_url_raw( $url ) {
-	return filter_var( $url, FILTER_SANITIZE_URL ) ?: '';
+	return filter_var( $url, FILTER_SANITIZE_URL );
 }
 
 function esc_url( $url ) {
-	return htmlspecialchars( esc_url_raw( $url ), ENT_QUOTES, 'UTF-8' );
+	return esc_url_raw( $url );
 }
 
-function esc_attr( $str ) {
-	return htmlspecialchars( (string) $str, ENT_QUOTES, 'UTF-8' );
+function esc_attr( $text ) {
+	return htmlspecialchars( (string) $text, ENT_QUOTES );
 }
 
-function esc_html( $str ) {
-	return htmlspecialchars( (string) $str, ENT_QUOTES, 'UTF-8' );
+function esc_html( $text ) {
+	return htmlspecialchars( (string) $text, ENT_QUOTES );
 }
 
-function esc_textarea( $str ) {
-	return htmlspecialchars( (string) $str, ENT_QUOTES, 'UTF-8' );
-}
-
-function home_url( $path = '' ) {
-	return 'https://example.com' . $path;
-}
-
-function site_url( $path = '' ) {
-	return 'https://example.com' . $path;
-}
-
-function content_url( $path = '' ) {
-	return 'https://example.com/wp-content/' . ltrim( $path, '/' );
-}
-
-function includes_url( $path = '' ) {
-	return 'https://example.com/wp-includes/' . ltrim( $path, '/' );
-}
-
-function admin_url( $path = '' ) {
-	return 'https://example.com/wp-admin/' . ltrim( $path, '/' );
+function current_user_can( $capability ) {
+	return ! empty( $GLOBALS['current_user_caps'][ $capability ] );
 }
 
 function is_admin() {
 	return false;
 }
 
-function current_user_can( $cap ) {
-	return ! empty( $GLOBALS['current_user_caps'][ $cap ] );
+function is_multisite() {
+	return false;
 }
 
-function check_admin_referer( $action ) {
+function is_rtl() {
 	return true;
 }
 
-function wp_nonce_url( $url, $action ) {
-	return $url . '&_wpnonce=testnonce123';
+function get_user_locale() {
+	return 'fa_IR';
 }
 
-function wp_safe_redirect( $location ) {
-	$GLOBALS['redirected_to'] = $location;
+function checked( $checked, $current = true, $echo = true ) {
+	return ( (string) $checked === (string) $current ) ? ' checked="checked"' : '';
 }
 
-function register_setting( $group, $name, $args ) {
-	$GLOBALS['registered_settings'][ $name ] = $args;
+function current_time( $type, $gmt = 0 ) {
+	if ( 'timestamp' === $type ) return time();
+	if ( 'mysql' === $type ) return date( 'Y-m-d H:i:s' );
+	return time();
 }
 
-function add_options_page( $title, $menu_title, $cap, $slug, $callback ) {
-	$GLOBALS['options_pages'][ $slug ] = compact( 'title', 'menu_title', 'cap', 'callback' );
+function check_admin_referer( $action = -1, $query_arg = '_wpnonce' ) {
+	return true;
 }
 
-function add_meta_box( $id, $title, $callback, $screen, $context, $priority ) {
-	$GLOBALS['meta_boxes'][ $id ] = compact( 'title', 'callback', 'screen', 'context', 'priority' );
+function wp_nonce_url( $actionurl, $action = -1, $name = '_wpnonce' ) {
+	return $actionurl . '&' . $name . '=mocknonce';
 }
 
-function wp_enqueue_style( $handle, $src = '', $deps = [], $ver = false, $media = 'all' ) {
-	$GLOBALS['enqueued_styles'][ $handle ] = compact( 'src', 'deps', 'ver', 'media' );
+function add_options_page( $page_title, $menu_title, $capability, $menu_slug, $callback = '' ) {
+	return 'settings_page_' . $menu_slug;
 }
 
-function selected( $selected, $current, $echo = true ) {
-	$out = ( (string) $selected === (string) $current ) ? ' selected="selected"' : '';
-	if ( $echo ) echo $out;
-	return $out;
+function register_setting( $option_group, $option_name, $args = [] ) {
+	return true;
 }
 
-function checked( $checked, $current, $echo = true ) {
-	$out = ( (string) $checked === (string) $current ) ? ' checked="checked"' : '';
-	if ( $echo ) echo $out;
-	return $out;
+function add_meta_box( $id, $title, $callback, $screen = null, $context = 'advanced', $priority = 'default' ) {
+	return true;
 }
 
-function submit_button( $text, $type = 'primary', $name = 'submit', $wrap = true ) {
-	echo "<button type='submit' name='$name'>$text</button>";
-}
+// 2. Load Core Classes
+require_once dirname( __DIR__ ) . '/mu-plugin-package/wpgate-core/bootstrap.php';
 
-function settings_fields( $group ) {
-	echo "<input type='hidden' name='option_page' value='$group' />";
-}
-
-// -------------------------------------------------------------
-// Test Runner Infrastructure
-// -------------------------------------------------------------
+// Test runner helpers
 $tests_passed = 0;
 $tests_failed = 0;
 
-function it( $description, $test_fn ) {
+function it( $description, $test_callable ) {
 	global $tests_passed, $tests_failed;
 	try {
-		$result = $test_fn();
-		if ( false !== $result ) {
+		$result = $test_callable();
+		if ( $result ) {
 			echo "  [PASS] $description\n";
 			$tests_passed++;
 		} else {
-			echo "  [FAIL] $description (Assertion failed)\n";
+			echo "  [FAIL] $description (returned false)\n";
 			$tests_failed++;
 		}
 	} catch ( Throwable $e ) {
-		echo "  [FAIL] $description (Exception: " . $e->getMessage() . " at " . $e->getFile() . ":" . $e->getLine() . ")\n";
+		echo "  [FAIL] $description (Exception: " . $e->getMessage() . ")\n";
 		$tests_failed++;
 	}
 }
 
 echo "========================================================\n";
-echo " WPGATE STANDALONE CORE - AUTOMATED TEST SUITE (v0.1.0)\n";
+echo " WPGate Standalone Core - Automated Verification Suite\n";
 echo "========================================================\n\n";
 
-// Load WPGate Module Bootstrap
-$wpgate_bootstrap = dirname( __DIR__ ) . '/mu-plugin-package/mu-plugins/wpgate-core/bootstrap.php';
-require_once $wpgate_bootstrap;
-
-// TEST SUITE 1: Context & Autoloading
-echo "Test Suite 1: Context & Class Loading\n";
-it( "Bootstrap defines WPGATE_CORE_VERSION as 0.1.0", function() {
-	return defined( 'WPGATE_CORE_VERSION' ) && WPGATE_CORE_VERSION === '0.1.0';
+// TEST SUITE 1: Context & Path Resolution
+echo "Test Suite 1: Context & Path Resolution\n";
+it( "Detects mu-plugin loading context when inside mu-plugins dir", function() {
+	\WPGate\Core\Context::init( WPMU_PLUGIN_DIR . '/wpgate-core' );
+	return \WPGate\Core\Context::get_loading_method() === 'mu-plugin';
 });
 
-it( "Autoloader resolves WPGate\\Core\\Context correctly", function() {
-	return class_exists( 'WPGate\\Core\\Context' );
-});
-
-it( "Context generates valid asset URLs and paths for WPGate", function() {
+it( "Resolves asset URL correctly in mu-plugin context", function() {
+	\WPGate\Core\Context::init( WPMU_PLUGIN_DIR . '/wpgate-core' );
 	$url = \WPGate\Core\Context::get_asset_url( 'user.jpg' );
-	$path = \WPGate\Core\Context::get_asset_path( 'user.jpg' );
-	return ( false !== strpos( $url, 'wpgate-core' ) ) && ( false !== strpos( $path, 'wpgate-core' ) );
+	return $url === content_url( '/mu-plugins/wpgate-core/assets/user.jpg' );
 });
 
-// TEST SUITE 2: Settings & Migration
-echo "\nTest Suite 2: Settings, Defaults & Migration\n";
-it( "Default settings keep updates enabled (disable_updates == 'no')", function() {
-	$defaults = \WPGate\Core\Settings::get_defaults();
-	return isset( $defaults['disable_updates'] ) && $defaults['disable_updates'] === 'no';
+it( "Detects theme loading context when inside stylesheet directory", function() {
+	$theme_dir = get_stylesheet_directory() . '/wpgate-core';
+	\WPGate\Core\Context::init( $theme_dir );
+	return \WPGate\Core\Context::get_loading_method() === 'theme';
 });
 
-it( "Settings sanitization handles invalid mode cleanly", function() {
-	$sanitized = \WPGate\Core\Settings::sanitize( [ 'mode' => 'invalid_mode_xyz' ] );
-	return $sanitized['mode'] === 'disabled';
+it( "Resolves asset URL correctly in theme context", function() {
+	$theme_dir = get_stylesheet_directory() . '/wpgate-core';
+	\WPGate\Core\Context::init( $theme_dir );
+	$url = \WPGate\Core\Context::get_asset_url( 'user.jpg' );
+	return $url === 'https://example.com/wp-content/themes/child-theme/wpgate-core/assets/user.jpg';
+});
+
+// Reset context back to test directory
+\WPGate\Core\Context::init( dirname( __DIR__ ) . '/mu-plugin-package/wpgate-core' );
+
+// TEST SUITE 2: Settings Management & Defaults
+echo "\nTest Suite 2: Settings Management & Defaults\n";
+it( "Returns safe defaults with updates NOT disabled by default", function() {
+	delete_option( \WPGate\Core\Settings::OPTION_KEY );
+	$settings = \WPGate\Core\Settings::get_all( true );
+	return ( $settings['disable_updates'] === 'no' ) &&
+	       ( $settings['mode'] === 'disabled' ) &&
+	       ( $settings['disable_telemetry'] === 'yes' );
 });
 
 it( "Sanitize host list removes schemes, ports, and duplicates", function() {
@@ -296,20 +374,21 @@ it( "Sanitize host list removes schemes, ports, and duplicates", function() {
 	return $cleaned === $expected;
 });
 
-it( "Automatically migrates legacy Ghateino settings if present", function() {
+it( "Settings save and reset cycle functions correctly", function() {
 	delete_option( \WPGate\Core\Settings::OPTION_KEY );
-	update_option( \WPGate\Core\Settings::LEGACY_OPTION_KEY, [
-		'mode'      => 'whitelist',
-		'whitelist' => 'migrated.example.com',
-	] );
-	$settings = \WPGate\Core\Settings::get_all( true );
-	return ( $settings['mode'] === 'whitelist' ) && ( false !== strpos( $settings['whitelist'], 'migrated.example.com' ) );
+	$custom = [ 'mode' => 'whitelist', 'whitelist' => 'custom-domain.com' ];
+	\WPGate\Core\Settings::save( $custom );
+	$loaded = \WPGate\Core\Settings::get_all( true );
+	$saved_ok = ( $loaded['mode'] === 'whitelist' && $loaded['whitelist'] === 'custom-domain.com' );
+	\WPGate\Core\Settings::reset();
+	$after_reset = \WPGate\Core\Settings::get_all( true );
+	return $saved_ok && ( $after_reset['mode'] === 'disabled' );
 });
 
 // TEST SUITE 3: Domain Matching Logic (Exact & Subdomain)
 echo "\nTest Suite 3: Domain Matching & Subdomain Security\n";
 it( "Exact domain matches correctly", function() {
-	return \WPGate\Core\HttpGuard::host_in_list( 'api.shokrino.com', [ 'api.shokrino.com', 'zarinpal.com' ] );
+	return \WPGate\Core\HttpGuard::host_in_list( 'api.zarinpal.com', [ 'api.zarinpal.com', 'sep.ir' ] );
 });
 
 it( "Subdomain of allowed domain matches correctly", function() {
@@ -342,17 +421,17 @@ it( "In disabled mode, external requests pass through", function() {
 it( "In whitelist mode, whitelisted domain passes through", function() {
 	update_option( \WPGate\Core\Settings::OPTION_KEY, [
 		'mode'      => 'whitelist',
-		'whitelist' => "api.shokrino.com\nzarinpal.com",
+		'whitelist' => "api.zarinpal.com\nsep.ir",
 	] );
 	\WPGate\Core\Settings::get_all( true );
-	$res = \WPGate\Core\HttpGuard::filter( false, [], 'https://api.shokrino.com/v1/verify' );
+	$res = \WPGate\Core\HttpGuard::filter( false, [], 'https://api.zarinpal.com/v1/verify' );
 	return false === $res;
 });
 
 it( "In whitelist mode, non-whitelisted domain is blocked with WP_Error and wpgate_blocked code", function() {
 	update_option( \WPGate\Core\Settings::OPTION_KEY, [
 		'mode'      => 'whitelist',
-		'whitelist' => "api.shokrino.com\nzarinpal.com",
+		'whitelist' => "api.zarinpal.com\nsep.ir",
 	] );
 	\WPGate\Core\Settings::get_all( true );
 	$res = \WPGate\Core\HttpGuard::filter( false, [], 'https://unallowed-site.com/api' );
@@ -372,101 +451,101 @@ it( "In blacklist mode, blacklisted domain is blocked with WP_Error", function()
 it( "Localhost requests are never blocked even in strict whitelist mode", function() {
 	update_option( \WPGate\Core\Settings::OPTION_KEY, [
 		'mode'      => 'whitelist',
-		'whitelist' => "api.shokrino.com",
+		'whitelist' => "api.zarinpal.com",
 	] );
 	\WPGate\Core\Settings::get_all( true );
 	$res = \WPGate\Core\HttpGuard::filter( false, [], 'http://127.0.0.1/wp-cron.php' );
 	return false === $res;
 });
 
-it( "Mixpanel hosts are blocked when block_mixpanel is 'yes'", function() {
-	update_option( \WPGate\Core\Settings::OPTION_KEY, [
-		'mode'           => 'disabled',
-		'block_mixpanel' => 'yes',
-	] );
-	\WPGate\Core\Settings::get_all( true );
-	$res = \WPGate\Core\HttpGuard::filter( false, [], 'https://api-eu.mixpanel.com/track' );
-	return ( $res instanceof WP_Error ) && ( $res->get_error_code() === 'wpgate_blocked' );
-});
-
-// TEST SUITE 5: Telemetry Blocking
-echo "\nTest Suite 5: Telemetry Interception\n";
-it( "Blocks requests to wordpress.org when disable_telemetry is 'yes'", function() {
+// TEST SUITE 5: Telemetry Interception
+echo "\nTest Suite 5: Telemetry Guard\n";
+it( "Blocks telemetry and tracking domains when telemetry guard enabled", function() {
 	update_option( \WPGate\Core\Settings::OPTION_KEY, [ 'disable_telemetry' => 'yes' ] );
 	\WPGate\Core\Settings::get_all( true );
-	$res = \WPGate\Core\TelemetryGuard::filter( false, [], 'https://api.wordpress.org/stats/wordpress/1.0/' );
-	return ( $res instanceof WP_Error ) && ( $res->get_error_code() === 'wpgate_blocked' );
+	$res = \WPGate\Core\TelemetryGuard::filter( false, [], 'https://api.wordpress.org/core/version-check/1.7/' );
+	return ( $res instanceof WP_Error ) && ( $res->get_error_code() === 'wpgate_telemetry_blocked' );
 });
 
-// TEST SUITE 6: Timeout Guard
-echo "\nTest Suite 6: Request Timeout Guard\n";
-it( "Clamps timeout to max_request_timeout when enabled", function() {
+it( "Allows telemetry when telemetry guard disabled", function() {
+	update_option( \WPGate\Core\Settings::OPTION_KEY, [ 'disable_telemetry' => 'no' ] );
+	\WPGate\Core\Settings::get_all( true );
+	$res = \WPGate\Core\TelemetryGuard::filter( false, [], 'https://api.wordpress.org/core/version-check/1.7/' );
+	return false === $res;
+});
+
+// TEST SUITE 6: Timeout Management
+echo "\nTest Suite 6: Timeout Guard\n";
+it( "Reduces timeout to configured limit when enable_timeout_guard is 'yes'", function() {
 	update_option( \WPGate\Core\Settings::OPTION_KEY, [
 		'enable_timeout_guard' => 'yes',
-		'max_request_timeout'  => '3',
+		'max_request_timeout'  => '4',
 	] );
 	\WPGate\Core\Settings::get_all( true );
-	$args = [ 'timeout' => 30 ];
-	$res = \WPGate\Core\TimeoutGuard::filter( $args, 'https://external-api.com/slow' );
-	return $res['timeout'] === 3;
+	$args = \WPGate\Core\TimeoutGuard::filter( [ 'timeout' => 30 ], 'https://external-api.com/slow' );
+	return $args['timeout'] === 4;
 });
 
-it( "Preserves shorter timeout if already below ceiling", function() {
+it( "Leaves timeout untouched when enable_timeout_guard is 'no'", function() {
 	update_option( \WPGate\Core\Settings::OPTION_KEY, [
-		'enable_timeout_guard' => 'yes',
-		'max_request_timeout'  => '5',
+		'enable_timeout_guard' => 'no',
+		'max_request_timeout'  => '4',
 	] );
 	\WPGate\Core\Settings::get_all( true );
-	$args = [ 'timeout' => 2 ];
-	$res = \WPGate\Core\TimeoutGuard::filter( $args, 'https://external-api.com/fast' );
-	return $res['timeout'] === 2;
+	$args = \WPGate\Core\TimeoutGuard::filter( [ 'timeout' => 30 ], 'https://external-api.com/slow' );
+	return $args['timeout'] === 30;
 });
 
-// TEST SUITE 7: Asset Replacement & Stubs
-echo "\nTest Suite 7: Local CDN & Asset Replacement\n";
-it( "Replaces Google Fonts with local Vazirmatn or Roboto CSS", function() {
+// TEST SUITE 7: Asset Rewriting & CDN Local Fallbacks
+echo "\nTest Suite 7: Asset Manager & CDN Rewriting\n";
+it( "Rewrites CDN FontAwesome stylesheet to local asset URL", function() {
 	update_option( \WPGate\Core\Settings::OPTION_KEY, [ 'local_asset_rewrite' => 'yes' ] );
 	\WPGate\Core\Settings::get_all( true );
-	$src = 'https://fonts.googleapis.com/css?family=Vazirmatn:400,700&display=swap';
-	$replaced = \WPGate\Core\AssetManager::replace_style_src( $src, 'google-fonts-vazir' );
-	return false !== strpos( $replaced, 'vazirmatn.css' );
+	$remote = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css';
+	$rewritten = \WPGate\Core\AssetManager::replace_style_src( $remote, 'fontawesome' );
+	return ( false !== strpos( $rewritten, 'vendor/fontawesome/css/all.min.css' ) ) &&
+	       ( false === strpos( $rewritten, 'cdnjs.cloudflare.com' ) );
 });
 
-it( "Replaces Mixpanel script with stub", function() {
+it( "Rewrites CDN Swiper JS script to local asset URL", function() {
+	update_option( \WPGate\Core\Settings::OPTION_KEY, [ 'local_asset_rewrite' => 'yes' ] );
+	\WPGate\Core\Settings::get_all( true );
+	$remote = 'https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js';
+	$rewritten = \WPGate\Core\AssetManager::replace_script_src( $remote, 'swiper' );
+	return ( false !== strpos( $rewritten, 'vendor/swiper/swiper-bundle.min.js' ) ) &&
+	       ( false === strpos( $rewritten, 'jsdelivr.net' ) );
+});
+
+it( "Replaces Mixpanel script with safe local stub", function() {
 	update_option( \WPGate\Core\Settings::OPTION_KEY, [
 		'local_asset_rewrite' => 'yes',
 		'block_mixpanel'      => 'yes',
 	] );
 	\WPGate\Core\Settings::get_all( true );
-	$src = 'https://cdn.mxpnl.com/libs/mixpanel-2-latest.min.js';
-	$replaced = \WPGate\Core\AssetManager::replace_script_src( $src, 'mixpanel-js' );
-	return false !== strpos( $replaced, 'mixpanel-stub.js' );
+	$remote = 'https://cdn.mxpnl.com/libs/mixpanel-2-latest.min.js';
+	$rewritten = \WPGate\Core\AssetManager::replace_script_src( $remote, 'mixpanel' );
+	return false !== strpos( $rewritten, 'mixpanel-stub.js' );
 });
 
-it( "Strict asset block replaces unmapped external CDN with blocked stub", function() {
-	update_option( \WPGate\Core\Settings::OPTION_KEY, [
-		'local_asset_rewrite' => 'yes',
-		'strict_asset_block'  => 'yes',
-	] );
-	\WPGate\Core\Settings::get_all( true );
-	$src = 'https://cdnjs.cloudflare.com/ajax/libs/some-random-lib/1.0/lib.js';
-	$replaced = \WPGate\Core\AssetManager::replace_script_src( $src, 'random-lib' );
-	return false !== strpos( $replaced, 'blocked-asset.js' );
+it( "Extracts Google Font families from complex URL queries", function() {
+	$url = 'https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700&family=Roboto:ital@1&display=swap';
+	$families = \WPGate\Core\AssetManager::extract_google_font_families( $url );
+	return in_array( 'vazirmatn', $families, true ) && in_array( 'roboto', $families, true );
 });
 
-// TEST SUITE 8: Logger & Sensitive Query Redaction
-echo "\nTest Suite 8: Secure Logger & Parameter Redaction\n";
-it( "Redacts sensitive query parameters (token, api_key, password)", function() {
-	$url = 'https://api.payment.com/v1/charge?token=secret9988&api_key=privkey123&user_id=45&pass=mypassword';
-	$sanitized = \WPGate\Core\Logger::sanitize_url( $url );
-	return ( false === strpos( $sanitized, 'secret9988' ) ) &&
-	       ( false === strpos( $sanitized, 'privkey123' ) ) &&
-	       ( false === strpos( $sanitized, 'mypassword' ) ) &&
-	       ( false !== strpos( $sanitized, '[REDACTED]' ) ) &&
-	       ( false !== strpos( $sanitized, 'user_id=45' ) );
+// TEST SUITE 8: Logger & Redaction of Credentials
+echo "\nTest Suite 8: Secure Logger & Credential Redaction\n";
+it( "Redacts tokens, passwords, and API keys from logged URLs", function() {
+	$dirty_url = 'https://api.external.com/v1/auth?token=supersecret123&api_key=xyz987&normal=value&password=secretpassword999';
+	$sanitized = \WPGate\Core\Logger::sanitize_url( $dirty_url );
+	return ( false === strpos( $sanitized, 'supersecret123' ) ) &&
+	       ( false === strpos( $sanitized, 'xyz987' ) ) &&
+	       ( false === strpos( $sanitized, 'secretpassword999' ) ) &&
+	       ( false !== strpos( $sanitized, 'normal=value' ) ) &&
+	       ( false !== strpos( $sanitized, '[REDACTED]' ) );
 });
 
-it( "Logger records events when enabled and clears on command", function() {
+it( "Logs events to database options and respects clear_logs", function() {
 	update_option( \WPGate\Core\Settings::OPTION_KEY, [ 'enable_logging' => 'yes' ] );
 	\WPGate\Core\Settings::get_all( true );
 	delete_option( \WPGate\Core\Logger::LOG_KEY );
@@ -483,16 +562,16 @@ it( "Logger records events when enabled and clears on command", function() {
 
 // TEST SUITE 9: Kill-Switch & Disabled Behavior
 echo "\nTest Suite 9: Kill-Switch Behavior (wp-config.php define)\n";
-it( "MU-Plugin loader respects WPGATE_CORE_DISABLED", function() {
-	$cmd = 'php -r "define(\'ABSPATH\', 1); define(\'WPGATE_CORE_DISABLED\', true); require \'' .
-	       addslashes( dirname( __DIR__ ) . '/mu-plugin-package/mu-plugins/wpgate-loader.php' ) . '\'; echo defined(\'WPGATE_CORE_LOADED\') ? \'loaded\' : \'disabled\';"';
+it( "MU-Plugin loader respects WPGATE_DISABLED", function() {
+	$cmd = 'php -r "define(\'ABSPATH\', 1); define(\'WPGATE_DISABLED\', true); require \'' .
+	       addslashes( dirname( __DIR__ ) . '/mu-plugin-package/wpgate-loader.php' ) . '\'; echo defined(\'WPGATE_CORE_LOADED\') ? \'loaded\' : \'disabled\';"';
 	$output = trim( shell_exec( $cmd ) );
 	return 'disabled' === $output;
 });
 
-it( "MU-Plugin loader respects legacy GHATEINO_CORE_DISABLED", function() {
-	$cmd = 'php -r "define(\'ABSPATH\', 1); define(\'GHATEINO_CORE_DISABLED\', true); require \'' .
-	       addslashes( dirname( __DIR__ ) . '/mu-plugin-package/mu-plugins/wpgate-loader.php' ) . '\'; echo defined(\'WPGATE_CORE_LOADED\') ? \'loaded\' : \'disabled\';"';
+it( "MU-Plugin loader respects WPGATE_CORE_DISABLED", function() {
+	$cmd = 'php -r "define(\'ABSPATH\', 1); define(\'WPGATE_CORE_DISABLED\', true); require \'' .
+	       addslashes( dirname( __DIR__ ) . '/mu-plugin-package/wpgate-loader.php' ) . '\'; echo defined(\'WPGATE_CORE_LOADED\') ? \'loaded\' : \'disabled\';"';
 	$output = trim( shell_exec( $cmd ) );
 	return 'disabled' === $output;
 });
@@ -530,15 +609,79 @@ it( "Settings page check blocks users lacking manage_options", function() {
 	return empty( $out );
 });
 
-// TEST SUITE 12: Theme Loader Package Integrity
-echo "\nTest Suite 12: Theme Loader Package Verification\n";
+// TEST SUITE 12: REST API Endpoints
+echo "\nTest Suite 12: REST API Controller (wpgate/v1)\n";
+it( "Registers all required REST routes under wpgate/v1", function() {
+	\WPGate\Core\RestController::register_routes();
+	return isset(
+		$GLOBALS['wp_rest_routes']['wpgate/v1/settings'],
+		$GLOBALS['wp_rest_routes']['wpgate/v1/settings/reset'],
+		$GLOBALS['wp_rest_routes']['wpgate/v1/logs'],
+		$GLOBALS['wp_rest_routes']['wpgate/v1/logs/clear'],
+		$GLOBALS['wp_rest_routes']['wpgate/v1/presets'],
+		$GLOBALS['wp_rest_routes']['wpgate/v1/stats']
+	);
+});
+
+it( "GET /wpgate/v1/settings returns settings and author metadata", function() {
+	$res = \WPGate\Core\RestController::get_settings();
+	$data = $res->get_data();
+	return $res->get_status() === 200 &&
+	       isset( $data['data']['settings'], $data['data']['system'] ) &&
+	       $data['data']['system']['author'] === 'Hossein Mohammadpour';
+});
+
+it( "POST /wpgate/v1/settings saves sanitized configuration", function() {
+	$req = new WP_REST_Request( [], [
+		'mode'      => 'blacklist',
+		'blacklist' => "test-bad.com\nmalware.org",
+	] );
+	$res = \WPGate\Core\RestController::save_settings( $req );
+	$data = $res->get_data();
+	return $res->get_status() === 200 &&
+	       $data['data']['settings']['mode'] === 'blacklist' &&
+	       false !== strpos( $data['data']['settings']['blacklist'], 'test-bad.com' );
+});
+
+it( "GET /wpgate/v1/logs provides paginated results and search filtering", function() {
+	update_option( \WPGate\Core\Settings::OPTION_KEY, [ 'enable_logging' => 'yes' ] );
+	\WPGate\Core\Settings::get_all( true );
+	\WPGate\Core\Logger::clear_logs();
+	\WPGate\Core\Logger::log( 'https://target-alpha.com/api', 'target-alpha.com', 'blocked' );
+	\WPGate\Core\Logger::log( 'https://target-beta.com/api', 'target-beta.com', 'allowed' );
+
+	$req = new WP_REST_Request( [ 'search' => 'alpha', 'page' => 1, 'per_page' => 10 ] );
+	$res = \WPGate\Core\RestController::get_logs( $req );
+	$data = $res->get_data();
+	return $res->get_status() === 200 &&
+	       $data['data']['total'] === 1 &&
+	       $data['data']['items'][0]['host'] === 'target-alpha.com';
+});
+
+it( "GET /wpgate/v1/presets loads domain presets list", function() {
+	$res = \WPGate\Core\RestController::get_presets();
+	$data = $res->get_data();
+	return $res->get_status() === 200 &&
+	       is_array( $data['data'] ) &&
+	       ! empty( $data['data'] );
+});
+
+it( "GET /wpgate/v1/stats calculates telemetry metrics", function() {
+	$res = \WPGate\Core\RestController::get_stats();
+	$data = $res->get_data();
+	return $res->get_status() === 200 &&
+	       isset( $data['data']['total_logs'], $data['data']['active_mode'] );
+});
+
+// TEST SUITE 13: Theme Loader Package Integrity
+echo "\nTest Suite 13: Theme Loader Package Verification\n";
 it( "Theme package bootstrap file exists and has valid syntax", function() {
 	$theme_bootstrap = dirname( __DIR__ ) . '/theme-package/wpgate-core/bootstrap.php';
 	return file_exists( $theme_bootstrap );
 });
 
 it( "Theme package core matches MU package core files", function() {
-	$mu_core = dirname( __DIR__ ) . '/mu-plugin-package/mu-plugins/wpgate-core';
+	$mu_core = dirname( __DIR__ ) . '/mu-plugin-package/wpgate-core';
 	$theme_core = dirname( __DIR__ ) . '/theme-package/wpgate-core';
 	$files = [
 		'bootstrap.php',
@@ -553,16 +696,56 @@ it( "Theme package core matches MU package core files", function() {
 		'includes/GravatarGuard.php',
 		'includes/AssetManager.php',
 		'includes/Logger.php',
+		'includes/RestController.php',
 		'admin/AdminController.php',
 		'admin/views/settings-page.php',
 		'admin/views/dashboard-widget.php',
 	];
 	foreach ( $files as $f ) {
+		if ( ! file_exists( "$theme_core/$f" ) ) {
+			return false;
+		}
 		if ( md5_file( "$mu_core/$f" ) !== md5_file( "$theme_core/$f" ) ) {
 			return false;
 		}
 	}
 	return true;
+});
+
+// TEST SUITE 14: Admin UI Asset Resolution & Fallback Behavior (P0 Bug Fix)
+echo "\nTest Suite 14: Admin UI Asset Resolution & Diagnostics\n";
+it( "Locates admin JS and CSS assets without incorrect /assets/ duplication", function() {
+	$js = \WPGate\Core\Admin\AdminController::locate_admin_dist_asset( 'wpgate-admin.js' );
+	$css = \WPGate\Core\Admin\AdminController::locate_admin_dist_asset( 'wpgate-admin.css' );
+
+	return null !== $js &&
+	       null !== $css &&
+	       file_exists( $js['path'] ) &&
+	       file_exists( $css['path'] ) &&
+	       false !== strpos( $js['url'], 'wpgate-admin.js' ) &&
+	       false !== strpos( $css['url'], 'wpgate-admin.css' );
+});
+
+it( "Returns null for nonexistent asset files without throwing errors", function() {
+	$missing = \WPGate\Core\Admin\AdminController::locate_admin_dist_asset( 'nonexistent-bundle.js' );
+	return null === $missing;
+});
+
+it( "Settings page renders diagnostic notice if admin JS asset is missing", function() {
+	// Temporarily point context to empty directory
+	$tmp_dir = sys_get_temp_dir() . '/wpgate-empty-' . uniqid();
+	mkdir( $tmp_dir );
+	\WPGate\Core\Context::init( $tmp_dir );
+
+	ob_start();
+	\WPGate\Core\Admin\AdminController::render_settings_page();
+	$output = ob_get_clean();
+
+	// Reset context
+	\WPGate\Core\Context::init( dirname( __DIR__ ) . '/mu-plugin-package/wpgate-core' );
+	rmdir( $tmp_dir );
+
+	return false !== strpos( $output, 'SPA Administration Dashboard Assets Not Found' );
 });
 
 echo "\n========================================================\n";

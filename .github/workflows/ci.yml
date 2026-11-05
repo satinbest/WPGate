@@ -13,9 +13,67 @@ on:
       - develop
 
 jobs:
+  build-and-lint-ui:
+    name: Build & Verify Admin UI
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: admin-ui/package-lock.json
+
+      - name: Install Admin UI dependencies & Build
+        run: |
+          cd admin-ui
+          npm ci
+          npm run build
+
+      - name: Verify compiled asset sizes
+        run: |
+          JS_FILE="mu-plugin-package/wpgate-core/admin/dist/wpgate-admin.js"
+          CSS_FILE="mu-plugin-package/wpgate-core/admin/dist/wpgate-admin.css"
+          
+          if [ ! -f "$JS_FILE" ]; then
+            echo "Error: $JS_FILE not found!"
+            exit 1
+          fi
+          
+          if [ ! -f "$CSS_FILE" ]; then
+            echo "Error: $CSS_FILE not found!"
+            exit 1
+          fi
+
+          JS_SIZE=$(wc -c < "$JS_FILE")
+          CSS_SIZE=$(wc -c < "$CSS_FILE")
+
+          echo "JS Size: $JS_SIZE bytes"
+          echo "CSS Size: $CSS_SIZE bytes"
+
+          # wpgate-admin.js must be > 50KB (51200 bytes)
+          if [ "$JS_SIZE" -lt 51200 ]; then
+            echo "Error: $JS_FILE is smaller than 50KB ($JS_SIZE bytes)"
+            exit 1
+          fi
+
+          # wpgate-admin.css must be > 5KB (5120 bytes)
+          if [ "$CSS_SIZE" -lt 5120 ]; then
+            echo "Error: $CSS_FILE is smaller than 5KB ($CSS_SIZE bytes)"
+            exit 1
+          fi
+
+      - name: Verify Documentation Parity & Link Integrity
+        run: |
+          node tests/verify-docs.js
+
   lint-and-test:
     name: PHP ${{ matrix.php }} Lint & Test
     runs-on: ubuntu-latest
+    needs: build-and-lint-ui
     strategy:
       fail-fast: false
       matrix:
@@ -30,7 +88,6 @@ jobs:
         with:
           php-version: ${{ matrix.php }}
           extensions: mbstring, json, curl
-          tools: php-cs-fixer, phpunit
 
       - name: Validate PHP syntax (php -l)
         run: |
@@ -40,8 +97,28 @@ jobs:
         run: |
           php tests/run-tests.php
 
-      - name: Verify package integrity
+      - name: Verify package integrity & ZIP structure
         run: |
-          test -f mu-plugin-package/mu-plugins/wpgate-loader.php
-          test -f mu-plugin-package/mu-plugins/wpgate-core/bootstrap.php
+          test -f mu-plugin-package/wpgate-loader.php
+          test -f mu-plugin-package/wpgate-core/bootstrap.php
+          test -f mu-plugin-package/wpgate-core/admin/dist/wpgate-admin.js
+          test -f mu-plugin-package/wpgate-core/admin/dist/wpgate-admin.css
           test -f theme-package/wpgate-core/bootstrap.php
+
+          # Test packaging and unzipping to temporary directory
+          cd mu-plugin-package
+          zip -r ../test-mu-package.zip .
+          cd ..
+
+          mkdir test_unzip
+          unzip test-mu-package.zip -d test_unzip
+
+          # Assert root loader exists directly at root of unzipped mu-plugins
+          test -f test_unzip/wpgate-loader.php
+          test -f test_unzip/wpgate-core/bootstrap.php
+          test -f test_unzip/wpgate-core/admin/dist/wpgate-admin.js
+          test -f test_unzip/wpgate-core/admin/dist/wpgate-admin.css
+
+          # Verify loader syntax
+          php -l test_unzip/wpgate-loader.php
+          php -l test_unzip/wpgate-core/bootstrap.php

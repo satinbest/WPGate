@@ -1,0 +1,1 @@
+/* Blocked external script by WPGate */

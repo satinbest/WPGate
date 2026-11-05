@@ -1,5 +1,7 @@
 # Contributing to WPGate
 
+[English](CONTRIBUTING.md) | [فارسی](CONTRIBUTING-FA.md)
+
 Thank you for your interest in contributing to **WPGate**! As an enterprise-grade standalone WordPress module, we uphold rigorous standards for code quality, architectural consistency, and security.
 
 ---

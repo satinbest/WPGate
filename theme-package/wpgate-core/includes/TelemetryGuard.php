@@ -39,7 +39,7 @@ class TelemetryGuard {
 
 		if ( 'wordpress.org' === $host || substr( $host, -14 ) === '.wordpress.org' ) {
 			Logger::log( $url, $host, 'telemetry_blocked' );
-			return new \WP_Error( 'wpgate_blocked', 'Telemetry blocked' );
+			return new \WP_Error( 'wpgate_telemetry_blocked', 'Telemetry blocked by WPGate.' );
 		}
 
 		return $preempt;

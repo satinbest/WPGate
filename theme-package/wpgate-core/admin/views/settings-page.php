@@ -247,7 +247,7 @@ defined( 'ABSPATH' ) || exit;
 					<td>
 						<label>
 							<input type="checkbox" name="<?php echo esc_attr( Settings::OPTION_KEY ); ?>[allow_whitelisted_updates]" value="yes" <?php checked( $settings['allow_whitelisted_updates'], 'yes' ); ?> />
-							اجازه به دریافت آپدیت‌ها از مارکت‌ها و سرورهای داخلی تعریف شده در لیست سفید (مانند ژاکت، راست‌چین و شکرینو)
+							اجازه به دریافت آپدیت‌ها از مارکت‌ها و سرورهای داخلی تعریف شده در لیست سفید (مانند ژاکت و راست‌چین)
 						</label>
 					</td>
 				</tr>

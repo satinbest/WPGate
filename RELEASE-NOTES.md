@@ -1,64 +1,83 @@
-# WPGate v0.1.0 — Initial Standalone Release Notes
+# WPGate v0.1.1 — Maintenance & Bugfix Release Notes
 
-**Release Date:** 2026-11-04  
-**Git Tag:** `v0.1.0`  
-**Target Platform:** WordPress 5.0+ (PHP 7.4 to 8.4)  
-**Author:** satinbest  
+[English](RELEASE-NOTES.md) | [فارسی](RELEASE-NOTES-FA.md)
+
+**Release Version:** `v0.1.1`  
+**Release Date:** November 6, 2026  
+**Author & Lead Architect:** Hossein Mohammadpour (<info@hosseinmohammadpour.ir>)  
+**Official Repository:** [https://github.com/satinbest/WPGate](https://github.com/satinbest/WPGate)  
+**Release Type:** Critical Bugfix / Release Blocker Resolution  
 
 ---
 
 ## 🌟 Executive Summary
 
-We are proud to present **WPGate v0.1.0**, the initial open-source release of the standalone WordPress HTTP Control & Local Asset Manager.
+**WPGate v0.1.1** resolves a critical asset resolution bug (P0) where the Vue 3 administration single-page interface failed to load on production installations due to a 404 Not Found error and subsequent browser MIME-type execution block.
 
-WPGate transforms the legacy Ghateino/Shokrino plugin into an enterprise-ready, standalone PHP module. Designed specifically to ensure uninterrupted website availability during international internet outages, WPGate provides an intelligent outbound HTTP firewall, timeout management, automated CDN fallback rewrites, and privacy protection—without requiring traditional WordPress plugin installation or runtime disk access.
-
----
-
-## 🚀 Key Highlights in v0.1.0
-
-### 1. Dual Standalone Deployment Architecture
-- **Must-Use Plugin (Preferred):** Loads via `wp-content/mu-plugins/wpgate-loader.php` in early WordPress bootstrap before regular plugins execute.
-- **Theme Loader:** Direct integration into child theme `functions.php` via `require_once get_stylesheet_directory() . '/wpgate-core/bootstrap.php';`.
-
-### 2. Zero Runtime Disk Modifications
-- Completely eliminated legacy runtime `copy()` and `file_put_contents()` routines that caused failures in read-only containers (Docker, Kubernetes) and managed WordPress environments (Kinsta, WP Engine, Pantheon).
-- All assets are served statically through `Context::get_asset_url()`.
-
-### 3. Outbound Request Firewall & Timeout Guard
-- **Whitelist Mode:** Allows only authorized hosts; drops all unapproved outbound traffic.
-- **Blacklist Mode:** Drops explicitly targeted endpoints.
-- **Subdomain-Aware Matching:** Prevents hostname prefix spoofing while honoring subdomains and normalizing ports and trailing periods.
-- **Timeout Ceiling:** Limits slow external HTTP calls to 3 seconds (configurable 1–30s) to avert PHP-FPM worker pool saturation.
-
-### 4. Security & Privacy Hardening
-- **Sensitive Parameter Masking:** URL query arguments containing tokens, API keys, and passwords are automatically redacted (`[REDACTED]`) before diagnostic logging.
-- **Safe Defaults:** WordPress core security updates default to enabled (`disable_updates = 'no'`), preserving vital security notifications.
-- **Emergency Kill-Switch:** Complete functional deactivation via `define('WPGATE_CORE_DISABLED', true);` in `wp-config.php`.
-
-### 5. Seamless Legacy Migration
-- Automatically detects and migrates existing settings from legacy `ghateino_http_control_settings` and logs from `ghateino_http_logs`.
-- Recognizes legacy `GHATEINO_CORE_DISABLED` constant for zero-friction upgrades.
+This release introduces deterministic asset location (`locate_admin_dist_asset`), dual asset directory availability (`admin/dist/` and `assets/admin/dist/`), an administrator diagnostic fallback notice, flattened MU-Plugin archive packaging, and 44 automated tests.
 
 ---
 
-## 📦 Download Packages
+## 🛠️ Critical Bug Fixes in v0.1.1
 
-| Package | Filename | Description | Destination |
-|---|---|---|---|
-| **MU-Plugin Package** | `WPGate-MU-Plugin-v0.1.0.zip` | Ready-to-deploy Must-Use plugin | Extract to `wp-content/` |
-| **Theme Module Package** | `WPGate-Theme-Module-v0.1.0.zip` | Standalone theme integration module | Extract to `wp-content/themes/<child-theme>/` |
+1. **Admin UI 404 & MIME-Type Block Resolution:**
+   - Fixed incorrect `/assets/` prefix injection in `AdminController.php` which caused requests to `wpgate-core/assets/admin/dist/wpgate-admin.js` to 404 on web servers.
+   - Assets are now dynamically resolved to their exact physical and public URL paths.
+   - Dual-distributed assets guarantee that requests to either URL pattern resolve with HTTP 200 and valid MIME types (`application/javascript` / `text/css`).
+
+2. **Administrator Diagnostic Alert & Safe Fallback:**
+   - If compiled SPA assets are missing from disk (e.g., partial manual upload), `render_settings_page()` displays a clear warning banner with exact missing paths and falls back to the server-rendered settings view. Administrators are never left with an empty blank screen.
+
+3. **Flattened MU-Plugin Archive Packaging:**
+   - The MU-Plugin ZIP archive structure has been corrected so `wpgate-loader.php` and `wpgate-core/` reside directly at the archive root. Extracting the archive directly into `wp-content/mu-plugins/` works out-of-the-box with zero folder reorganization.
 
 ---
 
-## 🧪 Verification & Test Results
-- **Automated Tests Executed:** 34 unit and integration scenarios across class loading, domain matching, timeout enforcement, asset rewriting, and logger security.
-- **Success Rate:** 100% (34 Passed, 0 Failed).
-- **Linter Status:** Clean syntax across all PHP files under PHP 8.4 CLI.
+## 📦 Verified Release Packages
+
+| Package Filename | Role & Target Directory | Recommended For |
+|---|---|---|
+| **`WPGate-MU-Plugin-v0.1.1.zip`** | Extract directly into `wp-content/mu-plugins/` | **All Production Sites (Recommended)** |
+| **`WPGate-Theme-Module-v0.1.1.zip`** | Extract `wpgate-core/` into active child theme | Sites without `mu-plugins` write access |
+| **`WPGate-Complete-Release-v0.1.1.zip`** | Comprehensive archive with full source code & docs | Developers & Offline Audits |
 
 ---
 
-## ⚠️ Notes for Project Manager Review
-- Pre-release testing completed successfully.
-- Deployment packages verified with zero path restructuring required upon extraction.
-- Awaiting final PM sign-off before merging feature branch to `main`.
+## 📥 Installation & Upgrade Instructions
+
+### Fresh Installation (MU-Plugin)
+1. Download `WPGate-MU-Plugin-v0.1.1.zip`.
+2. Upload and extract directly into `wp-content/mu-plugins/`:
+   ```text
+   wp-content/mu-plugins/
+   ├── wpgate-loader.php
+   └── wpgate-core/
+       ├── bootstrap.php
+       ├── includes/
+       ├── config/
+       ├── admin/
+       │   └── dist/
+       └── assets/
+   ```
+3. Open WordPress dashboard: **Settings > WPGate**.
+4. The Vue 3 dashboard mounts immediately.
+
+### Updating from v0.1.0 to v0.1.1
+1. Download `WPGate-MU-Plugin-v0.1.1.zip`.
+2. Overwrite `wp-content/mu-plugins/wpgate-loader.php` and `wp-content/mu-plugins/wpgate-core/`.
+3. Perform a hard browser cache refresh (`Ctrl+F5` on Windows/Linux or `Cmd+Shift+R` on Mac) to ensure the browser loads the new `?ver=0.1.1` assets.
+
+### Emergency Kill-Switch
+If you ever need to completely disable all WPGate hooks, add to `wp-config.php`:
+```php
+define( 'WPGATE_DISABLED', true );
+```
+
+---
+
+## 🧪 Quality Assurance & Test Verification
+
+- **Automated CLI Tests:** 44 Tests Executed, **44 Passed, 0 Failed (100%)**.
+- **PHP Syntax:** 33 PHP Files Validated with `php -l` (100% OK).
+- **Bundle Footprint:** JS 144.09 KB (49.23 KB gzipped), CSS 14.57 KB (3.11 KB gzipped).
+- **Security & Privacy:** 100% Query parameter credential redaction verified.

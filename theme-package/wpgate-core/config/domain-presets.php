@@ -195,8 +195,6 @@ return [
 		'label'   => 'لایسنس افزونه و قالب ایرانی',
 		'key'     => 'license',
 		'domains' => [
-			'shokrino.com',
-			'api.shokrino.com',
 			'abzarwp.com',
 			'api.abzarwp.com',
 			'cdn.abzarwp.com',

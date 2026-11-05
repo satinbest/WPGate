@@ -249,13 +249,7 @@ class AssetManager {
 			return function_exists( 'includes_url' ) ? includes_url( 'js/dist/vendor/react-dom.min.js' ) : Context::get_asset_url( 'vendor/wp-core-js/react-dom.min.js' );
 		}
 
-		$rewritten = apply_filters( 'wpgate_local_script_rewrite', '', $path, $original_src );
-		if ( '' !== $rewritten ) {
-			return $rewritten;
-		}
-
-		// Legacy hook fallback
-		return apply_filters( 'ghateino_local_script_rewrite', '', $path, $original_src );
+		return apply_filters( 'wpgate_local_script_rewrite', '', $path, $original_src );
 	}
 
 	/**
@@ -268,7 +262,7 @@ class AssetManager {
 	 */
 	private static function map_style_to_local( string $path, string $original_src, string $host ): string {
 		// FontAwesome
-		if ( false !== strpos( $path, 'fontawesome' ) ) {
+		if ( false !== strpos( $path, 'fontawesome' ) || false !== strpos( $path, 'font-awesome' ) ) {
 			if ( false !== strpos( $path, 'all.min.css' ) ) {
 				$local = Context::get_asset_path( 'vendor/fontawesome/css/all.min.css' );
 				if ( file_exists( $local ) ) {
@@ -331,12 +325,7 @@ class AssetManager {
 			}
 		}
 
-		$rewritten = apply_filters( 'wpgate_local_style_rewrite', '', $path, $original_src );
-		if ( '' !== $rewritten ) {
-			return $rewritten;
-		}
-
-		return apply_filters( 'ghateino_local_style_rewrite', '', $path, $original_src );
+		return apply_filters( 'wpgate_local_style_rewrite', '', $path, $original_src );
 	}
 
 	/**

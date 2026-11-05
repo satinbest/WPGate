@@ -35,14 +35,25 @@ jobs:
         run: |
           cd theme-package && zip -r ../WPGate-Theme-Module-${{ github.ref_name }}.zip . && cd ..
 
+      - name: Package Complete Release Archive
+        run: |
+          zip -r WPGate-Complete-Release-${{ github.ref_name }}.zip mu-plugin-package theme-package docs assets README.md README-FA.md RELEASE-NOTES.md LICENSE-NOTICE.md CHANGELOG.md PERFORMANCE-REPORT.md
+
+      - name: Generate Checksums
+        run: |
+          sha256sum WPGate-*.zip > SHA256SUMS.txt
+          cat SHA256SUMS.txt
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           files: |
             WPGate-MU-Plugin-${{ github.ref_name }}.zip
             WPGate-Theme-Module-${{ github.ref_name }}.zip
+            WPGate-Complete-Release-${{ github.ref_name }}.zip
+            SHA256SUMS.txt
           body_path: RELEASE-NOTES.md
-          draft: false
+          draft: true
           prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
