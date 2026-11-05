@@ -1,0 +1,3 @@
+06d4b51fe880279073056ddaaa182d48d373c78825354d5941efb209a2132a41 *WPGate-MU-Plugin-v0.1.1.zip
+ec1ba4fc1643b9dcac8eef9229f2e418568a9fbf315a84e0d9986f1e89210cb5 *WPGate-Theme-Module-v0.1.1.zip
+edbae7bc3d283d599e7d0fc4b52a175da74bde8ea4b4161d29a5eb3ba6cbb2ac *WPGate-Complete-Release-v0.1.1.zip

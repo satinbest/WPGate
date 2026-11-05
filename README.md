@@ -7,15 +7,70 @@
 **Enterprise Outbound HTTP Firewall & Local Asset Gateway for WordPress**
 
 [![CI / Quality & Tests](https://github.com/satinbest/WPGate/actions/workflows/ci.yml/badge.svg)](https://github.com/satinbest/WPGate/actions/workflows/ci.yml)
-[![Version](https://img.shields.io/badge/version-0.1.0-blue.svg)](https://github.com/satinbest/WPGate/releases)
+[![Version](https://img.shields.io/badge/version-0.1.1-blue.svg)](https://github.com/satinbest/WPGate/releases)
 [![PHP](https://img.shields.io/badge/PHP-7.4%20|%208.0%20|%208.1%20|%208.2%20|%208.3%20|%208.4-8892BF.svg)](https://www.php.net/)
 [![WordPress](https://img.shields.io/badge/WordPress-5.0+-21759B.svg)](https://wordpress.org/)
 [![Admin UI](https://img.shields.io/badge/Admin%20UI-Vue%203%20%2B%20Vite-42b883.svg)](https://vuejs.org/)
 [![License](https://img.shields.io/badge/license-MIT%20%2F%20GPLv2+-green.svg)](LICENSE-NOTICE.md)
 
-[🇮🇷 مستندات فارسی (README-FA.md)](README-FA.md) | [Admin Interface Guide](docs/admin-interface.md) | [Vue 3 UI Dev Guide](docs/vue-development.md) | [Performance Report](PERFORMANCE-REPORT.md) | [Changelog](CHANGELOG.md)
+[📥 Download Latest Release](https://github.com/satinbest/WPGate/releases) | [🇮🇷 مستندات فارسی (README-FA.md)](README-FA.md) | [Admin Interface Guide](docs/admin-interface.md) | [Performance Report](PERFORMANCE-REPORT.md) | [Bugfix Report](reports/ADMIN-UI-BUGFIX.md)
 
 </div>
+
+---
+
+## 📥 Downloads & Installation
+
+Ready-to-use production installers are available on our [GitHub Releases](https://github.com/satinbest/WPGate/releases) page:
+
+| Package | Recommended Target | Purpose |
+|---|---|---|
+| [**`WPGate-MU-Plugin-v0.1.1.zip`**](https://github.com/satinbest/WPGate/releases) | `wp-content/mu-plugins/` | **Recommended:** Early bootstrap, intercepts requests before plugins load |
+| [**`WPGate-Theme-Module-v0.1.1.zip`**](https://github.com/satinbest/WPGate/releases) | Active Child Theme | For hosting environments without `mu-plugins` write permissions |
+| [**`WPGate-Complete-Release-v0.1.1.zip`**](https://github.com/satinbest/WPGate/releases) | Development / Auditing | Full release archive with source code, tests, and documentation |
+
+### Fresh Installation (MU-Plugin Method)
+1. Download `WPGate-MU-Plugin-v0.1.1.zip`.
+2. Extract the archive directly into your WordPress `wp-content/mu-plugins/` directory:
+   ```text
+   wp-content/mu-plugins/
+   ├── wpgate-loader.php
+   └── wpgate-core/
+       ├── bootstrap.php
+       ├── includes/
+       ├── config/
+       ├── admin/
+       │   └── dist/
+       │       ├── wpgate-admin.js
+       │       └── wpgate-admin.css
+       └── assets/
+   ```
+3. Open your WordPress admin dashboard and navigate to **Settings > WPGate**.
+4. The Vue 3 dashboard mounts instantly with zero additional setup or activation needed.
+
+### Updating an Existing Installation
+1. Back up your existing `wp-content/mu-plugins/wpgate-core/` directory.
+2. Download `WPGate-MU-Plugin-v0.1.1.zip`.
+3. Extract and overwrite the files inside `wp-content/mu-plugins/`.
+4. Hard-refresh your browser (`Ctrl+F5` / `Cmd+Shift+R`) to clear cached client-side assets.
+5. All settings and logs stored in the WordPress database options are preserved automatically.
+
+### Avoiding Duplicate Loaders
+- Ensure only **one** instance of WPGate is loaded. If you switch from the theme loader to the MU-Plugin, remove the `require_once` call from your child theme's `functions.php`.
+
+### Emergency Kill-Switch
+To completely bypass all WPGate network interception and asset rewrites:
+Add this line to your `wp-config.php`:
+```php
+define( 'WPGATE_DISABLED', true );
+```
+
+### Troubleshooting Missing JS/CSS Assets
+If the admin interface ever appears empty:
+- Inspect browser developer tools (F12 > Console).
+- Verify that `wpgate-core/admin/dist/wpgate-admin.js` exists on disk.
+- In v0.1.1+, if files are missing, WPGate renders an automatic diagnostic warning banner with exact file paths and displays the server-rendered settings view as a safe fallback.
+- Read our detailed [Troubleshooting Guide](docs/troubleshooting.md).
 
 ---
 
@@ -44,12 +99,6 @@ Unlike traditional WordPress plugins, WPGate operates autonomously without stand
   - **Blacklist Mode:** Selectively blocks problematic external trackers or failing external APIs.
   - **Disabled Mode:** Passive monitoring with zero request alteration.
 - **Port-Agnostic & Subdomain-Aware Matching:** Normalizes ports and trailing dots, accurately matching subdomains (e.g., `api.zarinpal.com` matching `zarinpal.com`) while preventing substring spoofing (`attacker-zarinpal.com`).
-- **Emergency Kill-Switch:** Instantly bypass all filters and hooks directly from `wp-config.php`:
-  ```php
-  define( 'WPGATE_DISABLED', true );
-  // Or backward-compatible:
-  define( 'WPGATE_CORE_DISABLED', true );
-  ```
 - **Local Asset Gateway & CDN Fallbacks:** Automatically replaces remote Google Fonts (Roboto & Vazirmatn), FontAwesome 6, Swiper 11, Elementor Icons, and Dashicons with bundled local assets to eliminate render blocking.
 - **Outbound Timeout Ceiling:** Clamps slow external HTTP requests to a configurable limit (1–30 seconds) to avoid PHP worker exhaustion and 504 Gateway Timeouts.
 - **Privacy & Telemetry Mitigation:** Blocks background data transmission to telemetry endpoints while preserving essential core security updates.
@@ -67,54 +116,6 @@ Unlike traditional WordPress plugins, WPGate operates autonomously without stand
 | **Node.js** *(Dev only)* | 18+ | 20+ / 24+ |
 | **Operating System** | Linux, macOS, Windows | Linux (Ubuntu / Debian / Alpine) |
 | **Web Server** | Nginx, Apache, LiteSpeed, Caddy | Nginx / OpenResty |
-
----
-
-## 📦 Deployment Methods
-
-WPGate offers two standard deployment methods using the same shared core:
-
-### Method A: Must-Use Plugin (Recommended)
-
-Installs in `wp-content/mu-plugins/` to guarantee early execution before standard plugins load.
-
-1. Download [`WPGate-MU-Plugin-v0.1.0.zip`](https://github.com/satinbest/WPGate/releases).
-2. Extract the archive into your WordPress `wp-content/` directory:
-   ```text
-   wp-content/
-   └── mu-plugins/
-       ├── wpgate-loader.php
-       └── wpgate-core/
-           ├── bootstrap.php
-           ├── includes/
-           ├── config/
-           ├── admin/
-           └── assets/
-   ```
-3. WordPress automatically executes `wpgate-loader.php`. Navigate to **Settings > WPGate** in your WordPress dashboard.
-
-For step-by-step instructions, see [docs/installation-mu-plugin.md](docs/installation-mu-plugin.md).
-
----
-
-### Method B: Child Theme Loader
-
-If access to `mu-plugins` is restricted, embed WPGate directly into your child theme.
-
-1. Download [`WPGate-Theme-Module-v0.1.0.zip`](https://github.com/satinbest/WPGate/releases).
-2. Place `wpgate-core/` inside your active child theme folder:
-   ```text
-   wp-content/themes/your-child-theme/wpgate-core/
-   ```
-3. Include the bootstrap file in your child theme's `functions.php`:
-   ```php
-   // Initialize WPGate Standalone Core
-   if ( file_exists( get_stylesheet_directory() . '/wpgate-core/bootstrap.php' ) ) {
-       require_once get_stylesheet_directory() . '/wpgate-core/bootstrap.php';
-   }
-   ```
-
-For step-by-step instructions, see [docs/installation-theme-loader.md](docs/installation-theme-loader.md).
 
 ---
 
@@ -146,6 +147,7 @@ WPGate includes verified, curated presets for domestic infrastructure:
 - [Vue 3 Development & Build Guide](docs/vue-development.md)
 - [Architecture & Runtime Lifecycle](docs/architecture.md)
 - [Performance & Benchmark Report](PERFORMANCE-REPORT.md)
+- [Admin UI Bugfix Report](reports/ADMIN-UI-BUGFIX.md)
 - [Brand & Identity Audit](reports/BRAND-AUDIT.md)
 - [Configuration Reference](docs/configuration.md)
 - [Features Reference](docs/features.md)

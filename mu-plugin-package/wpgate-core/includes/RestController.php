@@ -5,7 +5,7 @@
  * Exposes secure REST API endpoints under route `wpgate/v1` for the Vue 3 admin interface.
  *
  * @package WPGate\Core
- * @version 0.1.0
+ * @version 0.1.1
  */
 
 namespace WPGate\Core;
@@ -117,7 +117,7 @@ class RestController {
 		                         ( defined( 'WPGATE_CORE_DISABLED' ) && WPGATE_CORE_DISABLED );
 
 		$system = [
-			'version'              => defined( 'WPGATE_CORE_VERSION' ) ? WPGATE_CORE_VERSION : '0.1.0',
+			'version'              => defined( 'WPGATE_CORE_VERSION' ) ? WPGATE_CORE_VERSION : '0.1.1',
 			'loading_method'       => Context::get_loading_method(),
 			'disabled_by_constant' => $disabled_by_constant,
 			'php_version'          => PHP_VERSION,

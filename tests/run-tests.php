@@ -301,7 +301,7 @@ function add_meta_box( $id, $title, $callback, $screen = null, $context = 'advan
 }
 
 // 2. Load Core Classes
-require_once dirname( __DIR__ ) . '/mu-plugin-package/mu-plugins/wpgate-core/bootstrap.php';
+require_once dirname( __DIR__ ) . '/mu-plugin-package/wpgate-core/bootstrap.php';
 
 // Test runner helpers
 $tests_passed = 0;
@@ -355,7 +355,7 @@ it( "Resolves asset URL correctly in theme context", function() {
 });
 
 // Reset context back to test directory
-\WPGate\Core\Context::init( dirname( __DIR__ ) . '/mu-plugin-package/mu-plugins/wpgate-core' );
+\WPGate\Core\Context::init( dirname( __DIR__ ) . '/mu-plugin-package/wpgate-core' );
 
 // TEST SUITE 2: Settings Management & Defaults
 echo "\nTest Suite 2: Settings Management & Defaults\n";
@@ -564,14 +564,14 @@ it( "Logs events to database options and respects clear_logs", function() {
 echo "\nTest Suite 9: Kill-Switch Behavior (wp-config.php define)\n";
 it( "MU-Plugin loader respects WPGATE_DISABLED", function() {
 	$cmd = 'php -r "define(\'ABSPATH\', 1); define(\'WPGATE_DISABLED\', true); require \'' .
-	       addslashes( dirname( __DIR__ ) . '/mu-plugin-package/mu-plugins/wpgate-loader.php' ) . '\'; echo defined(\'WPGATE_CORE_LOADED\') ? \'loaded\' : \'disabled\';"';
+	       addslashes( dirname( __DIR__ ) . '/mu-plugin-package/wpgate-loader.php' ) . '\'; echo defined(\'WPGATE_CORE_LOADED\') ? \'loaded\' : \'disabled\';"';
 	$output = trim( shell_exec( $cmd ) );
 	return 'disabled' === $output;
 });
 
 it( "MU-Plugin loader respects WPGATE_CORE_DISABLED", function() {
 	$cmd = 'php -r "define(\'ABSPATH\', 1); define(\'WPGATE_CORE_DISABLED\', true); require \'' .
-	       addslashes( dirname( __DIR__ ) . '/mu-plugin-package/mu-plugins/wpgate-loader.php' ) . '\'; echo defined(\'WPGATE_CORE_LOADED\') ? \'loaded\' : \'disabled\';"';
+	       addslashes( dirname( __DIR__ ) . '/mu-plugin-package/wpgate-loader.php' ) . '\'; echo defined(\'WPGATE_CORE_LOADED\') ? \'loaded\' : \'disabled\';"';
 	$output = trim( shell_exec( $cmd ) );
 	return 'disabled' === $output;
 });
@@ -681,7 +681,7 @@ it( "Theme package bootstrap file exists and has valid syntax", function() {
 });
 
 it( "Theme package core matches MU package core files", function() {
-	$mu_core = dirname( __DIR__ ) . '/mu-plugin-package/mu-plugins/wpgate-core';
+	$mu_core = dirname( __DIR__ ) . '/mu-plugin-package/wpgate-core';
 	$theme_core = dirname( __DIR__ ) . '/theme-package/wpgate-core';
 	$files = [
 		'bootstrap.php',
@@ -710,6 +710,42 @@ it( "Theme package core matches MU package core files", function() {
 		}
 	}
 	return true;
+});
+
+// TEST SUITE 14: Admin UI Asset Resolution & Fallback Behavior (P0 Bug Fix)
+echo "\nTest Suite 14: Admin UI Asset Resolution & Diagnostics\n";
+it( "Locates admin JS and CSS assets without incorrect /assets/ duplication", function() {
+	$js = \WPGate\Core\Admin\AdminController::locate_admin_dist_asset( 'wpgate-admin.js' );
+	$css = \WPGate\Core\Admin\AdminController::locate_admin_dist_asset( 'wpgate-admin.css' );
+
+	return null !== $js &&
+	       null !== $css &&
+	       file_exists( $js['path'] ) &&
+	       file_exists( $css['path'] ) &&
+	       false !== strpos( $js['url'], 'wpgate-admin.js' ) &&
+	       false !== strpos( $css['url'], 'wpgate-admin.css' );
+});
+
+it( "Returns null for nonexistent asset files without throwing errors", function() {
+	$missing = \WPGate\Core\Admin\AdminController::locate_admin_dist_asset( 'nonexistent-bundle.js' );
+	return null === $missing;
+});
+
+it( "Settings page renders diagnostic notice if admin JS asset is missing", function() {
+	// Temporarily point context to empty directory
+	$tmp_dir = sys_get_temp_dir() . '/wpgate-empty-' . uniqid();
+	mkdir( $tmp_dir );
+	\WPGate\Core\Context::init( $tmp_dir );
+
+	ob_start();
+	\WPGate\Core\Admin\AdminController::render_settings_page();
+	$output = ob_get_clean();
+
+	// Reset context
+	\WPGate\Core\Context::init( dirname( __DIR__ ) . '/mu-plugin-package/wpgate-core' );
+	rmdir( $tmp_dir );
+
+	return false !== strpos( $output, 'SPA Administration Dashboard Assets Not Found' );
 });
 
 echo "\n========================================================\n";

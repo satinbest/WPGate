@@ -180,12 +180,26 @@ class Context {
 	}
 
 	/**
-	 * Get URL to an asset file.
+	 * Get URL to an asset file (inside /assets/ directory).
 	 *
 	 * @param string $relative_path
 	 * @return string
 	 */
 	public static function get_asset_url( string $relative_path ): string {
 		return self::get_base_url() . '/assets/' . ltrim( $relative_path, '/' );
+	}
+
+	/**
+	 * Get URL relative to module root directory (without /assets/ prefix).
+	 *
+	 * @param string $relative_path
+	 * @return string
+	 */
+	public static function get_module_url( string $relative_path = '' ): string {
+		$url = self::get_base_url();
+		if ( '' !== $relative_path ) {
+			$url .= '/' . ltrim( $relative_path, '/' );
+		}
+		return $url;
 	}
 }

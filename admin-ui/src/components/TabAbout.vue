@@ -18,7 +18,7 @@
           </svg>
         </div>
         <div class="wpgate-about-info">
-          <h1 class="wpgate-about-name">WPGate <span class="wpgate-version-pill">v0.1.0</span></h1>
+          <h1 class="wpgate-about-name">WPGate <span class="wpgate-version-pill">v0.1.1</span></h1>
           <p class="wpgate-about-summary">{{ t('about.summary') }}</p>
         </div>
       </div>

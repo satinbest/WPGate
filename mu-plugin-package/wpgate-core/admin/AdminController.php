@@ -3,10 +3,10 @@
  * WPGate Standalone Core - Admin Controller
  *
  * Manages WordPress admin menu, script enqueueing for the Vue 3 SPA,
- * and dashboard widget integration.
+ * and dashboard widget integration with reliable asset resolution.
  *
  * @package WPGate\Core
- * @version 0.1.0
+ * @version 0.1.1
  */
 
 namespace WPGate\Core\Admin;
@@ -60,6 +60,40 @@ class AdminController {
 	}
 
 	/**
+	 * Locate compiled admin SPA asset (JS or CSS) deterministically.
+	 * Checks both primary location (admin/dist/) and secondary location (assets/admin/dist/).
+	 * Returns array with physical filesystem path and exact matching public URL, or null if missing.
+	 *
+	 * @param string $filename e.g. 'wpgate-admin.js' or 'wpgate-admin.css'
+	 * @return array{path: string, url: string}|null
+	 */
+	public static function locate_admin_dist_asset( string $filename ): ?array {
+		$base_dir = Context::get_base_dir();
+		$base_url = Context::get_base_url();
+
+		$candidates = [
+			// Primary structure: wpgate-core/admin/dist/
+			[
+				'path' => $base_dir . '/admin/dist/' . $filename,
+				'url'  => $base_url . '/admin/dist/' . $filename,
+			],
+			// Secondary structure: wpgate-core/assets/admin/dist/
+			[
+				'path' => $base_dir . '/assets/admin/dist/' . $filename,
+				'url'  => $base_url . '/assets/admin/dist/' . $filename,
+			],
+		];
+
+		foreach ( $candidates as $candidate ) {
+			if ( file_exists( $candidate['path'] ) && filesize( $candidate['path'] ) > 0 ) {
+				return $candidate;
+			}
+		}
+
+		return null;
+	}
+
+	/**
 	 * Enqueue Vue 3 SPA assets ONLY on WPGate administration page.
 	 *
 	 * @param string $hook_suffix
@@ -70,25 +104,29 @@ class AdminController {
 			return;
 		}
 
-		$dist_dir = Context::get_base_dir() . '/admin/dist';
-		$js_file  = $dist_dir . '/wpgate-admin.js';
-		$css_file = $dist_dir . '/wpgate-admin.css';
+		$version = defined( 'WPGATE_CORE_VERSION' ) ? WPGATE_CORE_VERSION : '0.1.1';
 
-		if ( file_exists( $css_file ) ) {
+		// Locate and enqueue compiled CSS
+		$css_asset = self::locate_admin_dist_asset( 'wpgate-admin.css' );
+		if ( null !== $css_asset ) {
+			$css_ver = file_exists( $css_asset['path'] ) ? (string) filemtime( $css_asset['path'] ) : $version;
 			wp_enqueue_style(
 				'wpgate-admin-spa',
-				Context::get_asset_url( 'admin/dist/wpgate-admin.css' ),
+				$css_asset['url'],
 				[],
-				defined( 'WPGATE_CORE_VERSION' ) ? WPGATE_CORE_VERSION : '0.1.0'
+				$css_ver
 			);
 		}
 
-		if ( file_exists( $js_file ) ) {
+		// Locate and enqueue compiled JS
+		$js_asset = self::locate_admin_dist_asset( 'wpgate-admin.js' );
+		if ( null !== $js_asset ) {
+			$js_ver = file_exists( $js_asset['path'] ) ? (string) filemtime( $js_asset['path'] ) : $version;
 			wp_enqueue_script(
 				'wpgate-admin-spa',
-				Context::get_asset_url( 'admin/dist/wpgate-admin.js' ),
+				$js_asset['url'],
 				[],
-				defined( 'WPGATE_CORE_VERSION' ) ? WPGATE_CORE_VERSION : '0.1.0',
+				$js_ver,
 				true
 			);
 
@@ -98,7 +136,7 @@ class AdminController {
 				[
 					'root'         => esc_url_raw( rest_url() ),
 					'nonce'        => wp_create_nonce( 'wp_rest' ),
-					'version'      => defined( 'WPGATE_CORE_VERSION' ) ? WPGATE_CORE_VERSION : '0.1.0',
+					'version'      => $version,
 					'isRtl'        => is_rtl(),
 					'locale'       => get_user_locale(),
 					'author'       => 'Hossein Mohammadpour',
@@ -183,7 +221,8 @@ class AdminController {
 	}
 
 	/**
-	 * Render settings page view. Mounts Vue 3 SPA or falls back to server-rendered template.
+	 * Render settings page view. Mounts Vue 3 SPA or provides an informative diagnostic
+	 * message with graceful fallback to server-rendered view if assets are missing.
 	 *
 	 * @return void
 	 */
@@ -192,17 +231,33 @@ class AdminController {
 			return;
 		}
 
-		$dist_js = Context::get_base_dir() . '/admin/dist/wpgate-admin.js';
+		$js_asset = self::locate_admin_dist_asset( 'wpgate-admin.js' );
 
-		if ( file_exists( $dist_js ) ) {
+		// If Vue SPA bundle is present on disk, mount the SPA container
+		if ( null !== $js_asset ) {
 			echo '<div class="wrap wpgate-admin-wrap">';
 			echo '<div id="wpgate-admin-app"></div>';
-			echo '<noscript><p class="notice notice-error">' . esc_html__( 'WPGate Administration Dashboard requires JavaScript to be enabled in your browser.', 'wpgate' ) . '</p></noscript>';
+			echo '<noscript><p class="notice notice-error" style="padding:12px; margin:20px 0;">' . esc_html__( 'WPGate Administration Dashboard requires JavaScript to be enabled in your browser.', 'wpgate' ) . '</p></noscript>';
 			echo '</div>';
 			return;
 		}
 
-		// Fallback server template if compiled SPA assets are not found
+		// Diagnostic Notice: Assets not found on disk
+		$version = defined( 'WPGATE_CORE_VERSION' ) ? WPGATE_CORE_VERSION : '0.1.1';
+		echo '<div class="wrap">';
+		echo '<div class="notice notice-warning is-dismissible" style="padding:16px; margin:20px 0; border-inline-start-width:4px;">';
+		echo '<h3 style="margin-top:0; color:#b45309;">⚠️ WPGate: SPA Administration Dashboard Assets Not Found</h3>';
+		echo '<p>The compiled Vue 3 Single Page Application assets (<code>wpgate-admin.js</code> / <code>wpgate-admin.css</code>) could not be located in:</p>';
+		echo '<ul style="list-style:disc; margin-left:24px; font-family:monospace; font-size:0.85em;">';
+		echo '<li>' . esc_html( Context::get_base_dir() . '/admin/dist/wpgate-admin.js' ) . '</li>';
+		echo '<li>' . esc_html( Context::get_base_dir() . '/assets/admin/dist/wpgate-admin.js' ) . '</li>';
+		echo '</ul>';
+		echo '<p><strong>Safe Fallback Mode Active:</strong> Displaying the standard server-rendered configuration interface below. All settings remain 100% accessible and editable.</p>';
+		echo '<p><em>To restore the modern Vue 3 interface, please ensure you downloaded and extracted the complete official release package (<code>WPGate-MU-Plugin-v' . esc_html( $version ) . '.zip</code>).</em></p>';
+		echo '</div>';
+		echo '</div>';
+
+		// Fallback server template so settings remain 100% accessible!
 		$settings        = Settings::get_all();
 		$logs            = Logger::get_logs();
 		$presets         = Settings::get_presets();

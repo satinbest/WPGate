@@ -14,7 +14,7 @@
           <div>
             <h1 class="wpgate-app-title">
               {{ t('appName') }}
-              <span class="wpgate-version-pill">v{{ system.version || '0.1.0' }}</span>
+              <span class="wpgate-version-pill">v{{ system.version || '0.1.1' }}</span>
             </h1>
           </div>
         </div>

@@ -5,7 +5,7 @@ import { resolve } from 'path';
 export default defineConfig({
   plugins: [vue()],
   build: {
-    outDir: resolve(__dirname, '../mu-plugin-package/mu-plugins/wpgate-core/admin/dist'),
+    outDir: resolve(__dirname, '../mu-plugin-package/wpgate-core/admin/dist'),
     emptyOutDir: true,
     rollupOptions: {
       input: resolve(__dirname, 'src/main.js'),

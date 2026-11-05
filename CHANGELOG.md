@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.1.1] - 2026-11-06
+
+### Fixed
+- **Admin UI Asset Resolution (P0 Bug Fix):** Resolved 404 Not Found error on `wpgate-admin.js` and `wpgate-admin.css` caused by incorrect `/assets/` path prefix injection in `AdminController.php`.
+- **MIME Type Blocking:** Eliminated browser execution block `MIME type ('text/html') is not executable` by ensuring web server returns 200 OK with correct JavaScript/CSS MIME types.
+- **Deterministic Asset Discovery:** Added `locate_admin_dist_asset()` to inspect both primary (`admin/dist/`) and fallback (`assets/admin/dist/`) directories and return exact matching URLs.
+- **Admin Diagnostic Safeguard:** Added informative administrator alert and server-rendered view fallback when compiled SPA assets are absent, preventing silent blank screens.
+- **MU Plugin Package Structure:** Flattened `mu-plugin-package/` to ensure `wpgate-loader.php` resides directly at the root of the installable ZIP for 1-click extraction into `wp-content/mu-plugins/`.
+
+### Added
+- **Automated Test Suite 14:** Added unit and integration tests for asset resolution, null handling, and diagnostic fallbacks (44 total tests, 100% pass).
+
+---
+
 ## [0.1.0] - 2026-11-05
 
 ### Added
